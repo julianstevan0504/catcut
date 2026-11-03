@@ -5,7 +5,9 @@ COPY package.json package-lock.json ./
 RUN --mount=type=secret,id=proxy_ca \
     if [ -f /run/secrets/proxy_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/proxy_ca; fi; \
     npm ci --strict-ssl=true --no-audit --no-fund
-COPY tsconfig.json vite.config.mjs index.html ./
+COPY tsconfig.json vite.config.mjs vite.standalone.config.mjs index.html ./
+COPY scripts/finish-standalone.mjs ./scripts/finish-standalone.mjs
+COPY shared ./shared
 COPY src ./src
 COPY public ./public
 RUN npm run build
@@ -20,6 +22,7 @@ COPY --from=build --chown=node:node /app/node_modules ./node_modules
 COPY --from=build --chown=node:node /app/dist ./dist
 COPY --chown=node:node package.json package-lock.json ./
 COPY --chown=node:node server ./server
+COPY --chown=node:node shared ./shared
 COPY --chown=node:node scripts/backup.mjs ./scripts/backup.mjs
 RUN mkdir -p /app/data && chown node:node /app/data
 USER node

@@ -1,55 +1,577 @@
-import { useEffect, useRef, useState } from 'react';
-import type { FormEvent } from 'react';
-import { ArrowLeft, ArrowUpRight, Bot, Check, CheckCheck, Download, Info, LoaderCircle, MessageCircle, MoreHorizontal, Send, ShieldCheck, Sparkles, UserRound, X, ShoppingBag, Phone, Clock3 } from 'lucide-react';
-import { dateLabel, exportCsv, money, patch, post, relativeTime, time, useResource } from '../api';
-import { useApp } from '../context';
-import { Avatar, EmptyState, ErrorState, PageHeading, SearchBox, Spinner, StatusBadge } from '../components';
-import type { Conversation, Message, Order } from '../types';
+import { useEffect, useRef, useState } from "react";
+import type { FormEvent } from "react";
+import {
+  ArrowLeft,
+  ArrowUpRight,
+  Bot,
+  Check,
+  CheckCheck,
+  Download,
+  Info,
+  LoaderCircle,
+  MessageCircle,
+  MoreHorizontal,
+  Send,
+  ShieldCheck,
+  Sparkles,
+  UserRound,
+  X,
+  ShoppingBag,
+  Phone,
+  Clock3,
+} from "lucide-react";
+import {
+  dateLabel,
+  exportCsv,
+  money,
+  patch,
+  post,
+  relativeTime,
+  time,
+  useResource,
+} from "../api";
+import { useApp } from "../context";
+import {
+  Avatar,
+  EmptyState,
+  ErrorState,
+  PageHeading,
+  SearchBox,
+  Spinner,
+  StatusBadge,
+} from "../components";
+import type { Conversation, Message, Order } from "../types";
 
 export function Inbox({ initialId }: { initialId?: string }) {
   const { version, navigate } = useApp();
-  const { data, error, loading, reload } = useResource<Conversation[]>('/conversations', version, 6000);
-  const [selected, setSelected] = useState(initialId ?? ''), [search, setSearch] = useState('');
-  const [filter, setFilter] = useState('all'), [mobileChat, setMobileChat] = useState(false);
-  useEffect(() => { if (initialId) { setSelected(initialId); setMobileChat(true); } }, [initialId]);
-  useEffect(() => { if (data?.length && !data.some(c => c.id === selected)) setSelected(data[0].id); }, [data, selected]);
-  const filtered = data?.filter(c => (filter === 'all' || c.status === filter) && `${c.name} ${c.phone} ${c.last_message}`.toLowerCase().includes(search.toLowerCase())) ?? [];
-  const active = data?.find(c => c.id === selected);
-  if (loading) return <Spinner/>;
-  if (error) return <ErrorState message={error} retry={reload}/>;
-  return <><PageHeading title="Cada conversación importa." subtitle="Todo lo que tus clientes dicen. Todo lo que tu asistente responde." action={<button className="button secondary" onClick={() => navigate('assistant')}><Sparkles size={17}/> Probar asistente</button>}/>
-    <div className="inbox-tabs tabs">{[{ id: 'all', label: 'Todas' }, { id: 'open', label: 'En curso' }, { id: 'pending', label: 'Necesitan atención' }, { id: 'resolved', label: 'Resueltas' }].map(f => <button key={f.id} className={filter === f.id ? 'active' : ''} onClick={() => setFilter(f.id)}>{f.label}<span>{data?.filter(c => f.id === 'all' || c.status === f.id).length ?? 0}</span></button>)}</div>
-    {!data?.length ? <div className="card"><EmptyState title="Aquí empieza la conversación" description="Prueba tu asistente para crear una conversación de ejemplo, o conecta WhatsApp Business para recibir mensajes reales." action={<button className="button primary" onClick={() => navigate('assistant')}>Probar asistente <ArrowUpRight size={16}/></button>}/></div> : <div className={`inbox-layout ${mobileChat ? 'show-mobile-chat' : ''}`}><section className="conversation-list"><div className="conversation-list-search"><SearchBox value={search} onChange={setSearch} placeholder="Buscar una conversación"/></div><div className="conversation-list-heading"><span>{filtered.length} CONVERSACIONES</span><MessagesIcon/></div><div className="conversation-items">{filtered.map((c, i) => <button key={c.id} className={`conversation-item ${selected === c.id ? 'selected' : ''}`} onClick={() => { setSelected(c.id); setMobileChat(true); }}><div className="contact-avatar"><Avatar name={c.name} index={i}/>{c.channel === 'whatsapp' && <span className="whatsapp-mini"><MessageCircle size={10}/></span>}</div><div className="conversation-preview"><div><strong>{c.name}</strong><small>{time(c.updated_at)}</small></div><p>{c.last_role === 'assistant' && <Bot size={13}/>}<span>{c.last_message}</span></p><div className="conversation-preview-meta"><span>{c.handoff ? 'Atención humana' : c.status === 'resolved' ? 'Resuelta' : 'Asistente IA'}</span>{c.unread > 0 && <b>{c.unread}</b>}</div></div></button>)}{!filtered.length && <EmptyState title="Sin coincidencias" description="Prueba con otro nombre o cambia el filtro."/>}</div><div className="inbox-list-footer"><ShieldCheck size={13}/> Solo tú puedes ver tu espacio</div></section>
-    {active ? <ConversationChat key={active.id} conversation={active} onBack={() => setMobileChat(false)}/> : <EmptyState title="Selecciona una conversación" description="Abre un chat para ver su historial."/>}</div>}
-  </>;
+  const { data, error, loading, reload } = useResource<Conversation[]>(
+    "/conversations",
+    version,
+    6000,
+  );
+  const [selected, setSelected] = useState(initialId ?? ""),
+    [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all"),
+    [mobileChat, setMobileChat] = useState(false);
+  useEffect(() => {
+    if (initialId) {
+      setSelected(initialId);
+      setMobileChat(true);
+    }
+  }, [initialId]);
+  useEffect(() => {
+    if (data?.length && !data.some((c) => c.id === selected))
+      setSelected(data[0].id);
+  }, [data, selected]);
+  const filtered =
+    data?.filter(
+      (c) =>
+        (filter === "all" || c.status === filter) &&
+        `${c.name} ${c.phone} ${c.last_message}`
+          .toLowerCase()
+          .includes(search.toLowerCase()),
+    ) ?? [];
+  const active = data?.find((c) => c.id === selected);
+  if (loading) return <Spinner />;
+  if (error) return <ErrorState message={error} retry={reload} />;
+  return (
+    <>
+      <PageHeading
+        title="Cada conversación importa."
+        subtitle="Todo lo que tus clientes dicen. Todo lo que tu asistente responde."
+        action={
+          <button
+            className="button secondary"
+            onClick={() => navigate("assistant")}
+          >
+            <Sparkles size={17} /> Probar asistente
+          </button>
+        }
+      />
+      <div className="inbox-tabs tabs">
+        {[
+          { id: "all", label: "Todas" },
+          { id: "open", label: "En curso" },
+          { id: "pending", label: "Necesitan atención" },
+          { id: "resolved", label: "Resueltas" },
+        ].map((f) => (
+          <button
+            key={f.id}
+            className={filter === f.id ? "active" : ""}
+            onClick={() => setFilter(f.id)}
+          >
+            {f.label}
+            <span>
+              {data?.filter((c) => f.id === "all" || c.status === f.id)
+                .length ?? 0}
+            </span>
+          </button>
+        ))}
+      </div>
+      {!data?.length ? (
+        <div className="card">
+          <EmptyState
+            title="Aquí empieza la conversación"
+            description="Prueba tu asistente para crear una conversación de ejemplo, o conecta WhatsApp Business para recibir mensajes reales."
+            action={
+              <button
+                className="button primary"
+                onClick={() => navigate("assistant")}
+              >
+                Probar asistente <ArrowUpRight size={16} />
+              </button>
+            }
+          />
+        </div>
+      ) : (
+        <div className={`inbox-layout ${mobileChat ? "show-mobile-chat" : ""}`}>
+          <section className="conversation-list">
+            <div className="conversation-list-search">
+              <SearchBox
+                value={search}
+                onChange={setSearch}
+                placeholder="Buscar una conversación"
+              />
+            </div>
+            <div className="conversation-list-heading">
+              <span>{filtered.length} CONVERSACIONES</span>
+              <MessagesIcon />
+            </div>
+            <div className="conversation-items">
+              {filtered.map((c, i) => (
+                <button
+                  key={c.id}
+                  className={`conversation-item ${selected === c.id ? "selected" : ""}`}
+                  onClick={() => {
+                    setSelected(c.id);
+                    setMobileChat(true);
+                  }}
+                >
+                  <div className="contact-avatar">
+                    <Avatar name={c.name} index={i} />
+                    {c.channel === "whatsapp" && (
+                      <span className="whatsapp-mini">
+                        <MessageCircle size={10} />
+                      </span>
+                    )}
+                  </div>
+                  <div className="conversation-preview">
+                    <div>
+                      <strong>{c.name}</strong>
+                      <small>{time(c.updated_at)}</small>
+                    </div>
+                    <p>
+                      {c.last_role === "assistant" && <Bot size={13} />}
+                      <span>{c.last_message}</span>
+                    </p>
+                    <div className="conversation-preview-meta">
+                      <span>
+                        {c.handoff
+                          ? "Atención humana"
+                          : c.status === "resolved"
+                            ? "Resuelta"
+                            : "Asistente IA"}
+                      </span>
+                      {c.unread > 0 && <b>{c.unread}</b>}
+                    </div>
+                  </div>
+                </button>
+              ))}
+              {!filtered.length && (
+                <EmptyState
+                  title="Sin coincidencias"
+                  description="Prueba con otro nombre o cambia el filtro."
+                />
+              )}
+            </div>
+            <div className="inbox-list-footer">
+              <ShieldCheck size={13} /> Solo tú puedes ver tu espacio
+            </div>
+          </section>
+          {active ? (
+            <ConversationChat
+              key={active.id}
+              conversation={active}
+              onBack={() => setMobileChat(false)}
+            />
+          ) : (
+            <EmptyState
+              title="Selecciona una conversación"
+              description="Abre un chat para ver su historial."
+            />
+          )}
+        </div>
+      )}
+    </>
+  );
 }
-const MessagesIcon = () => <MessageCircle size={14}/>;
+const MessagesIcon = () => <MessageCircle size={14} />;
 
-function ConversationChat({ conversation: c, onBack }: { conversation: Conversation; onBack: () => void }) {
+function ConversationChat({
+  conversation: c,
+  onBack,
+}: {
+  conversation: Conversation;
+  onBack: () => void;
+}) {
   const { session, version, refresh, notify, navigate } = useApp();
-  const { data: messages, loading, error, reload } = useResource<Message[]>(`/conversations/${c.id}/messages`, version, 5000);
-  const { data: orders } = useResource<Order[]>('/orders', version);
-  const [text, setText] = useState(''), [sending, setSending] = useState(false), [updating, setUpdating] = useState(false), [details, setDetails] = useState(true), [menu, setMenu] = useState(false);
+  const {
+    data: messages,
+    loading,
+    error,
+    reload,
+  } = useResource<Message[]>(`/conversations/${c.id}/messages`, version, 5000);
+  const { data: orders } = useResource<Order[]>("/orders", version);
+  const [text, setText] = useState(""),
+    [sending, setSending] = useState(false),
+    [updating, setUpdating] = useState(false),
+    [details, setDetails] = useState(true),
+    [menu, setMenu] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
-  useEffect(() => { if (scroller.current) scroller.current.scrollTop = scroller.current.scrollHeight; }, [messages?.length]);
-  async function update(body: object) { setUpdating(true); try { await patch(`/conversations/${c.id}`, body); refresh(); } catch (e) { notify((e as Error).message, true); } finally { setUpdating(false); } }
+  useEffect(() => {
+    if (scroller.current)
+      scroller.current.scrollTop = scroller.current.scrollHeight;
+  }, [messages?.length]);
+  async function update(body: object) {
+    setUpdating(true);
+    try {
+      await patch(`/conversations/${c.id}`, body);
+      refresh();
+    } catch (e) {
+      notify((e as Error).message, true);
+    } finally {
+      setUpdating(false);
+    }
+  }
   async function send(e: FormEvent) {
-    e.preventDefault(); if (!text.trim() || sending) return;
+    e.preventDefault();
+    if (!text.trim() || sending) return;
     setSending(true);
-    try { await post(`/conversations/${c.id}/messages`, { text }); setText(''); refresh(); reload(); }
-    catch (e) { notify((e as Error).message, true); reload(); }
-    finally { setSending(false); }
+    try {
+      await post(`/conversations/${c.id}/messages`, { text });
+      setText("");
+      refresh();
+      reload();
+    } catch (e) {
+      notify((e as Error).message, true);
+      reload();
+    } finally {
+      setSending(false);
+    }
   }
   function exportChat() {
     if (!messages) return;
-    exportCsv(`conversacion-${c.name.replaceAll(' ', '-')}.csv`, [['Fecha', 'Remitente', 'Mensaje', 'Estado'], ...messages.map(m => [m.created_at, m.role === 'user' ? c.name : m.role === 'assistant' ? session.settings.assistantName : 'Equipo', m.text, m.status])]);
-    setMenu(false); notify('Conversación exportada.');
+    exportCsv(`conversacion-${c.name.replaceAll(" ", "-")}.csv`, [
+      ["Fecha", "Remitente", "Mensaje", "Estado"],
+      ...messages.map((m) => [
+        m.created_at,
+        m.role === "user"
+          ? c.name
+          : m.role === "assistant"
+            ? session.settings.assistantName
+            : "Equipo",
+        m.text,
+        m.status,
+      ]),
+    ]);
+    setMenu(false);
+    notify("Conversación exportada.");
   }
-  const lastOrder = orders?.find(o => o.phone === c.phone);
-  return <><section className="chat-panel"><header className="chat-header"><button className="icon-button chat-back" onClick={onBack} aria-label="Volver a conversaciones"><ArrowLeft size={19}/></button><Avatar name={c.name}/><div className="chat-header-name"><strong>{c.name}</strong><small><span className={`status-dot ${c.handoff ? 'amber' : ''}`}/>{c.status === 'resolved' ? 'Conversación resuelta' : c.handoff ? 'En manos del equipo' : `${session.settings.assistantName} está a cargo`}</small></div><div className="chat-header-actions"><button className="icon-button" aria-label={details ? 'Ocultar información del cliente' : 'Ver información del cliente'} onClick={() => setDetails(d => !d)}><Info size={19}/></button><div className="chat-menu-wrap"><button className="icon-button" aria-label="Más acciones" aria-expanded={menu} onClick={() => setMenu(m => !m)}><MoreHorizontal size={20}/></button>{menu && <div className="chat-menu"><button onClick={exportChat}><Download size={15}/> Exportar conversación</button></div>}</div></div></header>
-    <div className={`chat-mode-bar ${c.handoff ? 'human' : ''}`}><span>{c.handoff ? <UserRound size={16}/> : <Sparkles size={16}/>} {c.handoff ? 'El asistente está pausado en este chat' : 'Tu asistente se encarga de esta conversación'}</span><button disabled={updating} onClick={() => void update({ handoff: !c.handoff, status: c.handoff ? 'open' : 'pending' })}>{c.handoff ? 'Devolver al asistente' : 'Tomar el control'}<ArrowUpRight size={13}/></button></div>
-    <div className="chat-messages" ref={scroller}>{loading ? <Spinner/> : error ? <ErrorState message={error} retry={reload}/> : <>{c.channel !== 'whatsapp' && <div className="chat-demo-notice"><Sparkles size={13}/> Conversación {c.channel === 'sandbox' ? 'del simulador' : 'de ejemplo'}. No se envían mensajes a WhatsApp.</div>}{messages?.map((m, i) => <div key={m.id}>{(i === 0 || messages[i - 1].created_at.slice(0, 10) !== m.created_at.slice(0, 10)) && <div className="chat-date">{dateLabel(m.created_at)}</div>}<div className={`message-row ${m.role === 'user' ? 'incoming' : 'outgoing'}`}><div className={`message-bubble ${m.role === 'agent' ? 'agent' : ''}`}><div className="message-author">{m.role === 'user' ? c.name.split(' ')[0] : m.role === 'assistant' ? <><Sparkles size={11}/>{session.settings.assistantName} <span>IA</span></> : <><UserRound size={11}/> Equipo</>}</div><p>{m.text}</p><div className={`message-time ${m.status === 'failed' ? 'failed' : ''}`}>{m.status === 'failed' ? 'No enviado · ' : ''}{time(m.created_at)} {m.role !== 'user' && (m.status === 'read' ? <CheckCheck size={13} className="read"/> : m.status === 'delivered' ? <CheckCheck size={13}/> : m.status === 'pending' ? <Clock3 size={12}/> : <Check size={13}/>)}</div></div></div></div>)}</>}</div>
-    {c.status === 'resolved' ? <div className="resolved-bar"><CheckCheck size={17}/> Marcaste esta conversación como resuelta.<button onClick={() => void update({ status: 'open' })}>Reabrir</button></div> : <div className="chat-composer-area">{c.channel === 'whatsapp' && !c.handoff ? <button className="takeover-composer" disabled={updating} onClick={() => void update({ handoff: true, status: 'pending' })}><UserRound size={17}/> Toma el control para escribir al cliente <ArrowUpRight size={16}/></button> : <form className="chat-composer" onSubmit={e => void send(e)}><textarea aria-label="Escribe tu respuesta" placeholder="Escribe una respuesta cercana..." value={text} onChange={e => setText(e.target.value)} maxLength={4000} rows={1} onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); e.currentTarget.form?.requestSubmit(); } }}/><button type="submit" className="send-button" aria-label="Enviar respuesta" disabled={!text.trim() || sending}>{sending ? <LoaderCircle size={17} className="spin"/> : <Send size={17}/>}</button></form>}<div className="composer-caption"><span>{c.channel === 'whatsapp' ? 'Enter para enviar · Shift + Enter para nueva línea' : 'Los mensajes de prueba quedan guardados en el historial'}</span><button disabled={updating} onClick={() => void update({ status: 'resolved' })}><CheckCheck size={13}/> Resolver</button></div></div>}</section>
-    {details && <aside className="contact-details"><div className="contact-details-heading"><span>DETALLES DEL CLIENTE</span><button className="icon-button" aria-label="Cerrar detalles" onClick={() => setDetails(false)}><X size={16}/></button></div><div className="contact-profile"><Avatar name={c.name} size="large"/><h3>{c.name}</h3><span>Cliente de {session.workspace.name}</span></div><div className="contact-data"><div><Phone size={14}/><span>WhatsApp<strong>{c.phone}</strong></span></div><div><MessageCircle size={14}/><span>Canal<strong>{c.channel === 'whatsapp' ? 'WhatsApp Business' : c.channel === 'sandbox' ? 'Simulador' : 'Datos de demostración'}</strong></span></div><div><Clock3 size={14}/><span>Última actividad<strong>{relativeTime(c.updated_at)}</strong></span></div></div><div className="detail-section"><h4>ESTADO</h4><StatusBadge status={c.status}/></div><div className="detail-section"><h4>TEMA DE LA CONVERSACIÓN</h4><span className="topic-tag">{{ stock: 'Productos y stock', pedido: 'Seguimiento de pedido', horario: 'Horario de atención', humano: 'Atención humana', general: 'Consulta general' }[c.topic] ?? 'Consulta general'}</span></div>{lastOrder && <div className="detail-section"><h4>PEDIDO VINCULADO</h4><button className="contact-order" onClick={() => navigate('orders')}><ShoppingBag size={19}/><span><strong>#{lastOrder.code}</strong><small>{money(lastOrder.total)} COP</small></span><ArrowUpRight size={14}/></button><StatusBadge status={lastOrder.status}/></div>}<div className="contact-privacy"><ShieldCheck size={17}/><p>El asistente solo muestra pedidos asociados al número que escribe.</p></div></aside>}
-  </>;
+  const lastOrder = orders?.find((o) => o.phone === c.phone);
+  return (
+    <>
+      <section className="chat-panel">
+        <header className="chat-header">
+          <button
+            className="icon-button chat-back"
+            onClick={onBack}
+            aria-label="Volver a conversaciones"
+          >
+            <ArrowLeft size={19} />
+          </button>
+          <Avatar name={c.name} />
+          <div className="chat-header-name">
+            <strong>{c.name}</strong>
+            <small>
+              <span className={`status-dot ${c.handoff ? "amber" : ""}`} />
+              {c.status === "resolved"
+                ? "Conversación resuelta"
+                : c.handoff
+                  ? "En manos del equipo"
+                  : `${session.settings.assistantName} está a cargo`}
+            </small>
+          </div>
+          <div className="chat-header-actions">
+            <button
+              className="icon-button"
+              aria-label={
+                details
+                  ? "Ocultar información del cliente"
+                  : "Ver información del cliente"
+              }
+              onClick={() => setDetails((d) => !d)}
+            >
+              <Info size={19} />
+            </button>
+            <div className="chat-menu-wrap">
+              <button
+                className="icon-button"
+                aria-label="Más acciones"
+                aria-expanded={menu}
+                onClick={() => setMenu((m) => !m)}
+              >
+                <MoreHorizontal size={20} />
+              </button>
+              {menu && (
+                <div className="chat-menu">
+                  <button onClick={exportChat}>
+                    <Download size={15} /> Exportar conversación
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </header>
+        <div className={`chat-mode-bar ${c.handoff ? "human" : ""}`}>
+          <span>
+            {c.handoff ? <UserRound size={16} /> : <Sparkles size={16} />}{" "}
+            {c.handoff
+              ? "El asistente está pausado en este chat"
+              : "Tu asistente se encarga de esta conversación"}
+          </span>
+          <button
+            disabled={updating}
+            onClick={() =>
+              void update({
+                handoff: !c.handoff,
+                status: c.handoff ? "open" : "pending",
+              })
+            }
+          >
+            {c.handoff ? "Devolver al asistente" : "Tomar el control"}
+            <ArrowUpRight size={13} />
+          </button>
+        </div>
+        <div className="chat-messages" ref={scroller}>
+          {loading ? (
+            <Spinner />
+          ) : error ? (
+            <ErrorState message={error} retry={reload} />
+          ) : (
+            <>
+              {c.channel !== "whatsapp" && (
+                <div className="chat-demo-notice">
+                  <Sparkles size={13} /> Conversación{" "}
+                  {c.channel === "sandbox" ? "del simulador" : "de ejemplo"}. No
+                  se envían mensajes a WhatsApp.
+                </div>
+              )}
+              {messages?.map((m, i) => (
+                <div key={m.id}>
+                  {(i === 0 ||
+                    messages[i - 1].created_at.slice(0, 10) !==
+                      m.created_at.slice(0, 10)) && (
+                    <div className="chat-date">{dateLabel(m.created_at)}</div>
+                  )}
+                  <div
+                    className={`message-row ${m.role === "user" ? "incoming" : "outgoing"}`}
+                  >
+                    <div
+                      className={`message-bubble ${m.role === "agent" ? "agent" : ""}`}
+                    >
+                      <div className="message-author">
+                        {m.role === "user" ? (
+                          c.name.split(" ")[0]
+                        ) : m.role === "assistant" ? (
+                          <>
+                            <Sparkles size={11} />
+                            {session.settings.assistantName} <span>IA</span>
+                          </>
+                        ) : (
+                          <>
+                            <UserRound size={11} /> Equipo
+                          </>
+                        )}
+                      </div>
+                      <p>{m.text}</p>
+                      <div
+                        className={`message-time ${m.status === "failed" ? "failed" : ""}`}
+                      >
+                        {m.status === "failed" ? "No enviado · " : ""}
+                        {time(m.created_at)}{" "}
+                        {m.role !== "user" &&
+                          (m.status === "read" ? (
+                            <CheckCheck size={13} className="read" />
+                          ) : m.status === "delivered" ? (
+                            <CheckCheck size={13} />
+                          ) : m.status === "pending" ? (
+                            <Clock3 size={12} />
+                          ) : (
+                            <Check size={13} />
+                          ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+        {c.status === "resolved" ? (
+          <div className="resolved-bar">
+            <CheckCheck size={17} /> Marcaste esta conversación como resuelta.
+            <button onClick={() => void update({ status: "open" })}>
+              Reabrir
+            </button>
+          </div>
+        ) : (
+          <div className="chat-composer-area">
+            {c.channel === "whatsapp" && !c.handoff ? (
+              <button
+                className="takeover-composer"
+                disabled={updating}
+                onClick={() =>
+                  void update({ handoff: true, status: "pending" })
+                }
+              >
+                <UserRound size={17} /> Toma el control para escribir al cliente{" "}
+                <ArrowUpRight size={16} />
+              </button>
+            ) : (
+              <form className="chat-composer" onSubmit={(e) => void send(e)}>
+                <textarea
+                  aria-label="Escribe tu respuesta"
+                  placeholder="Escribe una respuesta cercana..."
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  maxLength={4000}
+                  rows={1}
+                  onKeyDown={(e) => {
+                    if (
+                      e.key === "Enter" &&
+                      !e.shiftKey &&
+                      !e.nativeEvent.isComposing
+                    ) {
+                      e.preventDefault();
+                      e.currentTarget.form?.requestSubmit();
+                    }
+                  }}
+                />
+                <button
+                  type="submit"
+                  className="send-button"
+                  aria-label="Enviar respuesta"
+                  disabled={!text.trim() || sending}
+                >
+                  {sending ? (
+                    <LoaderCircle size={17} className="spin" />
+                  ) : (
+                    <Send size={17} />
+                  )}
+                </button>
+              </form>
+            )}
+            <div className="composer-caption">
+              <span>
+                {c.channel === "whatsapp"
+                  ? "Enter para enviar · Shift + Enter para nueva línea"
+                  : "Los mensajes de prueba quedan guardados en el historial"}
+              </span>
+              <button
+                disabled={updating}
+                onClick={() => void update({ status: "resolved" })}
+              >
+                <CheckCheck size={13} /> Resolver
+              </button>
+            </div>
+          </div>
+        )}
+      </section>
+      {details && (
+        <aside className="contact-details">
+          <div className="contact-details-heading">
+            <span>DETALLES DEL CLIENTE</span>
+            <button
+              className="icon-button"
+              aria-label="Cerrar detalles"
+              onClick={() => setDetails(false)}
+            >
+              <X size={16} />
+            </button>
+          </div>
+          <div className="contact-profile">
+            <Avatar name={c.name} size="large" />
+            <h3>{c.name}</h3>
+            <span>Cliente de {session.workspace.name}</span>
+          </div>
+          <div className="contact-data">
+            <div>
+              <Phone size={14} />
+              <span>
+                WhatsApp<strong>{c.phone}</strong>
+              </span>
+            </div>
+            <div>
+              <MessageCircle size={14} />
+              <span>
+                Canal
+                <strong>
+                  {c.channel === "whatsapp"
+                    ? "WhatsApp Business"
+                    : c.channel === "sandbox"
+                      ? "Simulador"
+                      : "Datos de demostración"}
+                </strong>
+              </span>
+            </div>
+            <div>
+              <Clock3 size={14} />
+              <span>
+                Última actividad<strong>{relativeTime(c.updated_at)}</strong>
+              </span>
+            </div>
+          </div>
+          <div className="detail-section">
+            <h4>ESTADO</h4>
+            <StatusBadge status={c.status} />
+          </div>
+          <div className="detail-section">
+            <h4>TEMA DE LA CONVERSACIÓN</h4>
+            <span className="topic-tag">
+              {{
+                stock: "Productos y stock",
+                pedido: "Seguimiento de pedido",
+                horario: "Horario de atención",
+                humano: "Atención humana",
+                general: "Consulta general",
+              }[c.topic] ?? "Consulta general"}
+            </span>
+          </div>
+          {lastOrder && (
+            <div className="detail-section">
+              <h4>PEDIDO VINCULADO</h4>
+              <button
+                className="contact-order"
+                onClick={() => navigate("orders")}
+              >
+                <ShoppingBag size={19} />
+                <span>
+                  <strong>#{lastOrder.code}</strong>
+                  <small>{money(lastOrder.total)} COP</small>
+                </span>
+                <ArrowUpRight size={14} />
+              </button>
+              <StatusBadge status={lastOrder.status} />
+            </div>
+          )}
+          <div className="contact-privacy">
+            <ShieldCheck size={17} />
+            <p>
+              El asistente solo muestra pedidos asociados al número que escribe.
+            </p>
+          </div>
+        </aside>
+      )}
+    </>
+  );
 }

@@ -2,11 +2,138 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Crect%20width%3D%2248%22%20height%3D%2248%22%20rx%3D%2215%22%20fill%3D%22%23173c32%22%2F%3E%3Cpath%20d%3D%22M34%2017a13%2013%200%201%200%200%2014%22%20fill%3D%22none%22%20stroke%3D%22%23d6f9a2%22%20stroke-width%3D%226%22%20stroke-linecap%3D%22round%22%2F%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2224%22%20r%3D%223%22%20fill%3D%22%23d6f9a2%22%2F%3E%3C%2Fsvg%3E%0A"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#173c32" />
-    <meta name="description" content="Cerca: el asistente de WhatsApp que acerca tu tienda a tus clientes. Conversaciones, inventario y pedidos en un mismo lugar." />
+    <meta
+      name="description"
+      content="Cerca: el asistente de WhatsApp que acerca tu tienda a tus clientes. Conversaciones, inventario y pedidos en un mismo lugar."
+    />
     <title>Cerca — Tu tienda, siempre cerca</title>
   </head>
-  <body><div id="root"></div><script type="module" src="/src/main.tsx"></script></body>
+  <body>
+    <style>
+      .entry-screen {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f5f8f1;
+        padding: 28px;
+        font-family: system-ui, sans-serif;
+        color: #294b38;
+      }
+      .entry-card {
+        max-width: 570px;
+        border: 1px solid #dce7d2;
+        border-radius: 22px;
+        padding: 38px;
+        background: #fff;
+        box-shadow: 0 20px 70px #294b3808;
+      }
+      .entry-brand {
+        font-size: 32px;
+        font-weight: 750;
+        letter-spacing: -1px;
+      }
+      .entry-card h1 {
+        font-size: 28px;
+        line-height: 1.3;
+        letter-spacing: -0.7px;
+      }
+      .entry-card p {
+        font-size: 15px;
+        color: #718269;
+        line-height: 1.8;
+      }
+      .entry-card a {
+        display: inline-block;
+        background: #294f3a;
+        color: white;
+        border-radius: 9px;
+        padding: 12px 18px;
+        text-decoration: none;
+        font-size: 14px;
+        margin-top: 12px;
+      }
+      .entry-card small {
+        display: block;
+        font-size: 12px;
+        color: #8fa27d;
+        line-height: 1.8;
+        margin-top: 20px;
+      }
+      .entry-progress {
+        height: 4px;
+        background: #e9f1e0;
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 23px 0;
+      }
+      .entry-progress:after {
+        content: "";
+        display: block;
+        height: 100%;
+        width: 40%;
+        background: #90b373;
+        border-radius: 4px;
+        animation: entry-slide 1.4s ease-in-out infinite alternate;
+      }
+      @keyframes entry-slide {
+        to {
+          transform: translateX(150%);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .entry-progress:after {
+          animation: none;
+        }
+      }
+    </style>
+    <script>
+      (function () {
+        if (
+          location.protocol === "file:" &&
+          document.documentElement.dataset.offline !== "true"
+        ) {
+          location.replace(new URL("./Cerca.html", location.href));
+        }
+        setTimeout(function () {
+          var starting = document.querySelector("[data-starting]");
+          if (starting) {
+            starting.querySelector("h1").textContent =
+              "Vamos a abrir tu plataforma.";
+            starting.querySelector("[data-entry-status]").textContent =
+              "Si esta pantalla no cambia, abre la demo interactiva o inicia el servidor de la aplicación completa.";
+          }
+        }, 8000);
+      })();
+    </script>
+    <div id="root">
+      <section class="entry-screen" data-starting>
+        <div class="entry-card">
+          <div class="entry-brand">cerca.</div>
+          <h1>Tu tienda, siempre cerca.</h1>
+          <div class="entry-progress"></div>
+          <p data-entry-status>
+            Estamos abriendo tu plataforma. Si descargaste el ZIP, la demo
+            interactiva se abrirá automáticamente.
+          </p>
+          <a href="./Cerca.html">Abrir demo interactiva</a
+          ><small
+            >Para usar cuentas reales y conectar WhatsApp Business, abre el
+            iniciador incluido en el ZIP. La demo guarda sus datos en este
+            navegador y no envía mensajes reales.</small
+          ><noscript
+            ><p>Activa JavaScript para usar la plataforma.</p></noscript
+          >
+        </div>
+      </section>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

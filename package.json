@@ -1,6 +1,6 @@
 {
   "name": "cerca-whatsapp-assistant",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -10,7 +10,9 @@
     "dev": "node scripts/dev.mjs",
     "dev:client": "vite --host 0.0.0.0",
     "dev:server": "node --use-env-proxy --watch server/index.mjs",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && npm run build:standalone",
+    "build:standalone": "vite build --config vite.standalone.config.mjs && node scripts/finish-standalone.mjs",
+    "package": "npm run build && node scripts/package-delivery.mjs",
     "start": "node --use-env-proxy server/index.mjs",
     "start:local": "node scripts/start-local.mjs",
     "test": "node --test --test-concurrency=1 tests/*.test.mjs",
@@ -32,7 +34,10 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.1.0",
+    "fflate": "^0.8.3",
+    "prettier": "^3.9.10",
     "typescript": "~5.9.3",
-    "vite": "^7.2.0"
+    "vite": "^7.2.0",
+    "vite-plugin-singlefile": "^2.3.4"
   }
 }

@@ -1,41 +1,459 @@
-import { ArrowRight, ArrowUpRight, Bot, Check, CheckCheck, Clock3, MessageCircle, MessagesSquare, Package, Sparkles, Zap, CalendarDays, ChevronRight, CircleHelp } from 'lucide-react';
-import { useApp } from '../context';
-import { useResource, relativeTime } from '../api';
-import { Avatar, PageHeading, Spinner, ErrorState, StatusBadge, EmptyState } from '../components';
-import type { DashboardData } from '../types';
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Bot,
+  Check,
+  CheckCheck,
+  Clock3,
+  MessageCircle,
+  MessagesSquare,
+  Package,
+  Sparkles,
+  Zap,
+  CalendarDays,
+  ChevronRight,
+  CircleHelp,
+} from "lucide-react";
+import { useApp } from "../context";
+import { useResource, relativeTime } from "../api";
+import {
+  Avatar,
+  PageHeading,
+  Spinner,
+  ErrorState,
+  StatusBadge,
+  EmptyState,
+} from "../components";
+import type { DashboardData } from "../types";
 
 export function Dashboard() {
   const { session, version, navigate } = useApp();
-  const { data, loading, error, reload } = useResource<DashboardData>('/dashboard', version, 15000);
-  if (loading) return <Spinner label="Poniendo tu tienda al día..."/>;
-  if (error || !data) return <ErrorState message={error || 'No se pudo cargar el resumen.'} retry={reload}/>;
+  const { data, loading, error, reload } = useResource<DashboardData>(
+    "/dashboard",
+    version,
+    15000,
+  );
+  if (loading) return <Spinner label="Poniendo tu tienda al día..." />;
+  if (error || !data)
+    return (
+      <ErrorState
+        message={error || "No se pudo cargar el resumen."}
+        retry={reload}
+      />
+    );
   const { metrics } = data;
   const tasks = [
-    { label: 'Dale personalidad a tu asistente', done: !!session.settings.assistantName, page: 'assistant' as const },
-    { label: 'Prepara tu catálogo de productos', done: metrics.products > 0, page: 'products' as const },
-    { label: 'Conecta tu WhatsApp Business', done: session.integration.status === 'verified', page: 'settings' as const },
+    {
+      label: "Dale personalidad a tu asistente",
+      done: !!session.settings.assistantName,
+      page: "assistant" as const,
+    },
+    {
+      label: "Prepara tu catálogo de productos",
+      done: metrics.products > 0,
+      page: "products" as const,
+    },
+    {
+      label: "Conecta tu WhatsApp Business",
+      done: session.integration.status === "verified",
+      page: "settings" as const,
+    },
   ];
-  return <div className="dashboard"><PageHeading eyebrow={`HOLA, ${session.user.name.split(' ')[0].toUpperCase()} 👋`} title="Tu tienda, en buenas manos." subtitle="Un vistazo a las conversaciones que hacen crecer tu negocio." action={<button className="button secondary" onClick={() => navigate('assistant')}><Sparkles size={17}/> Probar mi asistente <ArrowUpRight size={16}/></button>}/>
-    <section className="welcome-banner"><div className="welcome-copy"><span className="pill light"><span className="little-star">✦</span> UN POCO DE IA. MUCHO DE TU TIENDA.</span><h2>Más cerca de tus clientes.<br/>Más tiempo para ti.</h2><p>{session.settings.assistantName} responde las preguntas de siempre para que tú te enfoques en lo que sigue.</p><button onClick={() => navigate('assistant')}>Conoce a tu asistente <ArrowRight size={16}/></button></div><div className="welcome-art" aria-hidden="true"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><span className="art-spark one">✦</span><span className="art-spark two">✧</span><div className="art-message top"><span className="art-avatar">V</span><div><i/><i/></div><MessageCircle size={17}/></div><div className="art-core"><svg viewBox="0 0 80 80"><path d="M53 25a22 22 0 1 0 0 30" fill="none" stroke="currentColor" strokeWidth="10" strokeLinecap="round"/><circle cx="50" cy="40" r="5" fill="currentColor"/></svg><span className="art-online"/></div><div className="art-message bottom"><span className="art-answer-icon"><Sparkles size={17}/></span><div><strong>¡Claro que sí! 💚</strong><small>Una respuesta. Una conexión.</small></div><CheckCheck size={15}/></div></div></section>
-    <div className="section-overline"><span>ASÍ VA TU TIENDA</span><span>Totales registrados <CircleHelp size={13}><title>Datos calculados a partir de tus conversaciones guardadas.</title></CircleHelp></span></div>
-    <div className="stats-grid">{[
-      { label: 'Conversaciones', value: metrics.conversations, icon: MessagesSquare, color: 'sage', note: 'Conexiones que cuentan' },
-      { label: 'Respuestas automáticas', value: `${metrics.automatic}%`, icon: Zap, color: 'lavender', note: 'Del total de respuestas enviadas' },
-      { label: 'Necesitan una persona', value: metrics.waiting, icon: Clock3, color: 'peach', note: metrics.waiting ? 'Tu toque hace la diferencia' : 'Todo está bajo control' },
-      { label: 'Conversaciones resueltas', value: metrics.resolved, icon: CheckCheck, color: 'blue', note: 'Cerradas desde tu bandeja' },
-    ].map(stat => <div className="stat-card" key={stat.label}><div className="stat-top"><span>{stat.label}</span><span className={`stat-icon ${stat.color}`}><stat.icon size={18}/></span></div><div className="stat-value">{stat.value}</div><div className="stat-note">{stat.note}</div></div>)}</div>
-    <div className="dashboard-middle"><section className="card chart-card"><div className="card-header"><div><h3>Cada mensaje, una oportunidad</h3><p>Mensajes de clientes recibidos esta semana</p></div><span className="period-label"><CalendarDays size={14}/> Últimos 7 días</span></div><div className="chart-summary"><strong>{data.graph.reduce((n, d) => n + d.count, 0)}</strong><span>mensajes recibidos</span><span className="chart-legend"><i/> Mensajes</span></div><MessageChart graph={data.graph}/><div className="chart-bottom"><span><span className="status-dot"/> Cada conversación se guarda en tu bandeja.</span><button onClick={() => navigate('inbox')}>Ver conversaciones <ArrowRight size={14}/></button></div></section>
-    <section className="card assistant-card"><div className="assistant-card-top"><span className="eyebrow">TU NUEVO MEJOR EQUIPO</span><span className={`badge ${session.settings.active ? 'status-open' : 'status-pending'}`}><i/>{session.settings.active ? 'Activo' : 'Pausado'}</span></div><div className="assistant-card-identity"><div className="assistant-orb"><Bot size={32} strokeWidth={1.5}/><span>✦</span></div><div><h3>{session.settings.assistantName}</h3><p>Tu asistente virtual</p></div></div><p className="assistant-description">Una voz cercana que conoce tu tienda y está lista para ayudar.</p><div className="assistant-skills"><span><Check size={15}/> Responde preguntas frecuentes</span><span><Check size={15}/> Consulta precios y disponibilidad</span><span><Check size={15}/> Da seguimiento a los pedidos</span></div><div className="assistant-provider"><span><span className="status-dot"/>{session.ai.configured ? 'IA conectada' : 'Asistente local · sin API de IA'}</span></div><button className="button secondary full-width" onClick={() => navigate('assistant')}>Personalizar asistente <ArrowUpRight size={15}/></button></section></div>
-    <div className="dashboard-bottom"><section className="card recent-card"><div className="card-header"><div><h3>Conversaciones recientes</h3><p>Lo que tus clientes tienen para contarte</p></div><button className="text-button" onClick={() => navigate('inbox')}>Ver todas <ArrowRight size={15}/></button></div>{data.recentConversations.length ? <div className="recent-table"><div className="recent-table-head"><span>CLIENTE</span><span>ÚLTIMO MENSAJE</span><span>ESTADO</span><span/></div>{data.recentConversations.map((c, i) => <button className="recent-row" key={c.id} onClick={() => navigate('inbox', c.id)}><span className="recent-contact"><Avatar name={c.name} index={i}/><span><strong>{c.name}</strong><small>{relativeTime(c.updated_at)}</small></span></span><span className="recent-message">{c.last_message}</span><StatusBadge status={c.status}/><ChevronRight size={16}/></button>)}</div> : <EmptyState title="Tu primera conversación está por llegar" description="Prueba tu asistente o conecta WhatsApp para empezar." action={<button className="button secondary" onClick={() => navigate('assistant')}>Probar asistente</button>}/>}</section>
-    <section className="card setup-card"><div className="card-header"><div><span className="eyebrow">PASO A PASO</span><h3>Hagamos que suceda.</h3></div><span className="setup-count">{tasks.filter(t => t.done).length}/3</span></div><p>Tu tienda está a una conversación de algo grande.</p><div className="setup-progress"><span style={{ width: `${tasks.filter(t => t.done).length / 3 * 100}%` }}/></div><div className="setup-list">{tasks.map(task => <button key={task.label} onClick={() => navigate(task.page)}><span className={`task-check ${task.done ? 'done' : ''}`}>{task.done ? <Check size={12}/> : ''}</span><span>{task.label}</span><ChevronRight size={15}/></button>)}</div>{data.lowStock.length > 0 && <div className="low-stock-note"><Package size={17}/><span><strong>{data.lowStock.length} productos con stock bajo</strong><button onClick={() => navigate('products')}>Revisar inventario <ArrowRight size={13}/></button></span></div>}</section></div>
-    {session.demo && <p className="dashboard-demo-note"><Sparkles size={14}/> Estás explorando una tienda de ejemplo. Crea tu cuenta para usar los datos de tu negocio.</p>}
-  </div>;
+  return (
+    <div className="dashboard">
+      <PageHeading
+        eyebrow={`HOLA, ${session.user.name.split(" ")[0].toUpperCase()} 👋`}
+        title="Tu tienda, en buenas manos."
+        subtitle="Un vistazo a las conversaciones que hacen crecer tu negocio."
+        action={
+          <button
+            className="button secondary"
+            onClick={() => navigate("assistant")}
+          >
+            <Sparkles size={17} /> Probar mi asistente{" "}
+            <ArrowUpRight size={16} />
+          </button>
+        }
+      />
+      <section className="welcome-banner">
+        <div className="welcome-copy">
+          <span className="pill light">
+            <span className="little-star">✦</span> UN POCO DE IA. MUCHO DE TU
+            TIENDA.
+          </span>
+          <h2>
+            Más cerca de tus clientes.
+            <br />
+            Más tiempo para ti.
+          </h2>
+          <p>
+            {session.settings.assistantName} responde las preguntas de siempre
+            para que tú te enfoques en lo que sigue.
+          </p>
+          <button onClick={() => navigate("assistant")}>
+            Conoce a tu asistente <ArrowRight size={16} />
+          </button>
+        </div>
+        <div className="welcome-art" aria-hidden="true">
+          <div className="orbit orbit-one" />
+          <div className="orbit orbit-two" />
+          <span className="art-spark one">✦</span>
+          <span className="art-spark two">✧</span>
+          <div className="art-message top">
+            <span className="art-avatar">V</span>
+            <div>
+              <i />
+              <i />
+            </div>
+            <MessageCircle size={17} />
+          </div>
+          <div className="art-core">
+            <svg viewBox="0 0 80 80">
+              <path
+                d="M53 25a22 22 0 1 0 0 30"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="10"
+                strokeLinecap="round"
+              />
+              <circle cx="50" cy="40" r="5" fill="currentColor" />
+            </svg>
+            <span className="art-online" />
+          </div>
+          <div className="art-message bottom">
+            <span className="art-answer-icon">
+              <Sparkles size={17} />
+            </span>
+            <div>
+              <strong>¡Claro que sí! 💚</strong>
+              <small>Una respuesta. Una conexión.</small>
+            </div>
+            <CheckCheck size={15} />
+          </div>
+        </div>
+      </section>
+      <div className="section-overline">
+        <span>ASÍ VA TU TIENDA</span>
+        <span>
+          Totales registrados{" "}
+          <CircleHelp size={13}>
+            <title>
+              Datos calculados a partir de tus conversaciones guardadas.
+            </title>
+          </CircleHelp>
+        </span>
+      </div>
+      <div className="stats-grid">
+        {[
+          {
+            label: "Conversaciones",
+            value: metrics.conversations,
+            icon: MessagesSquare,
+            color: "sage",
+            note: "Conexiones que cuentan",
+          },
+          {
+            label: "Respuestas automáticas",
+            value: `${metrics.automatic}%`,
+            icon: Zap,
+            color: "lavender",
+            note: "Del total de respuestas enviadas",
+          },
+          {
+            label: "Necesitan una persona",
+            value: metrics.waiting,
+            icon: Clock3,
+            color: "peach",
+            note: metrics.waiting
+              ? "Tu toque hace la diferencia"
+              : "Todo está bajo control",
+          },
+          {
+            label: "Conversaciones resueltas",
+            value: metrics.resolved,
+            icon: CheckCheck,
+            color: "blue",
+            note: "Cerradas desde tu bandeja",
+          },
+        ].map((stat) => (
+          <div className="stat-card" key={stat.label}>
+            <div className="stat-top">
+              <span>{stat.label}</span>
+              <span className={`stat-icon ${stat.color}`}>
+                <stat.icon size={18} />
+              </span>
+            </div>
+            <div className="stat-value">{stat.value}</div>
+            <div className="stat-note">{stat.note}</div>
+          </div>
+        ))}
+      </div>
+      <div className="dashboard-middle">
+        <section className="card chart-card">
+          <div className="card-header">
+            <div>
+              <h3>Cada mensaje, una oportunidad</h3>
+              <p>Mensajes de clientes recibidos esta semana</p>
+            </div>
+            <span className="period-label">
+              <CalendarDays size={14} /> Últimos 7 días
+            </span>
+          </div>
+          <div className="chart-summary">
+            <strong>{data.graph.reduce((n, d) => n + d.count, 0)}</strong>
+            <span>mensajes recibidos</span>
+            <span className="chart-legend">
+              <i /> Mensajes
+            </span>
+          </div>
+          <MessageChart graph={data.graph} />
+          <div className="chart-bottom">
+            <span>
+              <span className="status-dot" /> Cada conversación se guarda en tu
+              bandeja.
+            </span>
+            <button onClick={() => navigate("inbox")}>
+              Ver conversaciones <ArrowRight size={14} />
+            </button>
+          </div>
+        </section>
+        <section className="card assistant-card">
+          <div className="assistant-card-top">
+            <span className="eyebrow">TU NUEVO MEJOR EQUIPO</span>
+            <span
+              className={`badge ${session.settings.active ? "status-open" : "status-pending"}`}
+            >
+              <i />
+              {session.settings.active ? "Activo" : "Pausado"}
+            </span>
+          </div>
+          <div className="assistant-card-identity">
+            <div className="assistant-orb">
+              <Bot size={32} strokeWidth={1.5} />
+              <span>✦</span>
+            </div>
+            <div>
+              <h3>{session.settings.assistantName}</h3>
+              <p>Tu asistente virtual</p>
+            </div>
+          </div>
+          <p className="assistant-description">
+            Una voz cercana que conoce tu tienda y está lista para ayudar.
+          </p>
+          <div className="assistant-skills">
+            <span>
+              <Check size={15} /> Responde preguntas frecuentes
+            </span>
+            <span>
+              <Check size={15} /> Consulta precios y disponibilidad
+            </span>
+            <span>
+              <Check size={15} /> Da seguimiento a los pedidos
+            </span>
+          </div>
+          <div className="assistant-provider">
+            <span>
+              <span className="status-dot" />
+              {session.ai.configured
+                ? "IA conectada"
+                : "Asistente local · sin API de IA"}
+            </span>
+          </div>
+          <button
+            className="button secondary full-width"
+            onClick={() => navigate("assistant")}
+          >
+            Personalizar asistente <ArrowUpRight size={15} />
+          </button>
+        </section>
+      </div>
+      <div className="dashboard-bottom">
+        <section className="card recent-card">
+          <div className="card-header">
+            <div>
+              <h3>Conversaciones recientes</h3>
+              <p>Lo que tus clientes tienen para contarte</p>
+            </div>
+            <button className="text-button" onClick={() => navigate("inbox")}>
+              Ver todas <ArrowRight size={15} />
+            </button>
+          </div>
+          {data.recentConversations.length ? (
+            <div className="recent-table">
+              <div className="recent-table-head">
+                <span>CLIENTE</span>
+                <span>ÚLTIMO MENSAJE</span>
+                <span>ESTADO</span>
+                <span />
+              </div>
+              {data.recentConversations.map((c, i) => (
+                <button
+                  className="recent-row"
+                  key={c.id}
+                  onClick={() => navigate("inbox", c.id)}
+                >
+                  <span className="recent-contact">
+                    <Avatar name={c.name} index={i} />
+                    <span>
+                      <strong>{c.name}</strong>
+                      <small>{relativeTime(c.updated_at)}</small>
+                    </span>
+                  </span>
+                  <span className="recent-message">{c.last_message}</span>
+                  <StatusBadge status={c.status} />
+                  <ChevronRight size={16} />
+                </button>
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              title="Tu primera conversación está por llegar"
+              description="Prueba tu asistente o conecta WhatsApp para empezar."
+              action={
+                <button
+                  className="button secondary"
+                  onClick={() => navigate("assistant")}
+                >
+                  Probar asistente
+                </button>
+              }
+            />
+          )}
+        </section>
+        <section className="card setup-card">
+          <div className="card-header">
+            <div>
+              <span className="eyebrow">PASO A PASO</span>
+              <h3>Hagamos que suceda.</h3>
+            </div>
+            <span className="setup-count">
+              {tasks.filter((t) => t.done).length}/3
+            </span>
+          </div>
+          <p>Tu tienda está a una conversación de algo grande.</p>
+          <div className="setup-progress">
+            <span
+              style={{
+                width: `${(tasks.filter((t) => t.done).length / 3) * 100}%`,
+              }}
+            />
+          </div>
+          <div className="setup-list">
+            {tasks.map((task) => (
+              <button key={task.label} onClick={() => navigate(task.page)}>
+                <span className={`task-check ${task.done ? "done" : ""}`}>
+                  {task.done ? <Check size={12} /> : ""}
+                </span>
+                <span>{task.label}</span>
+                <ChevronRight size={15} />
+              </button>
+            ))}
+          </div>
+          {data.lowStock.length > 0 && (
+            <div className="low-stock-note">
+              <Package size={17} />
+              <span>
+                <strong>{data.lowStock.length} productos con stock bajo</strong>
+                <button onClick={() => navigate("products")}>
+                  Revisar inventario <ArrowRight size={13} />
+                </button>
+              </span>
+            </div>
+          )}
+        </section>
+      </div>
+      {session.demo && (
+        <p className="dashboard-demo-note">
+          <Sparkles size={14} /> Estás explorando una tienda de ejemplo. Crea tu
+          cuenta para usar los datos de tu negocio.
+        </p>
+      )}
+    </div>
+  );
 }
 
-function MessageChart({ graph }: { graph: DashboardData['graph'] }) {
-  const width = 620, height = 166, pad = 15, max = Math.max(4, ...graph.map(g => g.count));
-  const points = graph.map((g, i) => [pad + i * (width - pad * 2) / 6, height - 15 - g.count / max * (height - 34)]);
-  const line = points.map((p, i) => i ? `C ${points[i - 1][0] + 34} ${points[i - 1][1]}, ${p[0] - 34} ${p[1]}, ${p[0]} ${p[1]}` : `M ${p[0]} ${p[1]}`).join(' ');
+function MessageChart({ graph }: { graph: DashboardData["graph"] }) {
+  const width = 620,
+    height = 166,
+    pad = 15,
+    max = Math.max(4, ...graph.map((g) => g.count));
+  const points = graph.map((g, i) => [
+    pad + (i * (width - pad * 2)) / 6,
+    height - 15 - (g.count / max) * (height - 34),
+  ]);
+  const line = points
+    .map((p, i) =>
+      i
+        ? `C ${points[i - 1][0] + 34} ${points[i - 1][1]}, ${p[0] - 34} ${p[1]}, ${p[0]} ${p[1]}`
+        : `M ${p[0]} ${p[1]}`,
+    )
+    .join(" ");
   const area = `${line} L ${width - pad} ${height} L ${pad} ${height} Z`;
-  return <div className="message-chart"><div className="chart-y-labels">{[max, Math.round(max * .66), Math.round(max * .33), 0].map((n, i) => <span key={i}>{n}</span>)}</div><div className="chart-plot"><svg role="img" aria-label={`Mensajes recibidos por día: ${graph.map(g => `${g.date}: ${g.count}`).join(', ')}`} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none"><defs><linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#94bc87" stopOpacity=".30"/><stop offset="100%" stopColor="#d3e6cc" stopOpacity=".04"/></linearGradient></defs>{[15, 59, 103, 151].map(y => <line key={y} x1="0" x2={width} y1={y} y2={y} stroke="#eef0ec" strokeDasharray="4 5"/>)}<path d={area} fill="url(#chart-gradient)"/><path d={line} fill="none" stroke="#6f9963" strokeWidth="2.5"/>{points.map((p, i) => <g key={i}><circle cx={p[0]} cy={p[1]} r="4" fill="#6f9963" stroke="#fff" strokeWidth="2"><title>{graph[i].date}: {graph[i].count} mensajes</title></circle></g>)}</svg><div className="chart-x-labels">{graph.map(g => <span key={g.date}>{new Date(`${g.date}T12:00:00-05:00`).toLocaleDateString('es-CO', { weekday: 'short', timeZone: 'America/Bogota' }).replace('.', '')}</span>)}</div></div></div>;
+  return (
+    <div className="message-chart">
+      <div className="chart-y-labels">
+        {[max, Math.round(max * 0.66), Math.round(max * 0.33), 0].map(
+          (n, i) => (
+            <span key={i}>{n}</span>
+          ),
+        )}
+      </div>
+      <div className="chart-plot">
+        <svg
+          role="img"
+          aria-label={`Mensajes recibidos por día: ${graph.map((g) => `${g.date}: ${g.count}`).join(", ")}`}
+          viewBox={`0 0 ${width} ${height}`}
+          preserveAspectRatio="none"
+        >
+          <defs>
+            <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#94bc87" stopOpacity=".30" />
+              <stop offset="100%" stopColor="#d3e6cc" stopOpacity=".04" />
+            </linearGradient>
+          </defs>
+          {[15, 59, 103, 151].map((y) => (
+            <line
+              key={y}
+              x1="0"
+              x2={width}
+              y1={y}
+              y2={y}
+              stroke="#eef0ec"
+              strokeDasharray="4 5"
+            />
+          ))}
+          <path d={area} fill="url(#chart-gradient)" />
+          <path d={line} fill="none" stroke="#6f9963" strokeWidth="2.5" />
+          {points.map((p, i) => (
+            <g key={i}>
+              <circle
+                cx={p[0]}
+                cy={p[1]}
+                r="4"
+                fill="#6f9963"
+                stroke="#fff"
+                strokeWidth="2"
+              >
+                <title>
+                  {graph[i].date}: {graph[i].count} mensajes
+                </title>
+              </circle>
+            </g>
+          ))}
+        </svg>
+        <div className="chart-x-labels">
+          {graph.map((g) => (
+            <span key={g.date}>
+              {new Date(`${g.date}T12:00:00-05:00`)
+                .toLocaleDateString("es-CO", {
+                  weekday: "short",
+                  timeZone: "America/Bogota",
+                })
+                .replace(".", "")}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 }

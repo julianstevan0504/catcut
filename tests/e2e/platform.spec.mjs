@@ -1,82 +1,171 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test('demo: panel, conversación, respuesta humana, simulador e historial', async ({ page }) => {
+test("demo: panel, conversación, respuesta humana, simulador e historial", async ({
+  page,
+}) => {
   const errors = [];
-  page.on('pageerror', error => errors.push(error.message));
-  await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Qué bueno tenerte de vuelta.' })).toBeVisible();
-  await page.getByRole('button', { name: 'Explorar la demo' }).click();
-  await expect(page.getByRole('heading', { name: 'Tu tienda, en buenas manos.' })).toBeVisible();
-  await page.screenshot({ path: 'test-results/dashboard-desktop.png', fullPage: true });
-  await page.getByRole('button', { name: 'Conversaciones', exact: false }).first().click();
-  await expect(page.getByRole('heading', { name: 'Cada conversación importa.' })).toBeVisible();
-  await page.getByRole('button', { name: /Valentina Rojas/ }).click();
-  await page.getByLabel('Escribe tu respuesta').fill('¡Hola, Valentina! Te ayudamos con mucho gusto.');
-  await page.getByRole('button', { name: 'Enviar respuesta', exact: true }).click();
-  await expect(page.locator('.chat-messages').getByText('¡Hola, Valentina! Te ayudamos con mucho gusto.', { exact: true })).toBeVisible();
-  await page.screenshot({ path: 'test-results/inbox-desktop.png', fullPage: true });
-  await page.getByRole('button', { name: 'Asistente IA', exact: true }).click();
-  await page.getByRole('button', { name: 'Reiniciar prueba' }).click();
-  await page.getByRole('button', { name: '¿Cuál es su horario?' }).click();
-  await expect(page.locator('.sim-message.assistant').last()).toContainText('Lunes a viernes');
-  await page.getByLabel('Mensaje para probar el asistente').fill('¿Cómo va mi pedido LC-1042?');
-  await page.getByRole('button', { name: 'Enviar mensaje de prueba' }).click();
-  await expect(page.locator('.sim-message.assistant').last()).toContainText('DEMO-1042');
-  await page.getByRole('button', { name: 'Registro de actividad', exact: true }).click();
-  await expect(page.getByText('Se probó el asistente en el simulador. No se envió ningún mensaje a WhatsApp.').first()).toBeVisible();
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { name: "Qué bueno tenerte de vuelta." }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Explorar la demo" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Tu tienda, en buenas manos." }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: "test-results/dashboard-desktop.png",
+    fullPage: true,
+  });
+  await page
+    .getByRole("button", { name: "Conversaciones", exact: false })
+    .first()
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Cada conversación importa." }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: /Valentina Rojas/ }).click();
+  await page
+    .getByLabel("Escribe tu respuesta")
+    .fill("¡Hola, Valentina! Te ayudamos con mucho gusto.");
+  await page
+    .getByRole("button", { name: "Enviar respuesta", exact: true })
+    .click();
+  await expect(
+    page
+      .locator(".chat-messages")
+      .getByText("¡Hola, Valentina! Te ayudamos con mucho gusto.", {
+        exact: true,
+      }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: "test-results/inbox-desktop.png",
+    fullPage: true,
+  });
+  await page.getByRole("button", { name: "Asistente IA", exact: true }).click();
+  await page.getByRole("button", { name: "Reiniciar prueba" }).click();
+  await page.getByRole("button", { name: "¿Cuál es su horario?" }).click();
+  await expect(page.locator(".sim-message.assistant").last()).toContainText(
+    "Lunes a viernes",
+  );
+  await page
+    .getByLabel("Mensaje para probar el asistente")
+    .fill("¿Cómo va mi pedido LC-1042?");
+  await page.getByRole("button", { name: "Enviar mensaje de prueba" }).click();
+  await expect(page.locator(".sim-message.assistant").last()).toContainText(
+    "DEMO-1042",
+  );
+  await page
+    .getByRole("button", { name: "Registro de actividad", exact: true })
+    .click();
+  await expect(
+    page
+      .getByText(
+        "Se probó el asistente en el simulador. No se envió ningún mensaje a WhatsApp.",
+      )
+      .first(),
+  ).toBeVisible();
   expect(errors).toEqual([]);
 });
 
-test('una cuenta nueva puede administrar productos, pedidos y su asistente', async ({ page }) => {
-  await page.goto('/#register');
-  await page.getByLabel('Tu nombre', { exact: true }).fill('Laura');
-  await page.getByLabel('Nombre de tu tienda').fill('Tienda de Laura');
-  await page.getByLabel('Correo electrónico').fill(`laura-${Date.now()}@example.test`);
-  await page.getByLabel('Contraseña', { exact: true }).fill('MiTiendaSegura123');
-  await page.getByRole('button', { name: 'Crear mi espacio' }).click();
-  await expect(page.getByRole('heading', { name: 'Tu tienda, en buenas manos.' })).toBeVisible();
-  await page.getByRole('button', { name: 'Productos', exact: true }).click();
-  await page.getByRole('button', { name: 'Agregar producto', exact: true }).click();
-  const dialog = page.getByRole('dialog');
-  await dialog.getByLabel('Nombre del producto').fill('Vela Cerezo');
-  await dialog.getByLabel('SKU', { exact: true }).fill('VC-001');
-  await dialog.getByLabel('Precio en pesos colombianos').fill('45000');
-  await dialog.getByLabel('Unidades disponibles').fill('12');
-  await dialog.getByRole('button', { name: 'Agregar producto', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Vela Cerezo' })).toBeVisible();
-  await page.getByRole('button', { name: 'Pedidos', exact: true }).click();
-  await page.getByRole('button', { name: 'Registrar pedido', exact: true }).first().click();
-  await dialog.getByLabel('Código del pedido').fill('LA-1001');
-  await dialog.getByLabel('Nombre del cliente').fill('Cliente de prueba');
-  await dialog.getByLabel('WhatsApp del cliente').fill('+573001112233');
-  await dialog.getByLabel('Productos del pedido').fill('1 × Vela Cerezo');
-  await dialog.getByLabel('Total en pesos colombianos').fill('45000');
-  await dialog.getByRole('button', { name: 'Registrar pedido', exact: true }).click();
-  await expect(page.getByText('#LA-1001', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Asistente IA', exact: true }).click();
-  await page.getByLabel('Nombre de tu asistente').fill('Luna');
-  await page.getByRole('button', { name: 'Guardar cambios', exact: true }).click();
-  await expect(page.locator('.simulator-header')).toContainText('Luna');
-  await page.getByLabel('Mensaje para probar el asistente').fill('¿Tienen la Vela Cerezo?');
-  await page.getByRole('button', { name: 'Enviar mensaje de prueba' }).click();
-  await expect(page.locator('.sim-message.assistant').last()).toContainText('12 unidades disponibles');
+test("una cuenta nueva puede administrar productos, pedidos y su asistente", async ({
+  page,
+}) => {
+  await page.goto("/#register");
+  await page.getByLabel("Tu nombre", { exact: true }).fill("Laura");
+  await page.getByLabel("Nombre de tu tienda").fill("Tienda de Laura");
+  await page
+    .getByLabel("Correo electrónico")
+    .fill(`laura-${Date.now()}@example.test`);
+  await page
+    .getByLabel("Contraseña", { exact: true })
+    .fill("MiTiendaSegura123");
+  await page.getByRole("button", { name: "Crear mi espacio" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Tu tienda, en buenas manos." }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Productos", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Agregar producto", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByLabel("Nombre del producto").fill("Vela Cerezo");
+  await dialog.getByLabel("SKU", { exact: true }).fill("VC-001");
+  await dialog.getByLabel("Precio en pesos colombianos").fill("45000");
+  await dialog.getByLabel("Unidades disponibles").fill("12");
+  await dialog
+    .getByRole("button", { name: "Agregar producto", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Vela Cerezo" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Pedidos", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Registrar pedido", exact: true })
+    .first()
+    .click();
+  await dialog.getByLabel("Código del pedido").fill("LA-1001");
+  await dialog.getByLabel("Nombre del cliente").fill("Cliente de prueba");
+  await dialog.getByLabel("WhatsApp del cliente").fill("+573001112233");
+  await dialog.getByLabel("Productos del pedido").fill("1 × Vela Cerezo");
+  await dialog.getByLabel("Total en pesos colombianos").fill("45000");
+  await dialog
+    .getByRole("button", { name: "Registrar pedido", exact: true })
+    .click();
+  await expect(page.getByText("#LA-1001", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Asistente IA", exact: true }).click();
+  await page.getByLabel("Nombre de tu asistente").fill("Luna");
+  await page
+    .getByRole("button", { name: "Guardar cambios", exact: true })
+    .click();
+  await expect(page.locator(".simulator-header")).toContainText("Luna");
+  await page
+    .getByLabel("Mensaje para probar el asistente")
+    .fill("¿Tienen la Vela Cerezo?");
+  await page.getByRole("button", { name: "Enviar mensaje de prueba" }).click();
+  await expect(page.locator(".sim-message.assistant").last()).toContainText(
+    "12 unidades disponibles",
+  );
   await page.reload();
-  await expect(page.locator('.simulator-header')).toContainText('Luna');
+  await expect(page.locator(".simulator-header")).toContainText("Luna");
 });
 
-test('en celular se puede navegar y probar; no hay desbordamiento horizontal', async ({ page }) => {
+test("en celular se puede navegar y probar; no hay desbordamiento horizontal", async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/');
-  await page.getByRole('button', { name: 'Explorar la demo' }).click();
-  await expect(page.getByRole('heading', { name: 'Tu tienda, en buenas manos.' })).toBeVisible();
-  await page.screenshot({ path: 'test-results/dashboard-mobile.png', fullPage: true });
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  await page.getByRole('button', { name: 'Abrir menú' }).click();
-  await page.getByRole('button', { name: 'Conversaciones', exact: false }).first().click();
-  await page.getByRole('button', { name: /Valentina Rojas/ }).click();
-  await expect(page.getByLabel('Escribe tu respuesta')).toBeVisible();
-  await page.screenshot({ path: 'test-results/inbox-mobile.png', fullPage: true });
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  await page.getByRole('button', { name: 'Volver a conversaciones' }).click();
-  await expect(page.getByRole('button', { name: /Valentina Rojas/ })).toBeVisible();
+  await page.goto("/");
+  await page.getByRole("button", { name: "Explorar la demo" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Tu tienda, en buenas manos." }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: "test-results/dashboard-mobile.png",
+    fullPage: true,
+  });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+  await page.getByRole("button", { name: "Abrir menú" }).click();
+  await page
+    .getByRole("button", { name: "Conversaciones", exact: false })
+    .first()
+    .click();
+  await page.getByRole("button", { name: /Valentina Rojas/ }).click();
+  await expect(page.getByLabel("Escribe tu respuesta")).toBeVisible();
+  await page.screenshot({
+    path: "test-results/inbox-mobile.png",
+    fullPage: true,
+  });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+  await page.getByRole("button", { name: "Volver a conversaciones" }).click();
+  await expect(
+    page.getByRole("button", { name: /Valentina Rojas/ }),
+  ).toBeVisible();
 });

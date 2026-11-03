@@ -1,17 +1,11 @@
-# Descargar Cerca
+# Cerca 2.0 · Descargar la plataforma
 
-**[Descargar Cerca-WhatsApp.zip](https://github.com/julianstevan0504/catcut/raw/refs/heads/entrega-cerca-whatsapp/descargas/Cerca-WhatsApp.zip)**
+**[Descargar ZIP actualizado](https://github.com/julianstevan0504/catcut/raw/refs/heads/entrega-cerca-whatsapp/descargas/Cerca-WhatsApp.zip)**
 
-1. Descarga y extrae todo el ZIP en una carpeta.
-2. Abre **ABRIR_PRIMERO.html** para ver el diseño y las instrucciones.
-3. Para usar el registro, los chats, el catálogo y los pedidos, instala Node.js 24 o superior y abre el iniciador de tu sistema.
+Descomprime el ZIP y abre **index.html** en la carpeta principal. La demo es interactiva y no requiere instalación. Para cuentas reales y WhatsApp, usa el iniciador y sigue la guía incluida.
 
-El paquete incluye 51 archivos: código del cliente y del servidor, versión compilada, pruebas, configuración de alojamiento, capturas e instrucciones. No incluye credenciales reales, bases de datos personales ni `node_modules`; el iniciador instala las dependencias oficiales.
+Incluye código completo, versión compilada, demo independiente, pruebas, capturas y configuración de alojamiento. Se excluyen credenciales, bases privadas y dependencias instaladas.
 
-La demo no envía mensajes reales a WhatsApp. La publicación en internet y la conexión a Meta y a una API de IA requieren la configuración del negocio.
+Versión: 2.0.0. Archivos: 73. Tamaño: 2126397 bytes.
 
-Tamaño del archivo: **744400 bytes**.
-
-SHA-256: `d84c185af702da0900567df6579c90f6af16699776ba552ac63be029baf65572`.
-
-Si el repositorio es privado, inicia sesión en GitHub con una cuenta que tenga acceso para descargarlo.
+SHA-256: `ff86752aac08f2a94045ef654f7af58c7f49d0c8612dba138a10e4079568206d`.
