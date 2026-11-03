@@ -1,0 +1,28 @@
+# Blueprint ready to review. This file does not deploy or purchase a service.
+services:
+  - type: web
+    name: cerca-whatsapp
+    runtime: docker
+    plan: starter
+    healthCheckPath: /api/health
+    disk:
+      name: cerca-data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3000"
+      - key: DATABASE_PATH
+        value: /app/data/cerca.sqlite
+      - key: APP_ENCRYPTION_KEY
+        generateValue: true
+      - key: DEMO_MODE
+        value: "false"
+      - key: REGISTRATION_OPEN
+        value: "false"
+      - key: OPENAI_MODEL
+        value: gpt-4.1-mini
+      - key: META_GRAPH_VERSION
+        value: v23.0
