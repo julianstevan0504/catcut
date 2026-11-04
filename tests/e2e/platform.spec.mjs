@@ -114,6 +114,7 @@ test("una cuenta nueva puede administrar productos, pedidos y su asistente", asy
     .click();
   await expect(page.getByText("#LA-1001", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Asistente IA", exact: true }).click();
+  await page.getByRole("button",{name:"Configurar",exact:true}).click();
   await page.getByLabel("Nombre de tu asistente").fill("Luna");
   await page
     .getByRole("button", { name: "Guardar cambios", exact: true })

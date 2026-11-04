@@ -3,6 +3,8 @@ export const defaultSettings: Settings = {
   assistantName: "Sofía",
   active: true,
   tone: "cercano",
+  voiceEnabled: true,
+  voiceRate: 1,
   description: "Una tienda independiente de moda y accesorios en Colombia.",
   timezone: "America/Bogota",
   hours:

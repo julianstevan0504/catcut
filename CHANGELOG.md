@@ -1,3 +1,13 @@
+# Cerca 3.0
+
+- Estudio del asistente con diseño nuevo, vista previa, voz, configuración y evaluación.
+- Consola web con dictado y lectura en español, controles de micrófono/altavoz, transcripción, privacidad y alternativa por texto. Enlace público de voz opcional para clientes sin acceso al panel.
+- Webhooks de WhatsApp Calling mediante Twilio, firma del SDK oficial, credenciales cifradas, deduplicación, manejo de silencios y derivación humana opcional. Requiere activar un remitente real y probarlo con el proveedor.
+- Menú editable con tipo, precios, stock, ingredientes y alérgenos; CSV ampliado y migración de datos existentes.
+- Respuestas escritas con datos guardados; clasificación opcional de consultas ambiguas con esquema JSON. Bloqueo de temas ajenos, ingredientes no confirmados y protección de pedidos en llamadas.
+- Evaluación de respuestas, auditorías axe/Lighthouse, correcciones de contraste y etiquetas, pruebas de llamadas y acceso público. Informes incluidos en el ZIP.
+- Carga por secciones en la versión con servidor; la demo portátil conserva un único HTML para doble clic.
+
 # Cerca 2.0
 
 - El `index.html` de la entrega abre una demo interactiva sin servidor. El proyecto y la compilación también incluyen `Cerca.html` como alternativa directa.

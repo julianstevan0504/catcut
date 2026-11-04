@@ -18,7 +18,7 @@ test("una base de datos de la versión anterior conserva cuenta y sesión al mig
       now = new Date().toISOString(),
       token = randomBytes(32).toString("hex");
     old.exec(
-      "CREATE TABLE workspaces(id TEXT PRIMARY KEY,name TEXT NOT NULL,settings TEXT NOT NULL,created_at TEXT NOT NULL); CREATE TABLE users(id TEXT PRIMARY KEY,workspace_id TEXT NOT NULL,name TEXT NOT NULL,email TEXT NOT NULL UNIQUE,password_hash TEXT NOT NULL,created_at TEXT NOT NULL); CREATE TABLE sessions(token_hash TEXT PRIMARY KEY,user_id TEXT NOT NULL,expires_at TEXT NOT NULL);",
+      "CREATE TABLE workspaces(id TEXT PRIMARY KEY,name TEXT NOT NULL,settings TEXT NOT NULL,created_at TEXT NOT NULL); CREATE TABLE users(id TEXT PRIMARY KEY,workspace_id TEXT NOT NULL,name TEXT NOT NULL,email TEXT NOT NULL UNIQUE,password_hash TEXT NOT NULL,created_at TEXT NOT NULL); CREATE TABLE sessions(token_hash TEXT PRIMARY KEY,user_id TEXT NOT NULL,expires_at TEXT NOT NULL); CREATE TABLE products(id TEXT PRIMARY KEY,workspace_id TEXT NOT NULL,name TEXT NOT NULL,sku TEXT NOT NULL,description TEXT NOT NULL,category TEXT NOT NULL,price INTEGER NOT NULL,stock INTEGER NOT NULL,color TEXT NOT NULL,UNIQUE(workspace_id,sku));",
     );
     old
       .prepare("INSERT INTO workspaces VALUES (?,?,?,?)")
@@ -45,6 +45,25 @@ test("una base de datos de la versión anterior conserva cuenta y sesión al mig
         "legacy-user",
         new Date(Date.now() + 3600000).toISOString(),
       );
+    old
+      .prepare("INSERT INTO products VALUES (?,?,?,?,?,?,?,?,?)")
+      .run(
+        "legacy-product",
+        "legacy-ws",
+        "Producto conservado",
+        "ANT-001",
+        "Descripción original",
+        "General",
+        9500,
+        7,
+        "sage",
+      );
+    const legacySettings = { ...defaultSettings };
+    delete legacySettings.voiceEnabled;
+    delete legacySettings.voiceRate;
+    old
+      .prepare("UPDATE workspaces SET settings=?")
+      .run(JSON.stringify(legacySettings));
     old.close();
     instance = await createApp({
       databasePath: path,
@@ -65,6 +84,23 @@ test("una base de datos de la versión anterior conserva cuenta y sesión al mig
     assert.equal(data.workspace.name, "Tienda conservada");
     assert.equal(data.user.name, "Propietaria");
     assert.ok(data.csrfToken);
+    assert.equal(data.settings.voiceEnabled, true);
+    const p = instance.db
+      .prepare("SELECT * FROM products WHERE id=?")
+      .get("legacy-product");
+    assert.equal(p.price, 9500);
+    assert.equal(p.stock, 7);
+    assert.equal(p.kind, "product");
+    assert.equal(p.ingredients, "");
+    assert.equal(p.allergens, "");
+    assert.equal(
+      instance.db.prepare("SELECT COUNT(*) n FROM products").get().n,
+      1,
+    );
+    assert.equal(
+      instance.db.prepare("SELECT COUNT(*) n FROM voice_channels").get().n,
+      0,
+    );
     assert.equal(
       instance.db.prepare("SELECT COUNT(*) AS n FROM users").get().n,
       1,

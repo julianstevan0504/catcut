@@ -1,6 +1,6 @@
 :root {
   --ink: #263e31;
-  --muted: #6d7b63;
+  --muted: #56644e;
   --green: #254d39;
   --line: #e1e7dc;
   --paper: #f5f8f1;
@@ -35,12 +35,12 @@ h3 {
 .page-heading p {
   font-size: 12px;
   line-height: 1.8;
-  color: #6e7e63;
+  color: #56614f;
 }
 .page-heading .eyebrow,
 .eyebrow {
   font-size: 10px;
-  color: #718165;
+  color: #56614e;
 }
 .page-heading {
   margin-bottom: 28px;
@@ -50,7 +50,7 @@ h3 {
 }
 .card-header p {
   font-size: 11px;
-  color: #6e7d63;
+  color: #56604f;
   line-height: 1.7;
 }
 .card-header {
@@ -89,7 +89,7 @@ h3 {
   border: 1px solid #e1e8da;
   border-radius: 8px;
   padding: 9px 10px;
-  color: #8b9980;
+  color: #5a6052;
   background: #f6f8f2;
   font-size: 11px;
 }
@@ -99,7 +99,7 @@ h3 {
   border-radius: 4px;
   padding: 1px 5px;
   font-size: 9px;
-  color: #96a28a;
+  color: #595f53;
   background: #fff;
   font-family: inherit;
 }
@@ -120,13 +120,13 @@ h3 {
 }
 .nav-group {
   font-size: 9px;
-  color: #849277;
+  color: #575f4e;
   letter-spacing: 1.3px;
 }
 .nav-item {
   font-size: 12px;
   min-height: 41px;
-  color: #6c7a61;
+  color: #57604f;
 }
 .nav-item.active {
   color: #355a2a;
@@ -140,12 +140,12 @@ h3 {
 }
 .user-profile small {
   font-size: 9px;
-  color: #7d8d70;
+  color: #52614b;
 }
 .sidebar-tip p,
 .help-link {
   font-size: 10px;
-  color: #7a8c6c;
+  color: #54604b;
 }
 .sidebar-tip h4 {
   font-size: 15px;
@@ -170,7 +170,7 @@ h3 {
 }
 .welcome-copy > .pill {
   font-size: 8px;
-  color: #6f8758;
+  color: #536340;
   border-color: #d2dfc1;
   background: #f8fbf2;
 }
@@ -186,15 +186,15 @@ h3 {
 }
 .art-message.bottom small {
   font-size: 9px;
-  color: #80966b;
+  color: #546146;
 }
 .section-overline {
   font-size: 9px;
-  color: #738468;
+  color: #56614e;
 }
 .section-overline > span:last-child {
   font-size: 10px;
-  color: #829276;
+  color: #565f4e;
 }
 .stats-grid {
   gap: 16px;
@@ -212,7 +212,7 @@ h3 {
 }
 .stat-note {
   font-size: 10px;
-  color: #7d8e6d;
+  color: #56614c;
   line-height: 1.7;
 }
 .stat-icon {
@@ -241,24 +241,24 @@ h3 {
 }
 .chart-summary > span {
   font-size: 11px;
-  color: #7c8d6d;
+  color: #56604c;
 }
 .chart-legend {
   font-size: 10px;
 }
 .period-label {
   font-size: 10px;
-  color: #76896a;
+  color: #54604c;
 }
 .chart-x-labels,
 .chart-y-labels {
   font-size: 10px;
-  color: #869678;
+  color: #58614f;
 }
 .chart-bottom > span,
 .chart-bottom button {
   font-size: 9px;
-  color: #7b9368;
+  color: #536246;
 }
 .assistant-card-identity h3 {
   font-size: 24px;
@@ -266,7 +266,7 @@ h3 {
 }
 .assistant-card-identity p {
   font-size: 11px;
-  color: #7b9069;
+  color: #556249;
 }
 .assistant-card-top .eyebrow {
   font-size: 8px;
@@ -277,18 +277,18 @@ h3 {
 .assistant-description {
   font-size: 12px;
   line-height: 1.8;
-  color: #768a63;
+  color: #546147;
 }
 .assistant-skills > span {
   font-size: 11px;
-  color: #6d8359;
+  color: #546243;
 }
 .assistant-skills > span svg {
   color: #80a460;
 }
 .assistant-provider > span {
   font-size: 10px;
-  color: #7a9168;
+  color: #546248;
 }
 .assistant-card > .button {
   font-size: 11px;
@@ -296,7 +296,7 @@ h3 {
 }
 .recent-table-head {
   font-size: 9px;
-  color: #859574;
+  color: #58604c;
 }
 .recent-row {
   padding-top: 16px;
@@ -308,11 +308,11 @@ h3 {
 }
 .recent-contact small {
   font-size: 9px;
-  color: #82966f;
+  color: #566149;
 }
 .recent-message {
   font-size: 11px;
-  color: #7f936d;
+  color: #546048;
 }
 .recent-row .badge {
   font-size: 9px;
@@ -328,15 +328,15 @@ h3 {
 }
 .setup-card > p {
   font-size: 11px;
-  color: #7d9268;
+  color: #546146;
 }
 .setup-count {
   font-size: 12px;
-  color: #729052;
+  color: #516438;
 }
 .setup-list > button {
   font-size: 11px;
-  color: #70895a;
+  color: #526240;
   line-height: 1.7;
 }
 .task-check {
@@ -345,19 +345,19 @@ h3 {
 }
 .low-stock-note strong {
   font-size: 10px;
-  color: #8f7c58;
+  color: #6a5c40;
 }
 .low-stock-note button {
   font-size: 9px;
-  color: #7f936b;
+  color: #566248;
 }
 .dashboard-demo-note {
   font-size: 10px;
-  color: #849773;
+  color: #55604a;
 }
 .app-footer {
   font-size: 10px;
-  color: #88997b;
+  color: #58604f;
 }
 .badge {
   font-size: 10px;
@@ -370,7 +370,7 @@ h3 {
 }
 .status-pending,
 .status-preparing {
-  color: #8c6a27;
+  color: #73581f;
   background: #fbf2de;
 }
 .status-resolved,
@@ -387,7 +387,7 @@ h3 {
   background: #fbeeea;
 }
 .badge.neutral {
-  color: #677659;
+  color: light-dark(#525c45, #c2d3b5);
   background: #f1f4ec;
 }
 .field-label,
@@ -414,17 +414,17 @@ h3 {
 .field-label small,
 .settings-content .field-label small {
   font-size: 10px;
-  color: #7f936e;
+  color: light-dark(#505c44, #c2d3b5);
   line-height: 1.8;
 }
 .field-label input:read-only {
-  color: #819570;
+  color: light-dark(#515c46, #c2d3b5);
   background: #f6f9f2;
 }
 .form-actions > span,
 .settings-content .form-actions > span {
   font-size: 10px;
-  color: #7c9169;
+  color: light-dark(#505c43, #c2d3b5);
 }
 .form-actions .button,
 .settings-content .form-actions .button {
@@ -436,14 +436,14 @@ h3 {
 }
 .form-section-heading p {
   font-size: 11px;
-  color: #7d9268;
+  color: #546146;
 }
 .form-section {
   padding-top: 27px;
 }
 .info-note p {
   font-size: 11px;
-  color: #748b5c;
+  color: light-dark(#4e5e3c, #c2d3b5);
 }
 .info-note {
   border-color: #e0e9d3;
@@ -476,7 +476,7 @@ h3 {
   font-size: 11px;
   min-height: 42px;
   border-color: #dfe7d3;
-  color: #72895f;
+  color: light-dark(#4d5c3f, #c2d3b5);
 }
 .toolbar-right {
   flex-wrap: wrap;
@@ -484,7 +484,7 @@ h3 {
 }
 .tabs > button {
   font-size: 12px;
-  color: #81956d;
+  color: light-dark(#515c44, #c2d3b5);
 }
 .tabs > button.active {
   color: #567b3b;
@@ -497,7 +497,7 @@ h3 {
 }
 .tone-option small {
   font-size: 10px;
-  color: #82966e;
+  color: light-dark(#505b42, #c2d3b5);
 }
 .editor-tabs button {
   font-size: 11px;
@@ -507,7 +507,7 @@ h3 {
 }
 .assistant-activation p {
   font-size: 11px;
-  color: #80956a;
+  color: light-dark(#505c42, #c2d3b5);
 }
 .conversation-list-search .search-box input {
   font-size: 11px;
@@ -633,18 +633,18 @@ h3 {
 }
 .simulator-top > span {
   font-size: 10px;
-  color: #7c9b62;
+  color: light-dark(#4c5e3a, #c2d3b5);
 }
 .simulator-header strong {
   font-size: 14px;
 }
 .simulator-header small {
   font-size: 10px;
-  color: #8ba477;
+  color: light-dark(#505c42, #c2d3b5);
 }
 .sim-message {
   font-size: 12px;
-  color: #6b8655;
+  color: light-dark(#4c5e3a, #c2d3b5);
 }
 .sim-message.user {
   color: #5b7a42;
@@ -652,7 +652,7 @@ h3 {
 }
 .simulator-suggestions > button {
   font-size: 11px;
-  color: #78985b;
+  color: light-dark(#4b5e38, #c2d3b5);
   padding: 10px;
 }
 .simulator-composer input {
@@ -661,27 +661,27 @@ h3 {
 }
 .simulator-footer {
   font-size: 10px;
-  color: #8ca676;
+  color: light-dark(#505d42, #c2d3b5);
 }
 .simulator-tip strong {
   font-size: 12px;
-  color: #7b9961;
+  color: light-dark(#4d5e3b, #c2d3b5);
 }
 .simulator-tip p,
 .assistant-rule p {
   font-size: 11px;
-  color: #8ba475;
+  color: light-dark(#505c41, #c2d3b5);
 }
 .simulator-messages {
   min-height: 280px;
 }
 .faq-number {
   font-size: 10px;
-  color: #859e70;
+  color: light-dark(#505d42, #c2d3b5);
 }
 .catalog-summary {
   font-size: 12px;
-  color: #82996a;
+  color: light-dark(#505c40, #c2d3b5);
 }
 .catalog-summary strong {
   font-size: 16px;
@@ -691,7 +691,7 @@ h3 {
 }
 .catalog-footnote {
   font-size: 11px;
-  color: #829b69;
+  color: light-dark(#4e5c3d, #c2d3b5);
 }
 .product-card {
   border-radius: 15px;
@@ -712,7 +712,7 @@ h3 {
 }
 .product-body > p {
   font-size: 11px;
-  color: #7c9567;
+  color: light-dark(#4e5c40, #c2d3b5);
   height: 40px;
 }
 .product-bottom strong {
@@ -722,11 +722,11 @@ h3 {
 .product-bottom small,
 .product-stock {
   font-size: 10px;
-  color: #8ba373;
+  color: light-dark(#505c40, #c2d3b5);
 }
 .product-actions > button:first-child {
   font-size: 11px;
-  color: #78975b;
+  color: light-dark(#4b5e38, #c2d3b5);
 }
 .product-actions {
   padding-top: 10px;
@@ -734,18 +734,18 @@ h3 {
 }
 .data-table th {
   font-size: 10px;
-  color: #829b69;
+  color: light-dark(#4e5c3d, #c2d3b5);
 }
 .data-table td {
   font-size: 12px;
-  color: #78975b;
+  color: light-dark(#4b5e38, #c2d3b5);
 }
 .data-table td strong {
   font-size: 12px;
 }
 .data-table td small {
   font-size: 10px;
-  color: #88a16f;
+  color: light-dark(#505c3f, #c2d3b5);
 }
 .data-table .badge {
   font-size: 10px;
@@ -759,38 +759,38 @@ h3 {
 }
 .mini-stat small {
   font-size: 11px;
-  color: #89a16f;
+  color: light-dark(#505c3f, #c2d3b5);
 }
 .order-privacy p {
   font-size: 11px;
 }
 .table-footer {
   font-size: 10px;
-  color: #8ca775;
+  color: light-dark(#4e5c3f, #c2d3b5);
 }
 .activity-intro strong {
   font-size: 14px;
-  color: #6f8e52;
+  color: light-dark(#4b5f36, #c2d3b5);
 }
 .activity-intro p {
   font-size: 12px;
-  color: #879e6f;
+  color: light-dark(#515d41, #c2d3b5);
 }
 .activity-intro > span:last-child {
   font-size: 11px;
 }
 .activity-row p {
   font-size: 12px;
-  color: #729253;
+  color: light-dark(#4b5f36, #c2d3b5);
 }
 .activity-row > div > span {
   font-size: 10px;
-  color: #91aa7a;
+  color: light-dark(#505d42, #c2d3b5);
 }
 .activity-row > small,
 .activity-date {
   font-size: 10px;
-  color: #8da574;
+  color: light-dark(#505c40, #c2d3b5);
 }
 .settings-nav strong {
   font-size: 12px;
@@ -800,36 +800,36 @@ h3 {
 }
 .settings-nav > button {
   padding: 16px 14px;
-  color: #86a26d;
+  color: light-dark(#4e5d3e, #c2d3b5);
 }
 .settings-nav-note > strong {
   font-size: 12px;
-  color: #7f9d63;
+  color: light-dark(#4e5e3b, #c2d3b5);
 }
 .settings-nav-note p {
   font-size: 11px;
-  color: #93ab7c;
+  color: light-dark(#505c42, #c2d3b5);
 }
 .settings-content .card-header h3 {
   font-size: 16px;
 }
 .settings-content .card-header p {
   font-size: 11px;
-  color: #819d69;
+  color: light-dark(#4d5c3d, #c2d3b5);
 }
 .connection-overview h3 {
   font-size: 14px;
 }
 .connection-overview p {
   font-size: 11px;
-  color: #849e6f;
+  color: light-dark(#4f5d41, #c2d3b5);
 }
 .connection-overview > .button {
   font-size: 11px;
 }
 .settings-bottom-note {
   font-size: 10px;
-  color: #8ca577;
+  color: light-dark(#505c42, #c2d3b5);
 }
 .store-brand-preview strong {
   font-size: 18px;
@@ -838,7 +838,7 @@ h3 {
   font-size: 11px;
 }
 .settings-content h3 {
-  color: #638446;
+  color: light-dark(#495f33, #c2d3b5);
 }
 .whatsapp-connection-hero h3 {
   font-size: 23px;
@@ -873,7 +873,7 @@ h3 {
 }
 .modal-header p {
   font-size: 12px;
-  color: #7b9466;
+  color: light-dark(#4d5c3f, #c2d3b5);
   line-height: 1.8;
 }
 .empty-state h3 {
@@ -902,7 +902,7 @@ h3 {
   border-bottom: 1px solid #dce8cf;
   background: #edf5e3;
   padding: 11px 32px;
-  color: #6f8e52;
+  color: light-dark(#4b5f36, #c2d3b5);
   line-height: 1.7;
 }
 .offline-banner > span {
@@ -913,19 +913,19 @@ h3 {
 }
 .offline-banner strong {
   font-size: 11px;
-  color: #537c34;
+  color: #45672d;
   font-weight: 600;
 }
 .offline-banner > span > span {
   font-size: 10px;
-  color: #7f9a63;
+  color: #546341;
 }
 .offline-banner > button {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 10px;
-  color: #648945;
+  color: #4c6534;
   white-space: nowrap;
   padding: 0;
 }
@@ -1215,7 +1215,7 @@ h3 {
 }
 .security-hero p {
   font-size: 11px;
-  color: #8ca775;
+  color: light-dark(#4e5c3f, #c2d3b5);
   line-height: 1.9;
   margin-top: 7px;
 }
@@ -1331,7 +1331,7 @@ h3 {
 }
 .auth-form-container > p {
   font-size: 12px;
-  color: #7b9466;
+  color: light-dark(#4d5c3f, #c2d3b5);
 }
 .auth-form-container .field-label input {
   font-size: 13px;
@@ -1347,33 +1347,33 @@ h3 {
 }
 .auth-story-content > p {
   font-size: 13px;
-  color: #7b9366;
+  color: light-dark(#4d5c3f, #c2d3b5);
 }
 .auth-perks {
   font-size: 11px;
 }
 .auth-bubble {
   font-size: 12px;
-  color: #718e57;
+  color: light-dark(#4a5d38, #c2d3b5);
 }
 .auth-chat-heading strong {
   font-size: 12px;
 }
 .auth-form-container > .demo-note {
   font-size: 10px;
-  color: #859e6f;
+  color: light-dark(#505d41, #c2d3b5);
 }
 .auth-security {
   font-size: 10px;
-  color: #8da677;
+  color: light-dark(#505d42, #c2d3b5);
 }
 .auth-bottom {
   font-size: 10px;
-  color: #91a77e;
+  color: light-dark(#505c45, #c2d3b5);
 }
 .auth-divider {
   font-size: 11px;
-  color: #8aa172;
+  color: light-dark(#515c41, #c2d3b5);
 }
 @media (min-width: 781px) {
   .sidebar {
@@ -3059,4 +3059,63 @@ h3 {
     margin-left: 29px;
     font-size: 10px;
   }
+}
+
+/* Dark-theme text corrections found by the accessibility audit. */
+[data-theme="dark"]
+  :is(
+    .nav-group,
+    .sidebar-tip p,
+    .sidebar-tip button,
+    .global-search-trigger > span,
+    .studio-history .voice-section-title p
+  ) {
+  color: #bdd0b2;
+}
+
+[data-theme="dark"] .user-profile small {
+  color: #bdd0b2;
+}
+
+/* Keep the search label available when the toolbar collapses to an icon. */
+@media (max-width: 1190px) {
+  .global-search-trigger > span {
+    display: block;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+.product-food-details {
+  font-size: 10px;
+  line-height: 1.7;
+  color: #53664f;
+  margin-top: 10px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+  display: grid;
+  gap: 5px;
+}
+.product-food-details span {
+  display: block;
+}
+.product-food-details b {
+  font-weight: 600;
+  color: #39583e;
+}
+.product-food-details .missing-ingredients {
+  color: #7a592b;
+}
+[data-theme="dark"] .product-food-details,
+[data-theme="dark"] .product-food-details b {
+  color: #c3d5b8;
+}
+[data-theme="dark"] .product-food-details .missing-ingredients {
+  color: #e0c69c;
 }

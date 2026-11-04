@@ -1,0 +1,21 @@
+
+> cerca-whatsapp-assistant@3.0.0 test:e2e
+> playwright test
+
+
+Running 12 tests using 1 worker
+
+  ✓   1 [chromium] › tests/e2e/platform.spec.mjs:3:1 › demo: panel, conversación, respuesta humana, simulador e historial (3.6s)
+  ✓   2 [chromium] › tests/e2e/platform.spec.mjs:71:1 › una cuenta nueva puede administrar productos, pedidos y su asistente (9.5s)
+  ✓   3 [chromium] › tests/e2e/platform.spec.mjs:134:1 › en celular se puede navegar y probar; no hay desbordamiento horizontal (2.1s)
+  ✓   4 [chromium] › tests/e2e/upgrades.spec.mjs:3:1 › la demo independiente funciona con la API bloqueada y conserva los cambios tras recargar (4.2s)
+  ✓   5 [chromium] › tests/e2e/upgrades.spec.mjs:55:1 › el catálogo se importa con revisión previa y la búsqueda global abre el producto correcto (3.6s)
+  ✓   6 [chromium] › tests/e2e/upgrades.spec.mjs:100:1 › un CSV incorrecto no permite importar ni cambia el catálogo (1.8s)
+  ✓   7 [chromium] › tests/e2e/upgrades.spec.mjs:123:1 › la nueva vista móvil no tiene desbordamiento y se pueden exportar los datos de la demo (1.9s)
+  ✓   8 [chromium] › tests/e2e/upgrades.spec.mjs:157:1 › la demo informa si el navegador no permite guardar y conserva la prueba en la pestaña (1.6s)
+  ✓   9 [chromium] › tests/e2e/voice.spec.mjs:73:1 › voz en demo sin API: escucha, responde con datos, conserva transcripción y detiene el micrófono (2.3s)
+  ✓  10 [chromium] › tests/e2e/voice.spec.mjs:131:1 › un cliente sin iniciar sesión puede llamar desde un enlace público sin ver el panel (1.4s)
+  ✓  11 [chromium] › tests/e2e/voice.spec.mjs:185:1 › la falta de permiso del micrófono permite continuar escribiendo y escuchar la respuesta (1.6s)
+  ✓  12 [chromium] › tests/e2e/voice.spec.mjs:206:1 › evaluación y menú editable muestran ingredientes reales y advierten cuando faltan (2.2s)
+
+  12 passed (37.9s)

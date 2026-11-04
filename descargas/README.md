@@ -1,4 +1,4 @@
-# Cerca 2.0 · Descargar la plataforma
+# Cerca 3.0 · Descargar la plataforma
 
 **[Descargar ZIP actualizado](https://github.com/julianstevan0504/catcut/raw/refs/heads/entrega-cerca-whatsapp/descargas/Cerca-WhatsApp.zip)**
 
@@ -6,6 +6,6 @@ Descomprime el ZIP y abre **index.html** en la carpeta principal. La demo es int
 
 Incluye código completo, versión compilada, demo independiente, pruebas, capturas y configuración de alojamiento. Se excluyen credenciales, bases privadas y dependencias instaladas.
 
-Versión: 2.0.0. Archivos: 73. Tamaño: 2126397 bytes.
+Versión: 3.0.0. Archivos: 110. Tamaño: 4762819 bytes.
 
-SHA-256: `ff86752aac08f2a94045ef654f7af58c7f49d0c8612dba138a10e4079568206d`.
+SHA-256: `5d4c047a82b0c078fd22ee29a8a2c7988d1e6e7937ca287ac632149e5b1b52c7`.

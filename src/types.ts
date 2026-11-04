@@ -18,6 +18,8 @@ export type Settings = {
   payments: string;
   welcome: string;
   faqs: { id: string; question: string; answer: string }[];
+  voiceEnabled?: boolean;
+  voiceRate?: number;
 };
 export type Integration = {
   configured: boolean;
@@ -41,7 +43,14 @@ export type Conversation = {
   id: string;
   name: string;
   phone: string;
-  channel: "demo" | "sandbox" | "whatsapp";
+  channel:
+    | "demo"
+    | "sandbox"
+    | "whatsapp"
+    | "voice-web"
+    | "voice-test"
+    | "voice-whatsapp"
+    | "voice-phone";
   status: "open" | "pending" | "resolved";
   handoff: number;
   unread: number;
@@ -68,6 +77,26 @@ export type Product = {
   price: number;
   stock: number;
   color: string;
+  ingredients?: string;
+  allergens?: string;
+  kind?: "product" | "dish" | "drink";
+};
+export type ReplyContext = { productIds?: string[]; menuOffset?: number };
+export type StoreReply = {
+  text: string;
+  category: string;
+  source: string;
+  handoff: boolean;
+  productIds: string[];
+  context: ReplyContext;
+  policy: "grounded" | "outside" | "not-found" | "missing-data";
+};
+export type VoiceSession = {
+  id: string;
+  token: string;
+  conversationId: string;
+  greeting: string;
+  expiresAt: string;
 };
 export type Order = {
   id: string;

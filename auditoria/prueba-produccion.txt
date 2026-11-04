@@ -1,0 +1,5 @@
+Construyendo la imagen final...
+Imagen final construida.
+Producción: HTML y assets, cuenta propietaria, cookie Secure, registro cerrado y demo deshabilitada: OK.
+Volumen persistente y sesión después de reiniciar el contenedor: OK.
+Copia de seguridad de SQLite verificada: OK.

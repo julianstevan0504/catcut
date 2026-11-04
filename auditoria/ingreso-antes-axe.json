@@ -1,0 +1,1621 @@
+{
+  "tool": "axe-core",
+  "scans": [
+    {
+      "page": "ingreso",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=playwright",
+          "nodes": [
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#8a9b79",
+                    "bgColor": "#edf3e6",
+                    "contrastRatio": 2.63,
+                    "fontSize": "6.8pt (9px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<section class=\"auth-story\">",
+                      "target": [
+                        ".auth-story"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.63 (foreground color: #8a9b79, background color: #edf3e6, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<span class=\"auth-kicker\"><span></span> TU NUEVO MEJOR EQUIPO</span>",
+              "target": [
+                ".auth-kicker"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.63 (foreground color: #8a9b79, background color: #edf3e6, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#8da977",
+                    "bgColor": "#edf3e6",
+                    "contrastRatio": 2.29,
+                    "fontSize": "48.0pt (64px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "3:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<section class=\"auth-story\">",
+                      "target": [
+                        ".auth-story"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.29 (foreground color: #8da977, background color: #edf3e6, font size: 48.0pt (64px), font weight: normal). Expected contrast ratio of 3:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<span>cerca.</span>",
+              "target": [
+                "h1 > span"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.29 (foreground color: #8da977, background color: #edf3e6, font size: 48.0pt (64px), font weight: normal). Expected contrast ratio of 3:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#7b9366",
+                    "bgColor": "#edf3e6",
+                    "contrastRatio": 2.99,
+                    "fontSize": "9.8pt (13px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<section class=\"auth-story\">",
+                      "target": [
+                        ".auth-story"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.99 (foreground color: #7b9366, background color: #edf3e6, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<p>Las buenas conversaciones hacen crecer los negocios. Dale a cada cliente la atención que merece, por WhatsApp.</p>",
+              "target": [
+                ".auth-story-content > p"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.99 (foreground color: #7b9366, background color: #edf3e6, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#7e9862",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 3.2,
+                    "fontSize": "9.0pt (12px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-conversation\">",
+                      "target": [
+                        ".auth-conversation"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 3.2 (foreground color: #7e9862, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<strong>Sofía · Tu asistente</strong>",
+              "target": [
+                "strong"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.2 (foreground color: #7e9862, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#b0bf9c",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 1.94,
+                    "fontSize": "6.0pt (8px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-conversation\">",
+                      "target": [
+                        ".auth-conversation"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 1.94 (foreground color: #b0bf9c, background color: #ffffff, font size: 6.0pt (8px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<small><i></i> Siempre lista para ayudar</small>",
+              "target": [
+                ".auth-chat-heading > div > small"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.94 (foreground color: #b0bf9c, background color: #ffffff, font size: 6.0pt (8px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#718e57",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 3.67,
+                    "fontSize": "9.0pt (12px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-bubble customer\">¡Hola! ¿Todavía tienen el Bolso Alba? 👀<small>10:24</small></div>",
+                      "target": [
+                        ".customer"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 3.67 (foreground color: #718e57, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<div class=\"auth-bubble customer\">¡Hola! ¿Todavía tienen el Bolso Alba? 👀<small>10:24</small></div>",
+              "target": [
+                ".customer"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.67 (foreground color: #718e57, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#bac9a6",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 1.75,
+                    "fontSize": "5.3pt (7px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-bubble customer\">¡Hola! ¿Todavía tienen el Bolso Alba? 👀<small>10:24</small></div>",
+                      "target": [
+                        ".customer"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 1.75 (foreground color: #bac9a6, background color: #ffffff, font size: 5.3pt (7px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<small>10:24</small>",
+              "target": [
+                ".customer > small"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.75 (foreground color: #bac9a6, background color: #ffffff, font size: 5.3pt (7px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#718e57",
+                    "bgColor": "#edf5e1",
+                    "contrastRatio": 3.28,
+                    "fontSize": "9.0pt (12px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-bubble assistant\">",
+                      "target": [
+                        ".assistant"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 3.28 (foreground color: #718e57, background color: #edf5e1, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<div class=\"auth-bubble assistant\">",
+              "target": [
+                ".assistant"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.28 (foreground color: #718e57, background color: #edf5e1, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#bac9a6",
+                    "bgColor": "#edf5e1",
+                    "contrastRatio": 1.56,
+                    "fontSize": "5.3pt (7px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-bubble assistant\">",
+                      "target": [
+                        ".assistant"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 1.56 (foreground color: #bac9a6, background color: #edf5e1, font size: 5.3pt (7px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<small>",
+              "target": [
+                ".assistant > small"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.56 (foreground color: #bac9a6, background color: #edf5e1, font size: 5.3pt (7px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#b4c1a3",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 1.89,
+                    "fontSize": "5.3pt (7px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-conversation\">",
+                      "target": [
+                        ".auth-conversation"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 1.89 (foreground color: #b4c1a3, background color: #ffffff, font size: 5.3pt (7px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<div class=\"auth-example-label\">Una conversación de ejemplo. Una atención muy tuya.</div>",
+              "target": [
+                ".auth-example-label"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.89 (foreground color: #b4c1a3, background color: #ffffff, font size: 5.3pt (7px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#9caf87",
+                    "bgColor": "#edf3e6",
+                    "contrastRatio": 2.08,
+                    "fontSize": "8.3pt (11px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<section class=\"auth-story\">",
+                      "target": [
+                        ".auth-story"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.08 (foreground color: #9caf87, background color: #edf3e6, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<span><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-check\"><path d=\"M20 6 9 17l-5-5\"></path></svg> Respuestas naturales</span>",
+              "target": [
+                ".auth-perks > span:nth-child(1)"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.08 (foreground color: #9caf87, background color: #edf3e6, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#9caf87",
+                    "bgColor": "#edf3e6",
+                    "contrastRatio": 2.08,
+                    "fontSize": "8.3pt (11px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<section class=\"auth-story\">",
+                      "target": [
+                        ".auth-story"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.08 (foreground color: #9caf87, background color: #edf3e6, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<span><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-check\"><path d=\"M20 6 9 17l-5-5\"></path></svg> Todo bajo tu control</span>",
+              "target": [
+                ".auth-perks > span:nth-child(2)"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.08 (foreground color: #9caf87, background color: #edf3e6, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#8c9f7b",
+                    "bgColor": "#edf3e6",
+                    "contrastRatio": 2.52,
+                    "fontSize": "6.8pt (9px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<section class=\"auth-story\">",
+                      "target": [
+                        ".auth-story"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.52 (foreground color: #8c9f7b, background color: #edf3e6, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<div class=\"auth-story-footer\">",
+              "target": [
+                ".auth-story-footer"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.52 (foreground color: #8c9f7b, background color: #edf3e6, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#899b7b",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 2.98,
+                    "fontSize": "8.3pt (11px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-shell\">",
+                      "target": [
+                        ".auth-shell"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.98 (foreground color: #899b7b, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<div class=\"auth-top-link\">",
+              "target": [
+                ".auth-top-link"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.98 (foreground color: #899b7b, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#7e9d64",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 3.04,
+                    "fontSize": "8.3pt (11px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-shell\">",
+                      "target": [
+                        ".auth-shell"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 3.04 (foreground color: #7e9d64, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<button>",
+              "target": [
+                ".auth-top-link > button"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.04 (foreground color: #7e9d64, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#adbb9d",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 2.02,
+                    "fontSize": "6.0pt (8px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-shell\">",
+                      "target": [
+                        ".auth-shell"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.02 (foreground color: #adbb9d, background color: #ffffff, font size: 6.0pt (8px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<div class=\"eyebrow\">HAGAMOS ESPACIO PARA TU TIENDA</div>",
+              "target": [
+                ".eyebrow"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.02 (foreground color: #adbb9d, background color: #ffffff, font size: 6.0pt (8px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#7b9466",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 3.34,
+                    "fontSize": "9.0pt (12px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-shell\">",
+                      "target": [
+                        ".auth-shell"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 3.34 (foreground color: #7b9466, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<p>Entra a tu espacio. Tu próxima conversación te espera.</p>",
+              "target": [
+                "p:nth-child(4)"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.34 (foreground color: #7b9466, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#8aa172",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 2.82,
+                    "fontSize": "8.3pt (11px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-shell\">",
+                      "target": [
+                        ".auth-shell"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.82 (foreground color: #8aa172, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<div class=\"auth-divider\"><span></span>o echa un vistazo primero<span></span></div>",
+              "target": [
+                ".auth-divider"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.82 (foreground color: #8aa172, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#93ad7d",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 2.46,
+                    "fontSize": "8.3pt (11px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<button class=\"button secondary full-width\">",
+                      "target": [
+                        ".secondary"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.46 (foreground color: #93ad7d, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<button class=\"button secondary full-width\">",
+              "target": [
+                ".secondary"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.46 (foreground color: #93ad7d, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#859e6f",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 2.95,
+                    "fontSize": "7.5pt (10px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-shell\">",
+                      "target": [
+                        ".auth-shell"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.95 (foreground color: #859e6f, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<p class=\"demo-note\">Sin registros. Sin mensajes reales. Con todas las posibilidades.</p>",
+              "target": [
+                ".demo-note"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.95 (foreground color: #859e6f, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#8da677",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 2.67,
+                    "fontSize": "7.5pt (10px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-shell\">",
+                      "target": [
+                        ".auth-shell"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.67 (foreground color: #8da677, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<span>Tus conversaciones y tus datos, en tu espacio.</span>",
+              "target": [
+                ".auth-security > span"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #8da677, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#91a77e",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 2.61,
+                    "fontSize": "7.5pt (10px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-shell\">",
+                      "target": [
+                        ".auth-shell"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.61 (foreground color: #91a77e, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<div class=\"auth-bottom\">Cerca © 2026 <span>Una forma más humana de conectar.</span></div>",
+              "target": [
+                ".auth-bottom"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.61 (foreground color: #91a77e, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#91a77e",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 2.61,
+                    "fontSize": "7.5pt (10px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-shell\">",
+                      "target": [
+                        ".auth-shell"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.61 (foreground color: #91a77e, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<span>Una forma más humana de conectar.</span>",
+              "target": [
+                ".auth-bottom > span"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.61 (foreground color: #91a77e, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "page": "registro",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "tags": [
+            "cat.color",
+            "wcag2aa",
+            "wcag143",
+            "TTv5",
+            "TT13.c",
+            "EN-301-549",
+            "EN-9.1.4.3",
+            "ACT",
+            "RGAAv4",
+            "RGAA-3.2.1"
+          ],
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "help": "Elements must meet minimum color contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=playwright",
+          "nodes": [
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#8a9b79",
+                    "bgColor": "#edf3e6",
+                    "contrastRatio": 2.63,
+                    "fontSize": "6.8pt (9px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<section class=\"auth-story\">",
+                      "target": [
+                        ".auth-story"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.63 (foreground color: #8a9b79, background color: #edf3e6, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<span class=\"auth-kicker\"><span></span> TU NUEVO MEJOR EQUIPO</span>",
+              "target": [
+                ".auth-kicker"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.63 (foreground color: #8a9b79, background color: #edf3e6, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#8da977",
+                    "bgColor": "#edf3e6",
+                    "contrastRatio": 2.29,
+                    "fontSize": "48.0pt (64px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "3:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<section class=\"auth-story\">",
+                      "target": [
+                        ".auth-story"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.29 (foreground color: #8da977, background color: #edf3e6, font size: 48.0pt (64px), font weight: normal). Expected contrast ratio of 3:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<span>cerca.</span>",
+              "target": [
+                "h1 > span"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.29 (foreground color: #8da977, background color: #edf3e6, font size: 48.0pt (64px), font weight: normal). Expected contrast ratio of 3:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#7b9366",
+                    "bgColor": "#edf3e6",
+                    "contrastRatio": 2.99,
+                    "fontSize": "9.8pt (13px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<section class=\"auth-story\">",
+                      "target": [
+                        ".auth-story"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.99 (foreground color: #7b9366, background color: #edf3e6, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<p>Las buenas conversaciones hacen crecer los negocios. Dale a cada cliente la atención que merece, por WhatsApp.</p>",
+              "target": [
+                ".auth-story-content > p"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.99 (foreground color: #7b9366, background color: #edf3e6, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#7e9862",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 3.2,
+                    "fontSize": "9.0pt (12px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-conversation\">",
+                      "target": [
+                        ".auth-conversation"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 3.2 (foreground color: #7e9862, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<strong>Sofía · Tu asistente</strong>",
+              "target": [
+                "strong"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.2 (foreground color: #7e9862, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#b0bf9c",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 1.94,
+                    "fontSize": "6.0pt (8px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-conversation\">",
+                      "target": [
+                        ".auth-conversation"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 1.94 (foreground color: #b0bf9c, background color: #ffffff, font size: 6.0pt (8px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<small><i></i> Siempre lista para ayudar</small>",
+              "target": [
+                ".auth-chat-heading > div > small"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.94 (foreground color: #b0bf9c, background color: #ffffff, font size: 6.0pt (8px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#718e57",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 3.67,
+                    "fontSize": "9.0pt (12px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-bubble customer\">¡Hola! ¿Todavía tienen el Bolso Alba? 👀<small>10:24</small></div>",
+                      "target": [
+                        ".customer"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 3.67 (foreground color: #718e57, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<div class=\"auth-bubble customer\">¡Hola! ¿Todavía tienen el Bolso Alba? 👀<small>10:24</small></div>",
+              "target": [
+                ".customer"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.67 (foreground color: #718e57, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#bac9a6",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 1.75,
+                    "fontSize": "5.3pt (7px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-bubble customer\">¡Hola! ¿Todavía tienen el Bolso Alba? 👀<small>10:24</small></div>",
+                      "target": [
+                        ".customer"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 1.75 (foreground color: #bac9a6, background color: #ffffff, font size: 5.3pt (7px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<small>10:24</small>",
+              "target": [
+                ".customer > small"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.75 (foreground color: #bac9a6, background color: #ffffff, font size: 5.3pt (7px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#718e57",
+                    "bgColor": "#edf5e1",
+                    "contrastRatio": 3.28,
+                    "fontSize": "9.0pt (12px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-bubble assistant\">",
+                      "target": [
+                        ".assistant"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 3.28 (foreground color: #718e57, background color: #edf5e1, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<div class=\"auth-bubble assistant\">",
+              "target": [
+                ".assistant"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.28 (foreground color: #718e57, background color: #edf5e1, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#bac9a6",
+                    "bgColor": "#edf5e1",
+                    "contrastRatio": 1.56,
+                    "fontSize": "5.3pt (7px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-bubble assistant\">",
+                      "target": [
+                        ".assistant"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 1.56 (foreground color: #bac9a6, background color: #edf5e1, font size: 5.3pt (7px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<small>",
+              "target": [
+                ".assistant > small"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.56 (foreground color: #bac9a6, background color: #edf5e1, font size: 5.3pt (7px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#b4c1a3",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 1.89,
+                    "fontSize": "5.3pt (7px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-conversation\">",
+                      "target": [
+                        ".auth-conversation"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 1.89 (foreground color: #b4c1a3, background color: #ffffff, font size: 5.3pt (7px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<div class=\"auth-example-label\">Una conversación de ejemplo. Una atención muy tuya.</div>",
+              "target": [
+                ".auth-example-label"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.89 (foreground color: #b4c1a3, background color: #ffffff, font size: 5.3pt (7px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#9caf87",
+                    "bgColor": "#edf3e6",
+                    "contrastRatio": 2.08,
+                    "fontSize": "8.3pt (11px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<section class=\"auth-story\">",
+                      "target": [
+                        ".auth-story"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.08 (foreground color: #9caf87, background color: #edf3e6, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<span><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-check\"><path d=\"M20 6 9 17l-5-5\"></path></svg> Respuestas naturales</span>",
+              "target": [
+                ".auth-perks > span:nth-child(1)"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.08 (foreground color: #9caf87, background color: #edf3e6, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#9caf87",
+                    "bgColor": "#edf3e6",
+                    "contrastRatio": 2.08,
+                    "fontSize": "8.3pt (11px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<section class=\"auth-story\">",
+                      "target": [
+                        ".auth-story"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.08 (foreground color: #9caf87, background color: #edf3e6, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<span><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-check\"><path d=\"M20 6 9 17l-5-5\"></path></svg> Todo bajo tu control</span>",
+              "target": [
+                ".auth-perks > span:nth-child(2)"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.08 (foreground color: #9caf87, background color: #edf3e6, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#8c9f7b",
+                    "bgColor": "#edf3e6",
+                    "contrastRatio": 2.52,
+                    "fontSize": "6.8pt (9px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<section class=\"auth-story\">",
+                      "target": [
+                        ".auth-story"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.52 (foreground color: #8c9f7b, background color: #edf3e6, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<div class=\"auth-story-footer\">",
+              "target": [
+                ".auth-story-footer"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.52 (foreground color: #8c9f7b, background color: #edf3e6, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#899b7b",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 2.98,
+                    "fontSize": "8.3pt (11px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-shell\">",
+                      "target": [
+                        ".auth-shell"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.98 (foreground color: #899b7b, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<div class=\"auth-top-link\">",
+              "target": [
+                ".auth-top-link"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.98 (foreground color: #899b7b, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#7e9d64",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 3.04,
+                    "fontSize": "8.3pt (11px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-shell\">",
+                      "target": [
+                        ".auth-shell"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 3.04 (foreground color: #7e9d64, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<button>",
+              "target": [
+                ".auth-top-link > button"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.04 (foreground color: #7e9d64, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#adbb9d",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 2.02,
+                    "fontSize": "6.0pt (8px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-shell\">",
+                      "target": [
+                        ".auth-shell"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.02 (foreground color: #adbb9d, background color: #ffffff, font size: 6.0pt (8px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<div class=\"eyebrow\">HAGAMOS ESPACIO PARA TU TIENDA</div>",
+              "target": [
+                ".eyebrow"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.02 (foreground color: #adbb9d, background color: #ffffff, font size: 6.0pt (8px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#7b9466",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 3.34,
+                    "fontSize": "9.0pt (12px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-shell\">",
+                      "target": [
+                        ".auth-shell"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 3.34 (foreground color: #7b9466, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<p>Crea tu cuenta y dale una voz a tu negocio.</p>",
+              "target": [
+                "p:nth-child(4)"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.34 (foreground color: #7b9466, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#8aa172",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 2.82,
+                    "fontSize": "8.3pt (11px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-shell\">",
+                      "target": [
+                        ".auth-shell"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.82 (foreground color: #8aa172, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<div class=\"auth-divider\"><span></span>o echa un vistazo primero<span></span></div>",
+              "target": [
+                ".auth-divider"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.82 (foreground color: #8aa172, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#93ad7d",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 2.46,
+                    "fontSize": "8.3pt (11px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<button class=\"button secondary full-width\">",
+                      "target": [
+                        ".secondary"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.46 (foreground color: #93ad7d, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<button class=\"button secondary full-width\">",
+              "target": [
+                ".secondary"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.46 (foreground color: #93ad7d, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#859e6f",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 2.95,
+                    "fontSize": "7.5pt (10px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-shell\">",
+                      "target": [
+                        ".auth-shell"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.95 (foreground color: #859e6f, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<p class=\"demo-note\">Sin registros. Sin mensajes reales. Con todas las posibilidades.</p>",
+              "target": [
+                ".demo-note"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.95 (foreground color: #859e6f, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#8da677",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 2.67,
+                    "fontSize": "7.5pt (10px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-shell\">",
+                      "target": [
+                        ".auth-shell"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.67 (foreground color: #8da677, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<span>Tus conversaciones y tus datos, en tu espacio.</span>",
+              "target": [
+                ".auth-security > span"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #8da677, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#91a77e",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 2.61,
+                    "fontSize": "7.5pt (10px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-shell\">",
+                      "target": [
+                        ".auth-shell"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.61 (foreground color: #91a77e, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<div class=\"auth-bottom\">Cerca © 2026 <span>Una forma más humana de conectar.</span></div>",
+              "target": [
+                ".auth-bottom"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.61 (foreground color: #91a77e, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "any": [
+                {
+                  "id": "color-contrast",
+                  "data": {
+                    "fgColor": "#91a77e",
+                    "bgColor": "#ffffff",
+                    "contrastRatio": 2.61,
+                    "fontSize": "7.5pt (10px)",
+                    "fontWeight": "normal",
+                    "messageKey": null,
+                    "expectedContrastRatio": "4.5:1"
+                  },
+                  "relatedNodes": [
+                    {
+                      "html": "<div class=\"auth-shell\">",
+                      "target": [
+                        ".auth-shell"
+                      ]
+                    }
+                  ],
+                  "impact": "serious",
+                  "message": "Element has insufficient color contrast of 2.61 (foreground color: #91a77e, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+                }
+              ],
+              "all": [],
+              "none": [],
+              "impact": "serious",
+              "html": "<span>Una forma más humana de conectar.</span>",
+              "target": [
+                ".auth-bottom > span"
+              ],
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.61 (foreground color: #91a77e, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

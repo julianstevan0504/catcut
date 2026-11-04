@@ -7,6 +7,7 @@ export const uid = () => randomUUID();
 export const now = () => new Date().toISOString();
 export { defaultSettings } from "../shared/defaults.ts";
 import { defaultSettings } from "../shared/defaults.ts";
+import { menuExamples } from "../shared/menu-examples.ts";
 
 export function createDatabase(path) {
   if (path !== ":memory:")
@@ -76,7 +77,39 @@ export function createDatabase(path) {
     CREATE TABLE IF NOT EXISTS conversation_context (
       conversation_id TEXT PRIMARY KEY REFERENCES conversations(id) ON DELETE CASCADE, started_at TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS conversation_memory (
+      conversation_id TEXT PRIMARY KEY REFERENCES conversations(id) ON DELETE CASCADE,
+      state TEXT NOT NULL DEFAULT '{}'
+    );
+    CREATE TABLE IF NOT EXISTS voice_channels (
+      workspace_id TEXT PRIMARY KEY REFERENCES workspaces(id),
+      public_token TEXT NOT NULL UNIQUE, enabled INTEGER NOT NULL DEFAULT 0,
+      updated_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS voice_integrations (
+      workspace_id TEXT PRIMARY KEY REFERENCES workspaces(id),
+      encrypted_credentials TEXT NOT NULL, account_sid TEXT NOT NULL,
+      business_number TEXT NOT NULL UNIQUE, forward_number TEXT NOT NULL DEFAULT '',
+      status TEXT NOT NULL DEFAULT 'configured', last_webhook_at TEXT,
+      updated_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS voice_sessions (
+      id TEXT PRIMARY KEY, workspace_id TEXT NOT NULL REFERENCES workspaces(id),
+      conversation_id TEXT NOT NULL REFERENCES conversations(id), token_hash TEXT NOT NULL,
+      mode TEXT NOT NULL, provider_call_id TEXT UNIQUE, created_at TEXT NOT NULL,
+      expires_at TEXT NOT NULL, ended_at TEXT, turn_count INTEGER NOT NULL DEFAULT 0,
+      state TEXT NOT NULL DEFAULT '{}'
+    );
+    CREATE TABLE IF NOT EXISTS voice_turns (
+      session_id TEXT NOT NULL REFERENCES voice_sessions(id), nonce TEXT NOT NULL,
+      response_xml TEXT NOT NULL, created_at TEXT NOT NULL,
+      PRIMARY KEY(session_id, nonce)
+    );
+    CREATE INDEX IF NOT EXISTS voice_sessions_workspace ON voice_sessions(workspace_id, created_at);
   `);
+  const productColumns = new Set(db.prepare('PRAGMA table_info(products)').all().map(c => c.name));
+  for (const [column, defaultValue] of [['ingredients',''],['allergens',''],['kind','product']])
+    if (!productColumns.has(column)) db.exec(`ALTER TABLE products ADD COLUMN ${column} TEXT NOT NULL DEFAULT '${defaultValue}'`);
   const columns = new Set(
     db
       .prepare("PRAGMA table_info(sessions)")
@@ -126,7 +159,7 @@ export function settingsFor(db, workspaceId) {
   const row = db
     .prepare("SELECT settings FROM workspaces WHERE id = ?")
     .get(workspaceId);
-  return row ? JSON.parse(row.settings) : null;
+  return row ? { ...defaultSettings, ...JSON.parse(row.settings) } : null;
 }
 
 export function addMessage(db, conversationId, role, text, options = {}) {
@@ -223,11 +256,12 @@ function seedStore(db, workspaceId) {
     ],
   ];
   for (const product of products)
-    db.prepare("INSERT INTO products VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run(
+    db.prepare("INSERT INTO products (id, workspace_id, name, sku, description, category, price, stock, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run(
       uid(),
       workspaceId,
       ...product,
     );
+  for (const p of menuExamples) db.prepare('INSERT INTO products (id,workspace_id,name,sku,description,category,price,stock,color,ingredients,allergens,kind) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)').run(uid(),workspaceId,p.name,p.sku,p.description,p.category,p.price,p.stock,p.color,p.ingredients,p.allergens,p.kind);
   const contacts = [
     [
       "Valentina Rojas",

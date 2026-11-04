@@ -6,6 +6,9 @@ export type ProductInput = {
   price: number;
   stock: number;
   color: string;
+  ingredients: string;
+  allergens: string;
+  kind: "product" | "dish" | "drink";
 };
 export class ValidationError extends Error {
   status = 400;
@@ -35,6 +38,14 @@ export function validateProduct(value: unknown): ProductInput {
   if (!value || typeof value !== "object")
     throw new ValidationError("El producto no es válido.");
   const p = value as Record<string, unknown>;
+  const aliases: Record<string, string> = {
+    producto: "product",
+    plato: "dish",
+    bebida: "drink",
+  };
+  const kind = aliases[String(p.kind)] ?? p.kind ?? "product";
+  if (!["product", "dish", "drink"].includes(String(kind)))
+    throw new ValidationError("El tipo debe ser producto, plato o bebida.");
   for (const [key, max] of [
     ["price", 1000000000],
     ["stock", 1000000],
@@ -59,6 +70,9 @@ export function validateProduct(value: unknown): ProductInput {
     color: ["sage", "sand", "peach", "lavender"].includes(String(p.color))
       ? String(p.color)
       : "sage",
+    ingredients: text(p.ingredients ?? "", "los ingredientes", 1000, true),
+    allergens: text(p.allergens ?? "", "los alérgenos", 500, true),
+    kind: kind as ProductInput["kind"],
   };
 }
 export function validateImport(value: unknown): {
@@ -152,6 +166,12 @@ export function parseCatalogCsv(csv: string): {
     price: "price",
     stock: "stock",
     color: "color",
+    ingredientes: "ingredients",
+    ingredients: "ingredients",
+    alergenos: "allergens",
+    allergens: "allergens",
+    tipo: "kind",
+    kind: "kind",
   };
   const headers = (rows.shift() ?? []).map(
     (h) =>
@@ -169,7 +189,7 @@ export function parseCatalogCsv(csv: string): {
     !["name", "sku", "price", "stock"].every((h) => headers.includes(h))
   )
     throw new ValidationError(
-      "Usa las columnas nombre, sku, precio y stock. También puedes incluir descripcion, categoria y color.",
+      "Usa nombre, sku, precio y stock. Puedes agregar descripcion, categoria, color, tipo, ingredientes y alergenos.",
     );
   if (!rows.length || rows.length > 500)
     throw new ValidationError("El CSV debe contener entre 1 y 500 productos.");

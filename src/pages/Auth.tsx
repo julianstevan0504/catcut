@@ -36,6 +36,12 @@ export function Auth({
       .then(setFlags)
       .catch((e) => setError(e.message));
   }, []);
+  useEffect(() => {
+    const syncMode = () =>
+      setRegister(!standaloneMode && location.hash === "#register");
+    addEventListener("hashchange", syncMode);
+    return () => removeEventListener("hashchange", syncMode);
+  }, []);
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);

@@ -209,12 +209,12 @@ function GeneralSettings({ onWhatsApp }: { onWhatsApp: () => void }) {
         <div>
           <h3>
             {session.ai.configured
-              ? "IA generativa activada"
+              ? "Clasificación con IA configurada"
               : "Asistente local incluido"}
           </h3>
           <p>
             {session.ai.configured
-              ? `Respuestas generadas con ${session.ai.model} y datos de tu tienda.`
+              ? `${session.ai.model} interpreta consultas ambiguas; las respuestas usan los datos guardados.`
               : "Responde usando tu catálogo y las políticas que configures."}
           </p>
         </div>
@@ -222,13 +222,13 @@ function GeneralSettings({ onWhatsApp }: { onWhatsApp: () => void }) {
           className={`badge ${session.ai.configured ? "status-open" : "neutral"}`}
         >
           <i />
-          {session.ai.configured ? "Disponible" : "Modo local"}
+          {session.ai.configured ? "Configurada" : "Modo local"}
         </span>
       </div>
       <div className="info-note ai-explanation">
         <Zap size={18} />
         <p>
-          La IA generativa es opcional y puede tener costos de uso. Se activa en
+          La clasificación con IA es opcional y puede tener costos de uso. Se configura en
           el alojamiento con una clave del proveedor. Sin ella, puedes seguir
           usando el asistente local.
         </p>

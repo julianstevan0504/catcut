@@ -66,3 +66,18 @@ test("la exportación CSV neutraliza fórmulas aunque empiecen con espacios o sa
     assert.ok(quoteCsvCell(value).startsWith("\"'"));
   assert.equal(quoteCsvCell('Algodón "natural"'), '"Algodón ""natural"""');
 });
+
+test("el CSV del menú conserva tipo, ingredientes y alérgenos y rechaza tipos inexistentes", () => {
+  const result = parseCatalogCsv(
+    'nombre,sku,precio,stock,tipo,ingredientes,alergenos\nSopa,S-900,12000,3,plato,"Papa, agua y sal",Leche',
+  );
+  assert.deepEqual(result.errors, []);
+  assert.equal(result.products[0].kind, "dish");
+  assert.equal(result.products[0].ingredients, "Papa, agua y sal");
+  assert.equal(result.products[0].allergens, "Leche");
+  const bad = parseCatalogCsv(
+    "nombre,sku,precio,stock,tipo\nX,X-900,12000,3,opcion-inventada",
+  );
+  assert.equal(bad.products.length, 0);
+  assert.equal(bad.errors.length, 1);
+});

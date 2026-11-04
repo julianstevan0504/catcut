@@ -52,7 +52,10 @@ const newProduct: ProductDraft = {
   name: "",
   sku: "",
   description: "",
-  category: "Ropa",
+  category: "General",
+  kind: "product",
+  ingredients: "",
+  allergens: "",
   price: 0,
   stock: 0,
   color: "sage",
@@ -134,6 +137,9 @@ export function Products({ initialId }: { initialId?: string } = {}) {
                     "precio",
                     "stock",
                     "color",
+                    "tipo",
+                    "ingredientes",
+                    "alergenos",
                   ],
                   ...products.map((p) => [
                     p.name,
@@ -143,6 +149,9 @@ export function Products({ initialId }: { initialId?: string } = {}) {
                     p.price,
                     p.stock,
                     p.color,
+                    p.kind ?? "product",
+                    p.ingredients ?? "",
+                    p.allergens ?? "",
                   ]),
                 ])
               }
@@ -259,7 +268,11 @@ export function Products({ initialId }: { initialId?: string } = {}) {
             <article className="product-card" key={product.id}>
               <div className={`product-art ${product.color}`}>
                 <span className="product-category">{product.category}</span>
-                <ProductArt category={product.category} name={product.name} />
+                <ProductArt
+                  category={product.category}
+                  name={product.name}
+                  kind={product.kind}
+                />
                 <span
                   className={`stock-badge ${!product.stock ? "empty" : product.stock <= 3 ? "low" : ""}`}
                 >
@@ -275,6 +288,29 @@ export function Products({ initialId }: { initialId?: string } = {}) {
                 <span className="product-sku">{product.sku}</span>
                 <h3>{product.name}</h3>
                 <p>{product.description}</p>
+                {(product.kind === "dish" || product.kind === "drink") && (
+                  <div className="product-food-details">
+                    <span>
+                      <b>
+                        {product.kind === "dish"
+                          ? "Plato del menú"
+                          : "Bebida del menú"}
+                      </b>
+                    </span>
+                    <span
+                      className={
+                        product.ingredients ? "" : "missing-ingredients"
+                      }
+                    >
+                      {product.ingredients
+                        ? `Ingredientes: ${product.ingredients}`
+                        : "Ingredientes pendientes de confirmar"}
+                    </span>
+                    {product.allergens && (
+                      <span>Alérgenos: {product.allergens}</span>
+                    )}
+                  </div>
+                )}
                 <div className="product-bottom">
                   <span>
                     <strong>{money(product.price)}</strong>
@@ -436,6 +472,43 @@ function ProductForm({
         </label>
       </div>
       <label className="field-label">
+        Tipo de ficha
+        <select
+          value={draft.kind ?? "product"}
+          onChange={(e) => change("kind", e.target.value)}
+        >
+          <option value="product">Producto</option>
+          <option value="dish">Plato del menú</option>
+          <option value="drink">Bebida del menú</option>
+        </select>
+      </label>
+      <div className="form-row">
+        <label className="field-label">
+          Ingredientes confirmados
+          <textarea
+            rows={3}
+            maxLength={1000}
+            value={draft.ingredients ?? ""}
+            onChange={(e) => change("ingredients", e.target.value)}
+            placeholder="Ej. Agua, limón y azúcar. Solo información confirmada."
+          />
+        </label>
+        <label className="field-label">
+          Alérgenos y posibles trazas
+          <textarea
+            rows={3}
+            maxLength={500}
+            value={draft.allergens ?? ""}
+            onChange={(e) => change("allergens", e.target.value)}
+            placeholder="Ej. Contiene leche y trigo. Si no lo sabes, deja vacío."
+          />
+        </label>
+      </div>
+      <p className="form-hint">
+        Si faltan ingredientes o alérgenos, el asistente pedirá confirmarlos al
+        equipo. Stock 0 significa agotado.
+      </p>
+      <label className="field-label">
         Descripción
         <textarea
           required={false}
@@ -509,7 +582,15 @@ function ProductForm({
   );
 }
 
-function ProductArt({ category, name }: { category: string; name: string }) {
+function ProductArt({
+  category,
+  name,
+  kind,
+}: {
+  category: string;
+  name: string;
+  kind?: Product["kind"];
+}) {
   return (
     <svg
       className="product-illustration"
@@ -524,7 +605,38 @@ function ProductArt({ category, name }: { category: string; name: string }) {
         fill="currentColor"
         opacity=".08"
       />
-      {/pantal[oó]n/i.test(name) ? (
+      {kind === "drink" ? (
+        <g stroke="currentColor" strokeWidth="2" fill="none">
+          <path
+            d="M61 46H119L111 121H69Z"
+            fill="currentColor"
+            fillOpacity=".12"
+          />
+          <path d="M76 94 96 27H121M64 70Q90 82 116 70" />
+          <circle
+            cx="111"
+            cy="44"
+            r="17"
+            fill="currentColor"
+            fillOpacity=".09"
+          />
+          <path d="M111 28V59M95 44H127" />
+        </g>
+      ) : kind === "dish" ? (
+        <g stroke="currentColor" strokeWidth="2" fill="none">
+          <ellipse
+            cx="90"
+            cy="86"
+            rx="54"
+            ry="34"
+            fill="currentColor"
+            fillOpacity=".10"
+          />
+          <ellipse cx="90" cy="83" rx="41" ry="25" />
+          <path d="M34 33V64Q34 73 27 73V122M21 33V64M27 33V122M147 32V123M147 32Q165 48 147 71" />
+          <path d="M70 80Q82 67 93 80T111 82M76 92Q90 103 105 91M79 44Q69 35 79 26M95 44Q85 35 95 26" />
+        </g>
+      ) : /pantal[oó]n/i.test(name) ? (
         <>
           <path
             d="M62 26H118L126 122H98L90 67 82 122H54Z"

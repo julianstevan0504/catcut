@@ -6,7 +6,10 @@ import type {
   Product,
   Session,
   Settings,
+  ReplyContext,
+  VoiceSession,
 } from "./types";
+import { menuExamples } from "../shared/menu-examples";
 import { defaultSettings } from "../shared/defaults";
 import { localReply, normalize } from "../shared/replies";
 import { validateImport, validateProduct } from "../shared/catalog";
@@ -31,6 +34,16 @@ type DemoData = {
   conversations: Conversation[];
   messages: Record<string, Message[]>;
   activities: Activity[];
+  contexts?: Record<string, ReplyContext>;
+  voiceHistory?: {
+    id: string;
+    conversation_id: string;
+    mode: string;
+    created_at: string;
+    expires_at: string;
+    ended_at: string | null;
+    turn_count: number;
+  }[];
 };
 class LocalError extends Error {
   status: number;
@@ -72,6 +85,7 @@ function seed(): DemoData {
     color,
     description: `${name}, una selección especial de nuestra tienda. Consulta con el equipo los detalles, colores y tallas.`,
   }));
+  d.products.push(...menuExamples.map((p) => ({ ...p, id: id() })));
   const contacts = [
     [
       "Valentina Rojas",
@@ -232,6 +246,9 @@ function load() {
     persistent = false;
   }
   memory ??= seed();
+  memory.settings = { ...defaultSettings, ...memory.settings };
+  memory.contexts ??= {};
+  memory.voiceHistory ??= [];
   return memory;
 }
 function save(d: DemoData) {
@@ -306,6 +323,7 @@ function session(d: DemoData): Session {
   };
 }
 
+const demoVoiceSessions = new Map<string, VoiceSession>();
 export async function standaloneRequest<T>(
   path: string,
   options: RequestInit = {},
@@ -513,7 +531,15 @@ export async function standaloneRequest<T>(
         );
       }
       const result = message(d, c, "agent", requireText(body.text));
-      event(d, "message.sent", `El equipo respondió a ${c.name} en la demo.`);
+      if (c.channel.startsWith("voice-")) {
+        result.status = "note";
+        event(
+          d,
+          "voice.note.added",
+          "El equipo agregó una nota interna a la llamada.",
+        );
+      } else
+        event(d, "message.sent", `El equipo respondió a ${c.name} en la demo.`);
       return done(result);
     }
     if (body.status !== undefined) {
@@ -530,6 +556,8 @@ export async function standaloneRequest<T>(
     return done({ ok: true });
   }
   if (route === "/simulator/reset") {
+    for (const c of d.conversations.filter((c) => c.channel === "sandbox"))
+      delete d.contexts![c.id];
     for (const c of d.conversations.filter((x) => x.channel === "sandbox")) {
       c.handoff = 0;
       c.status = "open";
@@ -566,12 +594,15 @@ export async function standaloneRequest<T>(
       products: d.products,
       orders: d.orders,
       phone: c.phone,
+      context: d.contexts?.[c.id] ?? {},
       text,
     });
     if (reply.handoff) {
       c.handoff = 1;
       c.status = "pending";
     }
+    d.contexts ??= {};
+    d.contexts[c.id] = reply.context;
     c.topic = reply.category;
     message(d, c, "assistant", reply.text);
     event(
@@ -581,6 +612,123 @@ export async function standaloneRequest<T>(
     );
     return done({ ...reply, conversationId: c.id });
   }
+  if (route === "/voice/config")
+    return done({
+      publicEnabled: false,
+      publicUrl: "",
+      configured: false,
+      accountSid: "",
+      businessNumber: "",
+      forwardNumber: "",
+      status: "not-configured",
+      lastWebhookAt: null,
+      incomingUrl: "",
+      statusUrl: "",
+    });
+  if (route === "/voice/history")
+    return done([...(d.voiceHistory ?? [])].reverse());
+  if (route === "/voice/sessions" && method === "POST") {
+    if (!d.settings.active || !d.settings.voiceEnabled)
+      throw new LocalError("El asistente de voz está en pausa.");
+    const cid = id(),
+      sid = id(),
+      token = id(),
+      expiresAt = new Date(Date.now() + 30 * 60000).toISOString();
+    const c: Conversation = {
+      id: cid,
+      name: "Llamada web de prueba",
+      phone: "web:" + sid,
+      channel: "voice-test",
+      status: "open",
+      handoff: 0,
+      unread: 0,
+      topic: "voz",
+      created_at: stamp(),
+      updated_at: stamp(),
+      last_message: "",
+      last_role: "assistant",
+    };
+    d.conversations.unshift(c);
+    d.messages[cid] = [];
+    const greeting = `Hola, soy ${d.settings.assistantName}, la asistente virtual de ${d.name}. Puedo ayudarte con nuestro menú, productos, precios y horarios. Esta conversación se guarda en texto en la demo. ¿Qué te gustaría consultar?`;
+    message(d, c, "assistant", greeting);
+    const session = {
+      id: sid,
+      token,
+      conversationId: cid,
+      greeting,
+      expiresAt,
+    };
+    demoVoiceSessions.set(sid, session);
+    d.voiceHistory ??= [];
+    d.voiceHistory.push({
+      id: sid,
+      conversation_id: cid,
+      mode: "owner",
+      created_at: stamp(),
+      expires_at: expiresAt,
+      ended_at: null,
+      turn_count: 0,
+    });
+    event(
+      d,
+      "voice.started",
+      "Se inició una llamada de prueba en esta demo local.",
+    );
+    return done(session);
+  }
+  const voiceRoute = route.match(/^\/voice\/sessions\/([^/]+)\/(turn|end)$/);
+  if (voiceRoute && method === "POST") {
+    const session = demoVoiceSessions.get(voiceRoute[1]);
+    const headers = new Headers(options.headers);
+    if (!session || headers.get("Authorization") !== `Bearer ${session.token}`)
+      throw new LocalError("Inicia una nueva llamada.", 401);
+    const history = d.voiceHistory!.find((h) => h.id === session.id)!;
+    if (history.ended_at || session.expiresAt < stamp())
+      throw new LocalError("La llamada terminó. Inicia otra.", 410);
+    if (voiceRoute[2] === "end") {
+      history.ended_at = stamp();
+      event(d, "voice.ended", "Terminó una llamada de prueba.");
+      return done({ ok: true });
+    }
+    if (history.turn_count >= 40)
+      throw new LocalError("Alcanzaste el límite de esta llamada.", 410);
+    if (!d.settings.active || !d.settings.voiceEnabled)
+      throw new LocalError("El asistente de voz está en pausa.", 409);
+    const c = d.conversations.find((c) => c.id === session.conversationId)!;
+    if (c.handoff)
+      throw new LocalError(
+        "La solicitud está pendiente de atención del equipo.",
+        409,
+      );
+    const text = requireText(body.text, 1500);
+    message(d, c, "user", text);
+    const reply = localReply({
+      settings: d.settings,
+      storeName: d.name,
+      products: d.products,
+      orders: [],
+      phone: c.phone,
+      text,
+      context: d.contexts?.[c.id] ?? {},
+      allowOrders: false,
+      channel: "voice",
+    });
+    d.contexts ??= {};
+    d.contexts[c.id] = reply.context;
+    history.turn_count++;
+    c.topic = reply.category;
+    if (reply.handoff) {
+      c.handoff = 1;
+      c.status = "pending";
+    }
+    message(d, c, "assistant", reply.text);
+    return done(reply);
+  }
+  if (route.startsWith("/voice/") || route.startsWith("/public/"))
+    throw new LocalError(
+      "Publica la aplicación con su servidor para habilitar clientes y proveedores reales.",
+    );
   if (route === "/activities") return done(d.activities.slice(0, 200));
   if (route === "/search") {
     const q = normalize(url.searchParams.get("q") ?? "");
@@ -608,7 +756,8 @@ export async function standaloneRequest<T>(
       "Se exportó una copia de los datos de esta demo.",
     );
     return done({
-      version: 2,
+      version: 3,
+      calls: d.voiceHistory ?? [],
       exportedAt: stamp(),
       workspace: { name: d.name, settings: d.settings },
       products: d.products,
@@ -623,7 +772,9 @@ export async function standaloneRequest<T>(
       "Esta función requiere la aplicación con servidor. No ingreses credenciales reales en la demo.",
     );
   if (route === "/dashboard") {
-    const messages = Object.values(d.messages).flat(),
+    const messages = Object.values(d.messages)
+        .flat()
+        .filter((m) => m.status !== "note"),
       bot = messages.filter((m) => m.role === "assistant").length,
       agent = messages.filter((m) => m.role === "agent").length;
     const graph = Array.from({ length: 7 }, (_, i) => {

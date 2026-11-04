@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import {
   LayoutDashboard,
   MessagesSquare,
@@ -28,10 +28,24 @@ import { AppContext } from "./context";
 import { Avatar, Logo, Modal, HelpContent, Spinner } from "./components";
 import { Auth } from "./pages/Auth";
 import { Dashboard } from "./pages/Dashboard";
-import { Inbox } from "./pages/Inbox";
-import { Assistant } from "./pages/Assistant";
-import { Products, Orders, ActivityLog } from "./pages/Store";
-import { SettingsPage } from "./pages/Settings";
+const Inbox = lazy(() =>
+  import("./pages/Inbox").then((m) => ({ default: m.Inbox })),
+);
+const Assistant = lazy(() =>
+  import("./pages/Assistant").then((m) => ({ default: m.Assistant })),
+);
+const Products = lazy(() =>
+  import("./pages/Store").then((m) => ({ default: m.Products })),
+);
+const Orders = lazy(() =>
+  import("./pages/Store").then((m) => ({ default: m.Orders })),
+);
+const ActivityLog = lazy(() =>
+  import("./pages/Store").then((m) => ({ default: m.ActivityLog })),
+);
+const SettingsPage = lazy(() =>
+  import("./pages/Settings").then((m) => ({ default: m.SettingsPage })),
+);
 import { QuickSearch } from "./Workbench";
 import type { Activity, Conversation, Page, Session } from "./types";
 
@@ -298,7 +312,6 @@ export default function App() {
             <div className="topbar-actions">
               <button
                 className="global-search-trigger"
-                aria-label="Buscar en toda la tienda"
                 onClick={() => setSearchOpen(true)}
               >
                 <Search size={17} />
@@ -403,13 +416,15 @@ export default function App() {
             className={`main-content page-${page}`}
             key={`${page}:${navigationVersion}`}
           >
-            {page === "overview" && <Dashboard />}
-            {page === "inbox" && <Inbox initialId={conversationId} />}
-            {page === "assistant" && <Assistant />}
-            {page === "products" && <Products initialId={conversationId} />}
-            {page === "orders" && <Orders initialId={conversationId} />}
-            {page === "activity" && <ActivityLog />}
-            {page === "settings" && <SettingsPage />}
+            <Suspense fallback={<Spinner label="Cargando tu espacio…" />}>
+              {page === "overview" && <Dashboard />}
+              {page === "inbox" && <Inbox initialId={conversationId} />}
+              {page === "assistant" && <Assistant />}
+              {page === "products" && <Products initialId={conversationId} />}
+              {page === "orders" && <Orders initialId={conversationId} />}
+              {page === "activity" && <ActivityLog />}
+              {page === "settings" && <SettingsPage />}
+            </Suspense>
           </main>
           <footer className="app-footer">
             <span>Conecta. Conversa. Crece.</span>

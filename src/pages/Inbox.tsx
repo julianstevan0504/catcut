@@ -359,7 +359,7 @@ function ConversationChat({
             <ErrorState message={error} retry={reload} />
           ) : (
             <>
-              {c.channel !== "whatsapp" && (
+              {(c.channel === "demo" || c.channel === "sandbox") && (
                 <div className="chat-demo-notice">
                   <Sparkles size={13} /> Conversación{" "}
                   {c.channel === "sandbox" ? "del simulador" : "de ejemplo"}. No
@@ -389,7 +389,10 @@ function ConversationChat({
                           </>
                         ) : (
                           <>
-                            <UserRound size={11} /> Equipo
+                            <UserRound size={11} />{" "}
+                            {m.status === "note"
+                              ? "Nota interna · Equipo"
+                              : "Equipo"}
                           </>
                         )}
                       </div>
@@ -440,8 +443,16 @@ function ConversationChat({
             ) : (
               <form className="chat-composer" onSubmit={(e) => void send(e)}>
                 <textarea
-                  aria-label="Escribe tu respuesta"
-                  placeholder="Escribe una respuesta cercana..."
+                  aria-label={
+                    c.channel.startsWith("voice-")
+                      ? "Nota interna de la llamada"
+                      : "Escribe tu respuesta"
+                  }
+                  placeholder={
+                    c.channel.startsWith("voice-")
+                      ? "Añade una nota para tu equipo…"
+                      : "Escribe una respuesta cercana..."
+                  }
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   maxLength={4000}
@@ -460,7 +471,11 @@ function ConversationChat({
                 <button
                   type="submit"
                   className="send-button"
-                  aria-label="Enviar respuesta"
+                  aria-label={
+                    c.channel.startsWith("voice-")
+                      ? "Guardar nota interna"
+                      : "Enviar respuesta"
+                  }
                   disabled={!text.trim() || sending}
                 >
                   {sending ? (
@@ -475,7 +490,9 @@ function ConversationChat({
               <span>
                 {c.channel === "whatsapp"
                   ? "Enter para enviar · Shift + Enter para nueva línea"
-                  : "Los mensajes de prueba quedan guardados en el historial"}
+                  : c.channel.startsWith("voice-")
+                    ? "Notas internas: las ve únicamente el equipo de la tienda"
+                    : "Los mensajes de prueba quedan guardados en el historial"}
               </span>
               <button
                 disabled={updating}
@@ -508,7 +525,12 @@ function ConversationChat({
             <div>
               <Phone size={14} />
               <span>
-                WhatsApp<strong>{c.phone}</strong>
+                {c.phone.startsWith("web:")
+                  ? "Cliente web"
+                  : "Número de contacto"}
+                <strong>
+                  {c.phone.startsWith("web:") ? "Visitante de la web" : c.phone}
+                </strong>
               </span>
             </div>
             <div>
@@ -518,9 +540,15 @@ function ConversationChat({
                 <strong>
                   {c.channel === "whatsapp"
                     ? "WhatsApp Business"
-                    : c.channel === "sandbox"
-                      ? "Simulador"
-                      : "Datos de demostración"}
+                    : c.channel.startsWith("voice-")
+                      ? c.channel === "voice-whatsapp"
+                        ? "Llamada de WhatsApp"
+                        : c.channel === "voice-test"
+                          ? "Llamada web de prueba"
+                          : "Llamada desde la web"
+                      : c.channel === "sandbox"
+                        ? "Simulador"
+                        : "Datos de demostración"}
                 </strong>
               </span>
             </div>

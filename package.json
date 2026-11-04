@@ -1,6 +1,6 @@
 {
   "name": "cerca-whatsapp-assistant",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -18,7 +18,10 @@
     "test": "node --test --test-concurrency=1 tests/*.test.mjs",
     "test:e2e": "playwright test",
     "backup": "node scripts/backup.mjs",
-    "check": "tsc -b"
+    "check": "tsc -b",
+    "audit:site": "node scripts/audit-site.mjs",
+    "audit:assistant": "node scripts/evaluate-assistant.mjs",
+    "verify": "npm run build && npm test && npm run audit:assistant"
   },
   "dependencies": {
     "@fontsource-variable/dm-sans": "^5.3.0",
@@ -27,14 +30,17 @@
     "helmet": "^8.1.0",
     "lucide-react": "^0.468.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "twilio": "^6.2.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.64.1",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.1.0",
     "fflate": "^0.8.3",
+    "lighthouse": "^13.6.0",
     "prettier": "^3.9.10",
     "typescript": "~5.9.3",
     "vite": "^7.2.0",

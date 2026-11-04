@@ -23,6 +23,7 @@ import {
   encryptionKey,
   rateLimiter,
 } from "./security.mjs";
+import { installVoice } from "./voice.mjs";
 import { answerMessage } from "./assistant.mjs";
 import { validateProduct, validateImport } from "../shared/catalog.ts";
 
@@ -158,6 +159,10 @@ export async function createApp(options = {}) {
         req.rawBody = buf;
       },
     }),
+  );
+  app.use(
+    "/api/webhooks/voice/twilio",
+    express.urlencoded({ extended: false, limit: "32kb", parameterLimit: 30 }),
   );
   app.use((req, _res, next) => {
     req.body ??= {};
@@ -459,7 +464,7 @@ export async function createApp(options = {}) {
       );
       res.set("Cache-Control", "no-store");
       res.json({
-        version: 2,
+        version: 3,
         exportedAt: now(),
         workspace: {
           name: db
@@ -479,6 +484,11 @@ export async function createApp(options = {}) {
         messages: db
           .prepare(
             "SELECT m.* FROM messages m JOIN conversations c ON c.id = m.conversation_id WHERE c.workspace_id = ? ORDER BY m.created_at",
+          )
+          .all(req.workspaceId),
+        calls: db
+          .prepare(
+            "SELECT id,conversation_id,mode,created_at,expires_at,ended_at,turn_count FROM voice_sessions WHERE workspace_id=? ORDER BY created_at",
           )
           .all(req.workspaceId),
         activities: db
@@ -555,7 +565,7 @@ export async function createApp(options = {}) {
       .all(ws);
     const counts = db
       .prepare(
-        `SELECT m.role, COUNT(*) AS count FROM messages m JOIN conversations c ON c.id = m.conversation_id WHERE c.workspace_id = ? AND (m.role = 'user' OR m.status IN ('sent','delivered','read','simulated')) GROUP BY m.role`,
+        `SELECT m.role, COUNT(*) AS count FROM messages m JOIN conversations c ON c.id = m.conversation_id WHERE c.workspace_id = ? AND (m.role = 'user' OR m.status IN ('sent','delivered','read','simulated') OR (m.source='voice' AND m.role='assistant')) GROUP BY m.role`,
       )
       .all(ws);
     const bot = counts.find((c) => c.role === "assistant")?.count ?? 0;
@@ -718,6 +728,20 @@ export async function createApp(options = {}) {
   app.post("/api/conversations/:id/messages", auth, async (req, res) => {
     const conversation = ownedConversation(req),
       text = field(req.body.text, "mensaje", { max: 4000 });
+    if (conversation.channel.startsWith("voice-")) {
+      const note = addMessage(db, conversation.id, "agent", text, {
+        source: "agent",
+        status: "note",
+      });
+      activity(
+        db,
+        req.workspaceId,
+        "voice.note.added",
+        `${req.user.name} agregó una nota interna a la llamada.`,
+        req.user.name,
+      );
+      return res.status(201).json(note);
+    }
     if (conversation.channel === "whatsapp" && !conversation.handoff)
       throw fail(
         409,
@@ -825,6 +849,9 @@ export async function createApp(options = {}) {
   );
   app.post("/api/simulator/reset", auth, (req, res) => {
     db.prepare(
+      "DELETE FROM conversation_memory WHERE conversation_id IN (SELECT id FROM conversations WHERE workspace_id = ? AND channel = 'sandbox')",
+    ).run(req.workspaceId);
+    db.prepare(
       "UPDATE conversations SET handoff = 0, status = 'open' WHERE workspace_id = ? AND channel = 'sandbox'",
     ).run(req.workspaceId);
     for (const row of db
@@ -862,7 +889,7 @@ export async function createApp(options = {}) {
           );
         if (existing) {
           db.prepare(
-            "UPDATE products SET name = ?, description = ?, category = ?, price = ?, stock = ?, color = ? WHERE id = ? AND workspace_id = ?",
+            "UPDATE products SET name = ?, description = ?, category = ?, price = ?, stock = ?, color = ?, ingredients = ?, allergens = ?, kind = ? WHERE id = ? AND workspace_id = ?",
           ).run(
             p.name,
             p.description,
@@ -870,13 +897,16 @@ export async function createApp(options = {}) {
             p.price,
             p.stock,
             p.color,
+            p.ingredients,
+            p.allergens,
+            p.kind,
             existing.id,
             req.workspaceId,
           );
           updated++;
         } else {
           db.prepare(
-            "INSERT INTO products VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO products (id,workspace_id,name,sku,description,category,price,stock,color,ingredients,allergens,kind) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
           ).run(
             uid(),
             req.workspaceId,
@@ -887,6 +917,9 @@ export async function createApp(options = {}) {
             p.price,
             p.stock,
             p.color,
+            p.ingredients,
+            p.allergens,
+            p.kind,
           );
           created++;
         }
@@ -922,17 +955,18 @@ export async function createApp(options = {}) {
       p.price,
       p.stock,
       p.color,
+      p.ingredients,
+      p.allergens,
+      p.kind,
     ];
   }
 
   app.post("/api/products", auth, (req, res) => {
     const fields = productFields(req.body),
       id = uid();
-    db.prepare("INSERT INTO products VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run(
-      id,
-      req.workspaceId,
-      ...fields,
-    );
+    db.prepare(
+      "INSERT INTO products (id,workspace_id,name,sku,description,category,price,stock,color,ingredients,allergens,kind) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    ).run(id, req.workspaceId, ...fields);
     activity(
       db,
       req.workspaceId,
@@ -946,7 +980,7 @@ export async function createApp(options = {}) {
     const fields = productFields(req.body);
     const result = db
       .prepare(
-        "UPDATE products SET name = ?, sku = ?, description = ?, category = ?, price = ?, stock = ?, color = ? WHERE id = ? AND workspace_id = ?",
+        "UPDATE products SET name = ?, sku = ?, description = ?, category = ?, price = ?, stock = ?, color = ?, ingredients = ?, allergens = ?, kind = ? WHERE id = ? AND workspace_id = ?",
       )
       .run(...fields, req.params.id, req.workspaceId);
     if (!result.changes) throw fail(404, "Producto no encontrado.");
@@ -1093,6 +1127,21 @@ export async function createApp(options = {}) {
         throw fail(400, "Estado no válido.");
       next.active = body.active;
     }
+    if (body.voiceEnabled !== undefined) {
+      if (typeof body.voiceEnabled !== "boolean")
+        throw fail(400, "Estado de voz no válido.");
+      next.voiceEnabled = body.voiceEnabled;
+    }
+    if (body.voiceRate !== undefined) {
+      if (
+        typeof body.voiceRate !== "number" ||
+        !Number.isFinite(body.voiceRate) ||
+        body.voiceRate < 0.8 ||
+        body.voiceRate > 1.2
+      )
+        throw fail(400, "La velocidad debe estar entre 0.8 y 1.2.");
+      next.voiceRate = body.voiceRate;
+    }
     if (body.tone !== undefined) {
       if (!["cercano", "profesional", "entusiasta"].includes(body.tone))
         throw fail(400, "Tono no válido.");
@@ -1101,7 +1150,13 @@ export async function createApp(options = {}) {
     if (body.faqs !== undefined) {
       if (!Array.isArray(body.faqs) || body.faqs.length > 40)
         throw fail(400, "Puedes guardar hasta 40 preguntas frecuentes.");
-      if (body.faqs.some(f => !f || typeof f !== 'object' || Array.isArray(f))) throw fail(400, 'Cada pregunta frecuente debe incluir una pregunta y una respuesta.');
+      if (
+        body.faqs.some((f) => !f || typeof f !== "object" || Array.isArray(f))
+      )
+        throw fail(
+          400,
+          "Cada pregunta frecuente debe incluir una pregunta y una respuesta.",
+        );
       next.faqs = body.faqs.map((f) => ({
         id: typeof f.id === "string" ? f.id.slice(0, 80) : uid(),
         question: field(f.question, "pregunta", { max: 300 }),
@@ -1503,6 +1558,8 @@ export async function createApp(options = {}) {
     );
     timer.unref();
   }
+
+  installVoice({ app, db, auth, key, baseUrl, demoEmail: DEMO_EMAIL });
 
   app.use("/api", (_req, res) =>
     res.status(404).json({ error: "Ruta no encontrada." }),

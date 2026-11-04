@@ -2,7 +2,7 @@
 
 **[Descargar la plataforma completa en ZIP](https://github.com/julianstevan0504/catcut/raw/refs/heads/entrega-cerca-whatsapp/descargas/Cerca-WhatsApp.zip)**
 
-**Versión 2.0:** descomprime el ZIP y abre **index.html** en la carpeta principal. Se abre una demo interactiva con productos, pedidos, conversaciones, importación CSV, búsqueda, modo oscuro y simulador. **La demo no necesita Node.js ni servidor.** Para trabajar con cuentas reales y WhatsApp, usa el iniciador del servidor con Node.js 24 o superior.
+**Versión 3.0:** descomprime el ZIP y abre **index.html** en la carpeta principal. Se abre una demo interactiva con productos, pedidos, conversaciones, importación CSV, búsqueda, modo oscuro, simulador, menú editable y consola de voz. **La demo no necesita Node.js ni servidor.** Para trabajar con cuentas reales y WhatsApp, usa el iniciador del servidor con Node.js 24 o superior.
 
 Plataforma en español para una tienda independiente en Colombia. Incluye registro e inicio de sesión, bandeja de conversaciones, inventario, seguimiento de pedidos, configuración del asistente y registro de actividad. React + TypeScript + Vite, servidor Express y base de datos SQLite persistente. Requiere **Node.js 24 o superior**.
 
@@ -55,20 +55,57 @@ Las respuestas HTML del servidor no se almacenan en caché y cada respuesta tien
 
 El servidor limita intentos de acceso, cambios de contraseña y exportaciones. SQLite se crea con permisos restrictivos. `TRUST_PROXY=1` debe usarse solo detrás de un proxy de confianza; el blueprint de Render lo configura. No son pruebas de penetración ni una garantía de ausencia de vulnerabilidades: las pruebas automatizadas verifican los casos que se incluyen en `tests/`.
 
-## Asistente local e IA generativa
+## Menú y respuestas limitadas al negocio
 
-Sin credenciales, el asistente local responde en español con las políticas y los datos del catálogo y pedidos. Es un asistente basado en reglas: no equivale a un modelo generativo y el selector de tono solo afecta a las respuestas generadas por IA. La interfaz lo distingue como **Asistente local**.
+En **Productos**, elige el tipo **Producto / Plato del menú / Bebida del menú**. Guarda precio en COP, stock, ingredientes confirmados y alérgenos o posibles trazas. El menú solo ofrece platos y bebidas con stock mayor que cero. Un producto agotado se informa como agotado; un producto o modificación sin registrar no se confirma. Los ingredientes nunca se deducen de una foto o del nombre. Cuando faltan datos, el asistente lo dice y pide confirmarlos con el equipo. Las consultas sobre alergias incluyen una recomendación de verificación humana, sin prometer seguridad alimentaria.
 
-Para activar OpenAI, configura en el entorno del servidor:
+El CSV acepta las columnas `nombre,sku,descripcion,categoria,precio,stock,color,tipo,ingredientes,alergenos`. Tipo: `producto`, `plato` o `bebida` (también `product`, `dish`, `drink`). Las columnas nuevas son opcionales para conservar los archivos anteriores. Los platos de ejemplo se crean únicamente en una demo nueva; una cuenta real empieza vacía. Una actualización conserva las cuentas, productos y sesiones anteriores.
+
+## Asistente local y clasificación opcional con IA
+
+Sin claves, funciona un asistente en español basado en reglas y datos. OpenAI es opcional: se usa para **clasificar consultas ambiguas** mediante un esquema JSON cerrado. El servidor escribe la respuesta final con información guardada. El modelo no redacta precios, inventa ingredientes, ve pedidos privados ni ejecuta compras o reservas. Las consultas claras se resuelven directamente; los intentos de cambiar las instrucciones y las preguntas ajenas al negocio se limitan al alcance de la tienda.
 
 ```dotenv
 OPENAI_API_KEY=<configurar como secreto en el alojamiento>
 OPENAI_MODEL=gpt-4.1-mini
 ```
 
-La IA usa la Responses API con herramientas para consultar la tienda, el stock y el pedido autorizado. No puede efectuar compras, modificar precios ni reservar inventario. Se envían hasta los últimos 12 mensajes y la información necesaria de la tienda al proveedor, con `store: false`. Informa a tus clientes del tratamiento de sus conversaciones. Si el proveedor falla, se utiliza el asistente local y se registra el cambio. Los mocks de las pruebas no validan la respuesta de un modelo real: eso requiere una clave válida.
+Se envía la consulta ambigua y los títulos/identificadores de las preguntas frecuentes; no se envían números de cliente, pedidos ni historial de conversaciones al clasificador. Se usa la Responses API con `store: false`. Una respuesta fuera del esquema se descarta. Un fallo del proveedor usa la respuesta local y deja constancia. Las pruebas del proveedor emplean mocks: no validan un modelo real ni consumen una clave externa.
 
-El seguimiento solo devuelve pedidos del número remitente proporcionado por WhatsApp, aunque el cliente conozca otro código. Para pedir ayuda humana, basta escribir «hablar con una persona». El asistente se identifica como virtual; no pretende ser una persona.
+El seguimiento por mensaje solo devuelve pedidos del número remitente de WhatsApp. **Las llamadas no revelan pedidos**, porque no autentican la identidad de compra; piden continuar por WhatsApp desde el número registrado. «Hablar con una persona» pausa el bot en la conversación y deja la solicitud pendiente. El asistente se presenta como virtual.
+
+## Hablar y escuchar desde la web
+
+Abre **Asistente IA → Voz y llamadas**. Puedes iniciar, silenciar el micrófono o el altavoz, escribir durante la llamada y terminarla. La transcripción se guarda en **Conversaciones** y en el historial de llamadas. Desde la bandeja puedes añadir notas internas para tu equipo; no se reproducen al cliente. No se graban archivos de audio. Al salir de la pantalla se detienen el dictado y la reproducción.
+
+El dictado usa `SpeechRecognition` del navegador; la voz usa `speechSynthesis`. La compatibilidad depende del navegador, idioma, permisos y sistema. Prueba Chrome o Edge en **HTTPS o localhost**. Si el dictado no está disponible o no tiene permiso, puedes seguir por texto. La demo con doble clic puede no tener acceso al micrófono: para probarlo usa el iniciador local. El reconocimiento puede procesar audio mediante el servicio del navegador, que tiene sus propias condiciones. El aviso se muestra antes de iniciar.
+
+Desde tu cuenta con servidor puedes activar **Enlace público de voz** y compartir la dirección real que aparece en pantalla. El cliente solo ve el asistente: no necesita cuenta y no ve el panel ni datos privados. El enlace empieza desactivado. Cada llamada tiene un token aleatorio, dura como máximo 30 minutos y permite hasta 40 consultas, con límites de solicitudes. Desactivar el enlace revoca las llamadas públicas activas. Los tokens no se incluyen en las exportaciones.
+
+## Llamadas entrantes de WhatsApp con Twilio
+
+La integración implementa webhooks de Twilio Programmable Voice y TwiML con reconocimiento `es-CO` y voz española. Es **una conexión diferente** de los mensajes de Meta Cloud API.
+
+1. Publica el servidor con HTTPS y `APP_URL` igual a su dirección pública exacta.
+2. Habilita **WhatsApp Business Calling** para tu remitente con Twilio. Su disponibilidad, aprobación y tarifas dependen del proveedor. Si ya usas el número con Meta, revisa con Twilio su compatibilidad o migración antes de cambiar nada.
+3. En **Voz y llamadas**, guarda Account SID, Auth Token y número del remitente. El token se cifra con AES-GCM y no se devuelve al navegador. Usa tu cuenta real; las demos no aceptan credenciales.
+4. Copia las direcciones de llamada entrante y estado al remitente/canal de voz del proveedor, ambas con **POST**. Configura allí los eventos de finalización.
+5. Prueba una llamada real. La pantalla distingue **configuración guardada** de **webhook firmado recibido**; recibir un webhook no certifica por sí solo toda la calidad de audio.
+
+Se verifica la firma con el SDK oficial y la URL pública, Account SID y número de destino; se rechazan llamadas de otro canal. Los turnos se deduplican y tres silencios consecutivos terminan la llamada. Puedes marcar cero o pedir una persona. Si configuras un número del equipo, se intenta una transferencia de voz a ese número; puede implicar tarifas adicionales y depende de su disponibilidad. Si no hay destino, la solicitud queda pendiente y se informa al cliente. No se realizan llamadas salientes automáticas ni se activa el servicio desde este repositorio.
+
+No se ha validado una llamada real en esta entrega porque no se proporcionaron credenciales ni un remitente habilitado. Se probaron webhooks firmados, TwiML, reintentos, silencios, privacidad y flujo de navegador con voz simulada. Referencia: [WhatsApp Business Calling de Twilio](https://www.twilio.com/docs/voice/whatsapp-business-calling).
+
+## Evaluación del asistente y del sitio
+
+En **Asistente IA → Evaluar**, comprueba las reglas con los datos de tu tienda y descarga el resultado en JSON. Esta prueba local no equivale a una certificación ni a una evaluación externa de un modelo.
+
+```bash
+npm run audit:assistant  # Casos de alcance, precios, ingredientes, privacidad y entradas hostiles
+npm run audit:site       # axe-core + Lighthouse; requiere Chromium (CHROMIUM_PATH opcional)
+```
+
+Consulta `auditoria/INFORME.md`, los JSON y las capturas para ver hallazgos, correcciones y límites de la revisión. La medición Lighthouse usa la demo portátil servida localmente; los números pueden variar según el equipo y el alojamiento.
 
 ## Conectar WhatsApp Business real
 
@@ -95,7 +132,7 @@ No se ha contratado alojamiento ni publicado un dominio. Se incluyen un `Dockerf
 2. Revisa el plan y el disco persistente antes de contratar. El blueprint usa un servicio `starter` y 1 GB de disco; no depende de almacenamiento efímero gratuito.
 3. El blueprint genera `APP_ENCRYPTION_KEY`, deshabilita la demo y cierra el registro tras la primera cuenta. El servidor detecta la URL HTTPS asignada mediante `RENDER_EXTERNAL_URL`. Para un dominio personalizado configura `APP_URL=https://tu-dominio`.
 4. Abre el sitio y registra inmediatamente tu primera cuenta. La primera alta se permite con `REGISTRATION_OPEN=false`; las siguientes quedan cerradas. Para admitir más tiendas independientes, cambia explícitamente esa variable a `true`.
-5. Agrega `OPENAI_API_KEY` como secreto si quieres IA generativa y conecta Meta desde tu cuenta. Conserva la clave de cifrado para poder restaurar las credenciales.
+5. Agrega `OPENAI_API_KEY` como secreto si quieres clasificación con IA y conecta Meta desde tu cuenta. Conserva la clave de cifrado para poder restaurar las credenciales.
 
 El blueprint no ejecuta una publicación desde este chat. Estos pasos requieren tu cuenta del alojamiento y la publicación del repositorio. No incluyas `.env` ni `data/` en Git.
 
@@ -130,7 +167,7 @@ También puedes ejecutar `npm run build` y `NODE_ENV=production npm start` con l
 ### Red y datos
 
 - Instalación: HTTPS a `registry.npmjs.org`. Docker también necesita el registro oficial de imágenes de Node.
-- Ejecución: `graph.facebook.com` para WhatsApp y, opcionalmente, `api.openai.com` para IA. Si el alojamiento limita la salida de red, habilita esos destinos conservando las reglas existentes.
+- Ejecución: `graph.facebook.com` para WhatsApp y, opcionalmente, `api.openai.com` para clasificación con IA. Los webhooks de Twilio requieren acceso HTTPS entrante; el servidor devuelve TwiML y no envía audio a OpenAI. Si el alojamiento limita la salida de red, habilita esos destinos conservando las reglas existentes.
 - Entrada pública HTTPS a `/api/webhooks/whatsapp/:workspaceId`. No expongas la base ni las credenciales.
 - La base por defecto está en `data/cerca.sqlite`. En desarrollo se genera una clave en `data/.encryption-key`, con permisos restrictivos. Producción exige `APP_ENCRYPTION_KEY` y HTTPS.
 - Copias consistentes: `npm run backup -- /ruta/segura/cerca.sqlite`. Conserva por separado la clave de cifrado necesaria para restaurar las integraciones. El script no imprime datos de clientes ni credenciales.
