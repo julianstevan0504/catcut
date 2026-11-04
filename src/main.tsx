@@ -22,6 +22,7 @@ import "./styles.css";
 import "./refinements.css";
 import "./restaurant.css";
 import "./storefront.css";
+import "./experience.css";
 document.documentElement.dataset.product = "restaurants";
 
 const query = new URLSearchParams(location.search);

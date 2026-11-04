@@ -72,6 +72,7 @@ const standalone = await readFile("Cerca.html");
 put("index.html", standalone);
 put("Cerca.html", standalone);
 const screenshots = [
+  ["panel.png", "panel-restaurante.png"],
   ["buscador-publico.png", "buscador-restaurantes.png"],
   ["editor-apariencia.png", "editor-pagina-publica.png"],
   ["menu-publico.png", "menu-publico.png"],
@@ -87,7 +88,7 @@ for (const [source, name] of screenshots)
     put("capturas/" + name, await readFile("auditoria/capturas/" + source));
 put(
   "LEEME_PRIMERO.txt",
-  `CERCA RESTAURANTES 5.0 — TU ATENCIÓN, TUS MESAS Y TU COCINA
+  `CERCA RESTAURANTES 5.1 — TU ATENCIÓN, TUS MESAS Y TU COCINA
 
 PARA VER Y PROBAR LA PLATAFORMA SIN INSTALAR NADA:
 1. Descomprime todo el ZIP en una carpeta.
@@ -146,7 +147,7 @@ put("INICIAR_MAC.command", shell, true);
 put("INICIAR_LINUX.sh", shell, true);
 put(
   "ABRIR_PRIMERO.html",
-  `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cerca Restaurantes 5.0 — Empezar</title><style>body{margin:0;background:#f3f7ee;color:#304c35;font:16px/1.8 system-ui,sans-serif}main{max-width:730px;margin:7vh auto;padding:34px}h1{font-size:46px;line-height:1.2;letter-spacing:-2px}p{color:#52664c}a.button{display:inline-block;padding:13px 22px;background:#2d5739;border-radius:9px;color:white;text-decoration:none;font-weight:600}article{padding:25px;border:1px solid #dfe8d5;border-radius:15px;background:#fff;margin-top:28px}h2{font-size:22px;margin-top:0}.label{font-size:12px;letter-spacing:2px;color:#566d47}code{font-size:14px}small{color:#546d48}@media(max-width:600px){main{padding:24px;margin:20px auto}h1{font-size:37px}}</style></head><body><main><span class="label">CERCA 5.0 · TU RESTAURANTE, SIEMPRE CERCA</span><h1>Ahora sí, abre y conversa.</h1><p>El ZIP incluye una demo interactiva que funciona con doble clic, sin instalar Node.js ni iniciar un servidor.</p><a class="button" href="index.html">Abrir mi plataforma →</a><article><h2>Para explorar el diseño y las funciones</h2><p>Abre <strong>index.html</strong>. Puedes subir fotos al menú, gestionar cocina y reservas, importar CSV, probar el asistente y explorar el panel del dueño y soporte. Tus pruebas se guardan en este navegador cuando está permitido.</p><small>Es una demo local. No envía mensajes reales ni crea cuentas en un servidor. Evita ingresar datos sensibles.</small></article><article><h2>Para trabajar con tu negocio real</h2><p>Instala Node.js 24 o superior y ejecuta el iniciador de Windows, Mac o Linux. El iniciador abre el navegador cuando el servidor está listo.</p><p>Las llamadas de voz se prueban en Asistente IA. El menú editable permite cargar ingredientes y alérgenos. La conexión de mensajes necesita Meta; las llamadas de WhatsApp necesitan Twilio Business Calling habilitado y un alojamiento HTTPS. Lee <strong>LEEME_PRIMERO.txt</strong> y <strong>proyecto/README.md</strong>.</p></article><p><a href="LEEME_PRIMERO.txt">Ver las instrucciones completas</a></p></main></body></html>`,
+  `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cerca Restaurantes 5.1 — Empezar</title><style>body{margin:0;background:#f3f7ee;color:#304c35;font:16px/1.8 system-ui,sans-serif}main{max-width:730px;margin:7vh auto;padding:34px}h1{font-size:46px;line-height:1.2;letter-spacing:-2px}p{color:#52664c}a.button{display:inline-block;padding:13px 22px;background:#2d5739;border-radius:9px;color:white;text-decoration:none;font-weight:600}article{padding:25px;border:1px solid #dfe8d5;border-radius:15px;background:#fff;margin-top:28px}h2{font-size:22px;margin-top:0}.label{font-size:12px;letter-spacing:2px;color:#566d47}code{font-size:14px}small{color:#546d48}@media(max-width:600px){main{padding:24px;margin:20px auto}h1{font-size:37px}}</style></head><body><main><span class="label">CERCA 5.1 · TU RESTAURANTE, SIEMPRE CERCA</span><h1>Ahora sí, abre y conversa.</h1><p>El ZIP incluye una demo interactiva que funciona con doble clic, sin instalar Node.js ni iniciar un servidor.</p><a class="button" href="index.html">Abrir mi plataforma →</a><article><h2>Para explorar el diseño y las funciones</h2><p>Abre <strong>index.html</strong>. Puedes subir fotos al menú, gestionar cocina y reservas, importar CSV, probar el asistente y explorar el panel del dueño y soporte. Tus pruebas se guardan en este navegador cuando está permitido.</p><small>Es una demo local. No envía mensajes reales ni crea cuentas en un servidor. Evita ingresar datos sensibles.</small></article><article><h2>Para trabajar con tu negocio real</h2><p>Instala Node.js 24 o superior y ejecuta el iniciador de Windows, Mac o Linux. El iniciador abre el navegador cuando el servidor está listo.</p><p>Las llamadas de voz se prueban en Asistente IA. El menú editable permite cargar ingredientes y alérgenos. La conexión de mensajes necesita Meta; las llamadas de WhatsApp necesitan Twilio Business Calling habilitado y un alojamiento HTTPS. Lee <strong>LEEME_PRIMERO.txt</strong> y <strong>proyecto/README.md</strong>.</p></article><p><a href="LEEME_PRIMERO.txt">Ver las instrucciones completas</a></p></main></body></html>`,
 );
 const archive = zipSync(files, { level: 9 });
 const unpacked = unzipSync(archive);
@@ -166,7 +167,7 @@ await mkdir("descargas", { recursive: true });
 await writeFile("descargas/Cerca-WhatsApp.zip", archive);
 const sha256 = createHash("sha256").update(archive).digest("hex");
 const manifest = {
-  version: "5.0.0",
+  version: "5.1.0",
   file: "Cerca-WhatsApp.zip",
   bytes: archive.length,
   files: Object.keys(files).length,
@@ -178,6 +179,6 @@ await writeFile(
 );
 await writeFile(
   "descargas/README.md",
-  `# Cerca 5.0 · Descargar la plataforma\n\n**[Descargar ZIP actualizado](https://github.com/julianstevan0504/catcut/raw/refs/heads/entrega-cerca-whatsapp/descargas/Cerca-WhatsApp.zip)**\n\nDescomprime el ZIP y abre **index.html** en la carpeta principal. La demo es interactiva y no requiere instalación. Para registrar varios restaurantes con cuentas reales, usa el iniciador y sigue la guía incluida.\n\nIncluye código completo, versión compilada, demo independiente, pruebas, capturas y configuración de alojamiento. Se excluyen credenciales, bases privadas y dependencias instaladas.\n\nVersión: 5.0.0. Archivos: ${manifest.files}. Tamaño: ${manifest.bytes} bytes.\n\nSHA-256: \`${sha256}\`.\n`,
+  `# Cerca 5.1 · Descargar la plataforma\n\n**[Descargar ZIP actualizado](https://github.com/julianstevan0504/catcut/raw/refs/heads/entrega-cerca-whatsapp/descargas/Cerca-WhatsApp.zip)**\n\nDescomprime el ZIP y abre **index.html** en la carpeta principal. La demo es interactiva y no requiere instalación. Para registrar varios restaurantes con cuentas reales, usa el iniciador y sigue la guía incluida.\n\nIncluye código completo, versión compilada, demo independiente, pruebas, capturas y configuración de alojamiento. Se excluyen credenciales, bases privadas y dependencias instaladas.\n\nVersión: 5.1.0. Archivos: ${manifest.files}. Tamaño: ${manifest.bytes} bytes.\n\nSHA-256: \`${sha256}\`.\n`,
 );
 console.log(JSON.stringify(manifest, null, 2));

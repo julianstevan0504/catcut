@@ -1,6 +1,6 @@
 {
   "tool": "Evaluador local de alcance, datos y privacidad de Cerca",
-  "generatedAt": "2026-11-04T20:34:34.333Z",
+  "generatedAt": "2026-11-04T22:41:25.942Z",
   "method": "Casos con expectativas explícitas sobre una tienda de prueba. Proveedor de IA simulado; no se llamó a una IA externa ni a WhatsApp real.",
   "passed": 33,
   "total": 33,

@@ -1,0 +1,392 @@
+/* Restaurant service desk: espresso, saffron, tomato and linen. */
+.app-skip-link,
+.public-skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 200;
+  padding: 13px 20px;
+  border: 2px solid #fff3d9;
+  border-radius: 8px;
+  color: #fff8e9;
+  background: #452a20;
+  transform: translateY(-160%);
+  text-decoration: none;
+  font-weight: 650;
+}
+.app-skip-link:focus,
+.public-skip-link:focus {
+  transform: translateY(0);
+}
+.main-content:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: -4px;
+}
+.app-shell .restaurant-dashboard .restaurant-dashboard-hero {
+  background: #3c251c;
+  border-color: #573628;
+  min-height: 325px;
+  padding: 35px 40px;
+  border-radius: 22px 22px 8px 22px;
+}
+.app-shell .restaurant-dashboard .restaurant-dashboard-hero::after {
+  content: "";
+  position: absolute;
+  right: -48px;
+  top: -85px;
+  width: 210px;
+  height: 210px;
+  border: 1px solid #f1c78826;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.app-shell .restaurant-dashboard .restaurant-dashboard-hero h1 {
+  color: #fff2da;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  letter-spacing: -1.7px;
+  font-size: clamp(39px, 4.4vw, 57px);
+  text-wrap: balance;
+  margin-top: 19px;
+}
+.app-shell .restaurant-dashboard .restaurant-dashboard-hero h1 > span {
+  color: #efb74d;
+}
+.app-shell .restaurant-dashboard .restaurant-dashboard-hero p {
+  color: #ead7c5;
+  max-width: 430px;
+}
+.app-shell .restaurant-dashboard .restaurant-eyebrow {
+  color: #f3d7b1;
+  font-size: 11px;
+  letter-spacing: 0.2px;
+  text-transform: none;
+  overflow-wrap: anywhere;
+}
+.app-shell .restaurant-dashboard .restaurant-eyebrow > span {
+  background: #efb74d;
+  box-shadow: 0 0 0 4px #efb74d16;
+  flex: 0 0 6px;
+}
+.app-shell .restaurant-dashboard .restaurant-hero-actions .button.primary {
+  background: #f1bb5c;
+  border-color: #f1bb5c;
+  color: #392117;
+}
+.app-shell
+  .restaurant-dashboard
+  .restaurant-hero-actions
+  .button.primary:hover {
+  background: #ffd185;
+  border-color: #ffd185;
+}
+.app-shell .restaurant-dashboard .restaurant-hero-actions .button.secondary {
+  background: transparent;
+  border-color: #b49a85;
+  color: #fff3df;
+}
+.app-shell
+  .restaurant-dashboard
+  .restaurant-hero-actions
+  .button.secondary:hover {
+  background: #53372a;
+}
+.app-shell .restaurant-dashboard .hero-plate-ring {
+  background: #f0dfbf;
+  border-color: #f7dfb5;
+  box-shadow:
+    inset 0 0 0 13px #fff5de88,
+    inset 0 0 0 15px #bda17c77,
+    18px 25px 0 #20110d35;
+}
+.app-shell .restaurant-dashboard .restaurant-hero-plate > .dish-art {
+  color: #8e4a2f;
+}
+.app-shell .restaurant-dashboard .hero-plate-note {
+  background: #fff4de;
+  color: #593823;
+  box-shadow: 0 7px 25px #1b0d0830;
+}
+.app-shell .restaurant-dashboard .hero-float {
+  color: #59331f;
+  background: #f2c66d;
+  border-color: #f4d59b;
+}
+.restaurant-publication {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  padding: 22px 24px;
+  margin-bottom: 24px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fffdf8;
+}
+.publication-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 47px;
+  height: 47px;
+  border-radius: 14px;
+  color: #7b492f;
+  background: #f4e6cf;
+}
+.publication-copy {
+  flex: 1;
+  min-width: 0;
+}
+.publication-copy h2 {
+  margin: 7px 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--ink);
+  text-wrap: balance;
+}
+.publication-copy p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+.publication-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #7a5831;
+  font-size: 10px;
+  font-weight: 600;
+}
+.publication-state i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.publication-state.is-published {
+  color: #466233;
+}
+.publication-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  justify-content: flex-end;
+}
+.publication-actions .button {
+  min-height: 40px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+.app-shell .restaurant-dashboard .restaurant-metric {
+  position: relative;
+  border-top: 3px solid var(--metric-color, #ad5b37);
+  background: #fffdf8;
+  border-radius: 12px;
+}
+.restaurant-metric:nth-child(2) {
+  --metric-color: #7a8d4e;
+}
+.restaurant-metric:nth-child(3) {
+  --metric-color: #cc922e;
+}
+.restaurant-metric:nth-child(4) {
+  --metric-color: #8c6a64;
+}
+.app-shell .restaurant-dashboard .restaurant-metric > strong {
+  font-variant-numeric: tabular-nums;
+  color: #563525;
+  font-size: 35px;
+}
+.restaurant-setup-progress {
+  margin: 19px 0 14px;
+}
+.restaurant-setup-progress > span {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  margin-bottom: 9px;
+}
+.restaurant-setup-progress progress {
+  display: block;
+  appearance: none;
+  border: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  width: 100%;
+  height: 5px;
+  background: #eadcca;
+  color: #9a422b;
+}
+.restaurant-setup-progress progress::-webkit-progress-bar {
+  background: #eadcca;
+}
+.restaurant-setup-progress progress::-webkit-progress-value {
+  background: #9a422b;
+  border-radius: 4px;
+}
+.restaurant-setup-progress progress::-moz-progress-bar {
+  background: #9a422b;
+  border-radius: 4px;
+}
+.booking-availability-error {
+  border: 1px solid #d9ba97;
+  background: #fff8ed;
+  color: #654026;
+  padding: 16px;
+  border-radius: 11px;
+  font-size: 12px;
+}
+.booking-availability-error p {
+  color: inherit;
+  line-height: 1.7;
+}
+.booking-availability-error .button {
+  font-size: 11px;
+  margin-top: 8px;
+}
+.custom-storefront .cart-update-notice {
+  padding: 13px 16px;
+  background: var(--menu-wash);
+  border: 1px solid var(--menu-line);
+  color: var(--menu-ink);
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.custom-storefront .public-menu-search input {
+  min-width: 0;
+}
+.custom-storefront .menu-clear-search {
+  flex: 0 0 30px;
+  display: grid;
+  place-items: center;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--menu-ink);
+  background: var(--menu-wash);
+}
+.custom-storefront .public-menu-categories button {
+  min-height: 38px;
+}
+.public-menu-content {
+  scroll-margin-top: 24px;
+}
+.public-menu-content:focus-visible {
+  outline: 2px solid var(--menu-accent);
+  outline-offset: 6px;
+}
+.public-floating-cart {
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+}
+.modal,
+.sidebar {
+  overscroll-behavior: contain;
+}
+.public-menu-grid,
+.directory-grid {
+  min-width: 0;
+}
+.public-menu-hero h1,
+.directory-hero h1 {
+  text-wrap: balance;
+}
+.checkout-total b,
+.checkout-lines b {
+  font-variant-numeric: tabular-nums;
+}
+.sidebar {
+  padding-bottom: max(14px, env(safe-area-inset-bottom, 0px));
+}
+[data-theme="dark"] .restaurant-publication {
+  background: #2c2620;
+}
+[data-theme="dark"] .publication-state {
+  color: #e8c58f;
+}
+[data-theme="dark"] .publication-state.is-published {
+  color: #c2d49d;
+}
+[data-theme="dark"] .publication-icon {
+  background: #483729;
+  color: #f1c587;
+}
+[data-theme="dark"]
+  .app-shell
+  .restaurant-dashboard
+  .restaurant-dashboard-hero {
+  background: #362117;
+  border-color: #684431;
+}
+[data-theme="dark"]
+  .app-shell
+  .restaurant-dashboard
+  .restaurant-dashboard-hero
+  h1 {
+  color: #fff2da;
+}
+[data-theme="dark"]
+  .app-shell
+  .restaurant-dashboard
+  .restaurant-dashboard-hero
+  p,
+[data-theme="dark"] .app-shell .restaurant-dashboard .restaurant-eyebrow {
+  color: #ead7c5;
+}
+[data-theme="dark"] .app-shell .restaurant-dashboard .restaurant-metric {
+  background: #2c2620;
+  border-top-color: var(--metric-color, #ad5b37);
+}
+[data-theme="dark"]
+  .app-shell
+  .restaurant-dashboard
+  .restaurant-metric
+  > strong {
+  color: #fff0d8;
+}
+[data-theme="dark"] .booking-availability-error {
+  background: #38291d;
+  color: #f7dfbc;
+  border-color: #8e6941;
+}
+@media (max-width: 1150px) {
+  .restaurant-publication {
+    flex-wrap: wrap;
+  }
+  .publication-actions {
+    width: 100%;
+    justify-content: flex-start;
+    padding-left: 64px;
+  }
+}
+@media (max-width: 600px) {
+  .app-shell .restaurant-dashboard .restaurant-dashboard-hero {
+    padding: 29px 24px;
+    min-height: auto;
+  }
+  .app-shell .restaurant-dashboard .restaurant-dashboard-hero h1 {
+    font-size: 44px;
+  }
+  .restaurant-publication {
+    gap: 12px;
+    padding: 19px 17px;
+  }
+  .publication-icon {
+    flex-basis: 37px;
+    height: 37px;
+    border-radius: 10px;
+  }
+  .publication-actions {
+    padding-left: 0;
+  }
+  .publication-actions .button {
+    flex: 1;
+  }
+  .publication-copy h2 {
+    font-size: 14px;
+  }
+  .app-shell .restaurant-dashboard .restaurant-metric > strong {
+    font-size: 30px;
+  }
+}

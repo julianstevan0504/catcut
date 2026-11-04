@@ -1,6 +1,6 @@
 {
   "name": "cerca-whatsapp-assistant",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -43,7 +43,7 @@
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^5.1.0",
     "fflate": "^0.8.3",
-    "lighthouse": "^13.6.0",
+    "lighthouse": "13.5.0",
     "prettier": "^3.9.10",
     "typescript": "~5.9.3",
     "vite": "^7.2.0",

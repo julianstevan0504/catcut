@@ -190,24 +190,49 @@ const mix = (a: string, b: string, t: number) =>
     .join("");
 export function storefrontTheme(d: StorefrontDesign): Record<string, string> {
   const bg = d.backgroundColor,
-    ink = contrast("#30231d", bg) >= 4.5 ? "#30231d" : "#fff8ef";
+    ink = ["#30231d", "#fff8ef", "#000000", "#ffffff"].find(
+      (color) => contrast(color, bg) >= 4.5,
+    )!;
+  function surface(tint: string, amount: number) {
+    let candidate = mix(bg, tint, amount);
+    for (let i = 0; contrast(ink, candidate) < 4.5 && i < 10; i++) {
+      amount *= 0.5;
+      candidate = mix(bg, tint, amount);
+    }
+    return contrast(ink, candidate) >= 4.5 ? candidate : bg;
+  }
+  const wash = surface(d.primaryColor, 0.065),
+    pill = surface(d.primaryColor, 0.12),
+    card = surface(ink, 0.015),
+    readable = (text: string) =>
+      [bg, wash, pill, card].every(
+        (background) => contrast(text, background) >= 4.5,
+      );
   let accent = d.primaryColor;
-  for (let i = 0; contrast(accent, bg) < 4.5 && i < 20; i++)
+  for (let i = 0; !readable(accent) && i < 24; i++)
     accent = mix(accent, ink, 0.14);
-  const muted = mix(ink, bg, 0.26),
-    buttonText =
-      contrast("#ffffff", d.primaryColor) >= 4.5 ? "#ffffff" : "#211914";
+  if (!readable(accent)) accent = ink;
+  let fade = 0.26,
+    muted = mix(ink, bg, fade);
+  for (let i = 0; !readable(muted) && i < 12; i++) {
+    fade *= 0.7;
+    muted = mix(ink, bg, fade);
+  }
+  if (!readable(muted)) muted = ink;
+  const buttonText = ["#ffffff", "#211914", "#000000"].find(
+    (color) => contrast(color, d.primaryColor) >= 4.5,
+  )!;
   return {
     "--menu-primary": d.primaryColor,
     "--menu-accent": accent,
     "--menu-strong": ink,
     "--menu-ink": ink,
     "--menu-muted": muted,
-    "--menu-wash": mix(bg, d.primaryColor, 0.065),
+    "--menu-wash": wash,
     "--menu-line": mix(bg, ink, 0.18),
-    "--menu-pill": mix(bg, d.primaryColor, 0.12),
+    "--menu-pill": pill,
     "--menu-bg": bg,
-    "--menu-card": mix(bg, ink, 0.015),
+    "--menu-card": card,
     "--menu-button-text": buttonText,
     "--store-font-size": d.fontSize + "px",
     "--store-font":

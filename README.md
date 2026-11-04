@@ -1,4 +1,4 @@
-# Cerca Restaurantes 5.0
+# Cerca Restaurantes 5.1
 
 **[Descargar la plataforma completa en ZIP](https://github.com/julianstevan0504/catcut/raw/refs/heads/entrega-cerca-whatsapp/descargas/Cerca-WhatsApp.zip)**
 
@@ -44,9 +44,17 @@ Añade al menos un producto y el WhatsApp del restaurante antes de publicar desd
 
 Cada página usa **su propio WhatsApp y teléfono**. «WhatsApp» abre el chat del negocio; «Llamar por WhatsApp» guía al cliente a abrir ese chat y pulsar su icono de llamada. «Llamar al restaurante» usa el teléfono configurado. Si el dueño habilita la voz web, también aparece «Hablar con Sofía». Una llamada por WhatsApp automatizada requiere el remitente Business Calling configurado con el proveedor.
 
-La campana del panel muestra **avisos persistentes de pedidos** del restaurante. Se revisan cada cinco segundos mientras el panel está abierto; puede activarse la notificación de ese dispositivo con permiso del navegador. Las notificaciones del sistema no incluyen el nombre o dirección del cliente. No se promete entrega de notificaciones con el navegador cerrado.
+La campana del panel muestra **avisos persistentes de pedidos** del restaurante. Se revisan cinco segundos después de terminar cada consulta mientras el panel está abierto; puede activarse o desactivarse la notificación del dispositivo con permiso del navegador. Si el navegador no permite crearla, el aviso sigue dentro de Cerca. Los pedidos antiguos no se anuncian como nuevos al leer los anteriores. Las notificaciones del sistema no incluyen el nombre o dirección del cliente. No se promete entrega de notificaciones con el navegador cerrado.
 
 El cliente conserva un enlace privado con progreso **Recibido → En cocina → Listo → En camino cuando corresponda → Entregado**. Cuando el dueño actualiza Cocina, el cliente ve el estado y un aviso en su seguimiento abierto, sin recargar manualmente. El enlace vuelve a mostrar el último estado al abrirlo después.
+
+## Revisión de diseño y funcionamiento 5.1
+
+El resumen muestra el estado de publicación, un enlace a la página del cliente y acceso directo a personalización. El panel combina espresso, azafrán y tonos de comida, con progreso de preparación y variantes para celular y modo oscuro. El menú móvil contiene el foco, se cierra con Escape y excluye el fondo del teclado. Las páginas ofrecen accesos para saltar al contenido.
+
+Las consultas periódicas esperan a terminar antes de programar la siguiente. Las reservas distinguen un fallo de disponibilidad de un día sin horarios y permiten reintentar. El carrito ajusta las cantidades a las existencias después de actualizar la carta; la búsqueda ignora tildes. Los filtros del buscador se conservan en la dirección para compartir y volver.
+
+Recomendaciones verificadas para instalar skills de diseño: [frontend-design, web-design-guidelines y UI UX Pro Max](investigacion/SKILLS_DISENO.md). El informe de pruebas y las capturas están en [auditoria/INFORME.md](auditoria/INFORME.md).
 
 ## Entrar como dueño de la plataforma
 

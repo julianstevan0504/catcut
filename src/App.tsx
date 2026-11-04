@@ -1,4 +1,4 @@
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import {
   LayoutDashboard,
   MessagesSquare,
@@ -129,6 +129,10 @@ export default function App() {
   );
   const [help, setHelp] = useState(false);
   const [mobile, setMobile] = useState(false);
+  const [smallScreen, setSmallScreen] = useState(
+    () => matchMedia("(max-width: 780px)").matches,
+  );
+  const sidebar = useRef<HTMLElement>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [navigationVersion, setNavigationVersion] = useState(0);
   const [theme, setTheme] = useState<"light" | "dark">(() => {
@@ -154,6 +158,54 @@ export default function App() {
     refresh();
   };
   useEffect(() => {
+    const media = matchMedia("(max-width: 780px)");
+    const resize = () => {
+      setSmallScreen(media.matches);
+      if (!media.matches) setMobile(false);
+    };
+    media.addEventListener("change", resize);
+    return () => media.removeEventListener("change", resize);
+  }, []);
+  useEffect(() => {
+    if (!mobile) return;
+    const before = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const focusable = () =>
+      Array.from(
+        sidebar.current?.querySelectorAll<HTMLElement>(
+          'button:not(:disabled), a[href], [tabindex="0"]',
+        ) ?? [],
+      ).filter((node) => node.getClientRects().length > 0);
+    focusable()[0]?.focus();
+    const keyboard = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setMobile(false);
+      } else if (event.key === "Tab") {
+        const nodes = focusable(),
+          first = nodes[0],
+          last = nodes[nodes.length - 1];
+        if (!first || !last) return;
+        if (
+          !sidebar.current?.contains(document.activeElement) ||
+          (event.shiftKey
+            ? document.activeElement === first
+            : document.activeElement === last)
+        ) {
+          event.preventDefault();
+          (event.shiftKey ? last : first).focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", keyboard);
+    return () => {
+      document.removeEventListener("keydown", keyboard);
+      document.body.style.overflow = previousOverflow;
+      before?.focus();
+    };
+  }, [mobile]);
+  useEffect(() => {
     api<Session>("/me")
       .then(setSession)
       .catch((e) => {
@@ -165,6 +217,7 @@ export default function App() {
     const handler = () => {
       setPage(currentPage());
       setEntryHash(location.hash);
+      setMobile(false);
     };
     addEventListener("hashchange", handler);
     return () => removeEventListener("hashchange", handler);
@@ -186,7 +239,10 @@ export default function App() {
     const listener = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        if (session) setSearchOpen((v) => !v);
+        if (session) {
+          setMobile(false);
+          setSearchOpen((v) => !v);
+        }
       }
     };
     addEventListener("keydown", listener);
@@ -195,6 +251,7 @@ export default function App() {
   useEffect(() => {
     const expired = () => {
       setSession(null);
+      setMobile(false);
       setConnectionError("");
       setToast({
         text: "Tu sesión terminó. Vuelve a iniciar sesión para continuar.",
@@ -235,6 +292,7 @@ export default function App() {
     try {
       await post("/auth/logout");
       setSession(null);
+      setMobile(false);
       setRecoveryCodes([]);
       location.hash = "login";
     } catch (e) {
@@ -280,14 +338,33 @@ export default function App() {
       value={{ session, version, refresh, refreshSession, navigate, notify }}
     >
       <div className={`app-shell ${mobile ? "mobile-open" : ""}`}>
+        <a
+          className="app-skip-link"
+          href="#contenido-principal"
+          onClick={(event) => {
+            event.preventDefault();
+            document.getElementById("contenido-principal")?.focus();
+          }}
+        >
+          Ir al contenido principal
+        </a>
         {mobile && (
           <button
             className="sidebar-overlay"
             aria-label="Cerrar menú"
+            tabIndex={-1}
             onClick={() => setMobile(false)}
           />
         )}
-        <aside className="sidebar">
+        <aside
+          className="sidebar"
+          id="restaurant-navigation"
+          ref={sidebar}
+          role={mobile ? "dialog" : undefined}
+          aria-modal={mobile || undefined}
+          aria-label="Menú del restaurante"
+          inert={smallScreen && !mobile}
+        >
           <div className="sidebar-logo">
             <Logo />
             <button
@@ -321,6 +398,7 @@ export default function App() {
                   )}
                   <button
                     className={`nav-item ${page === item.id ? "active" : ""}`}
+                    aria-current={page === item.id ? "page" : undefined}
                     onClick={() => navigate(item.id)}
                   >
                     <item.icon size={19} strokeWidth={1.7} />
@@ -348,7 +426,13 @@ export default function App() {
                 Hazlo tuyo <ArrowUpRight size={15} />
               </button>
             </div>
-            <button className="help-link" onClick={() => setHelp(true)}>
+            <button
+              className="help-link"
+              onClick={() => {
+                setMobile(false);
+                setHelp(true);
+              }}
+            >
               <HelpCircle size={18} /> Una mano para empezar{" "}
               <ArrowUpRight size={14} />
             </button>
@@ -371,12 +455,14 @@ export default function App() {
             </div>
           </div>
         </aside>
-        <div className="main-shell">
+        <div className="main-shell" inert={mobile && smallScreen}>
           <header className="topbar">
             <div className="breadcrumb">
               <button
                 className="icon-button menu-button"
                 aria-label="Abrir menú"
+                aria-expanded={mobile}
+                aria-controls="restaurant-navigation"
                 onClick={() => setMobile(true)}
               >
                 <Menu size={21} />
@@ -511,6 +597,8 @@ export default function App() {
             </div>
           )}
           <main
+            id="contenido-principal"
+            tabIndex={-1}
             className={`main-content page-${page}`}
             key={`${page}:${navigationVersion}`}
           >

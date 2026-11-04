@@ -32,6 +32,7 @@ export function OrderNotifications() {
     [permissionMessage, setPermissionMessage] = useState(""),
     [busy, setBusy] = useState(false),
     seen = useRef<Set<string> | null>(null),
+    newestAt = useRef(""),
     wrap = useRef<HTMLDivElement>(null);
   const preferenceKey = "cerca.order-notifications." + session.workspace.id;
   useEffect(() => {
@@ -41,9 +42,10 @@ export function OrderNotifications() {
   }, [preferenceKey]);
   useEffect(() => {
     if (!data) return;
-    const current = new Set(data.items.map((x) => x.id));
     if (seen.current) {
-      const fresh = data.items.filter((x) => !seen.current!.has(x.id));
+      const fresh = data.items.filter(
+        (x) => !seen.current!.has(x.id) && x.created_at >= newestAt.current,
+      );
       if (fresh.length) {
         const latest = fresh[0];
         notify(
@@ -58,22 +60,37 @@ export function OrderNotifications() {
           "Notification" in window &&
           Notification.permission === "granted"
         ) {
-          const notice = new Notification(
-            "Nuevo pedido para " + session.workspace.name,
-            {
-              body: "Tu cocina recibió un pedido nuevo. Abre el panel para atenderlo.",
-              tag: latest.id,
-            },
-          );
-          notice.onclick = () => {
-            window.focus();
-            navigate("kitchen");
-            notice.close();
-          };
+          try {
+            const notice = new Notification(
+              "Nuevo pedido para " + session.workspace.name,
+              {
+                body: "Tu cocina recibió un pedido nuevo. Abre el panel para atenderlo.",
+                tag: latest.id,
+              },
+            );
+            notice.onclick = () => {
+              window.focus();
+              navigate("kitchen");
+              notice.close();
+            };
+          } catch {
+            setEnabled(false);
+            try {
+              localStorage.setItem(preferenceKey, "false");
+            } catch {}
+            setPermissionMessage(
+              "Este navegador no admite estos avisos del dispositivo. Los pedidos siguen en la campana y en Cocina.",
+            );
+          }
         }
       }
     }
-    seen.current = current;
+    if (!seen.current) seen.current = new Set();
+    for (const item of data.items) {
+      seen.current.add(item.id);
+      if (item.created_at > newestAt.current)
+        newestAt.current = item.created_at;
+    }
   }, [data]);
   useEffect(() => {
     if (!open) return;
@@ -94,6 +111,16 @@ export function OrderNotifications() {
   }, [open]);
   async function enable() {
     setPermissionMessage("");
+    if (enabled) {
+      setEnabled(false);
+      try {
+        localStorage.setItem(preferenceKey, "false");
+      } catch {}
+      setPermissionMessage(
+        "Avisos del dispositivo desactivados. Los pedidos siguen en la campana y en Cocina.",
+      );
+      return;
+    }
     if (!("Notification" in window)) {
       setPermissionMessage(
         "Este navegador muestra los avisos dentro del panel.",
@@ -213,10 +240,14 @@ export function OrderNotifications() {
             </button>
           )}
           <div className="order-notice-options">
-            <button className="text-button" onClick={() => void enable()}>
+            <button
+              className="text-button"
+              aria-pressed={enabled}
+              onClick={() => void enable()}
+            >
               <Volume2 size={15} />
               {enabled
-                ? "Avisos del dispositivo activados"
+                ? "Desactivar avisos de este dispositivo"
                 : "Activar avisos en este dispositivo"}
             </button>
             {permissionMessage && <p role="status">{permissionMessage}</p>}

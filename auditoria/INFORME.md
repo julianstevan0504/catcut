@@ -1,15 +1,15 @@
-# Cerca Restaurantes 5.0 · Revisión de funcionamiento, IA y sitio
+# Cerca Restaurantes 5.1 · Revisión de errores, diseño y seguridad
 
-Medición de accesibilidad: 2026-11-04T20:35:55.839Z. Se usaron cuentas y datos de prueba.
+Fecha: 2026-11-04, 17:45 (Colombia, America/Bogota). Se usaron cuentas y datos de prueba. La auditoría automática se complementó con revisión de código, recorridos de cliente/dueño y capturas de computador y celular.
 
 ## Resultado
 
-- **90/90 pruebas de API, datos, seguridad y asistente**. Incluyen aislamiento entre restaurantes, publicación y borradores, búsqueda con tildes, revisiones simultáneas, fotos privadas, permisos de administración, avisos de pedidos y seguimiento, además de stock, capacidad, recuperación y webhooks.
-- **22/22 pruebas de navegador** en la compilación final: registro, editor de páginas, búsqueda de «Mateo Papa», contactos del negocio, pedido de Andrés, aviso al dueño, cambio visible a «En cocina», administración, soporte, reservas y voz. El recorrido del editor comprueba que ir a cargar el menú conserva el borrador.
-- **33/33 casos en el analizador local de respuestas**: precios, ingredientes, alérgenos, preguntas relacionadas, presupuesto, personas, contexto, variantes inexistentes, cálculos y privacidad. Los proveedores de IA se simulan; no es una evaluación externa de un modelo real.
-- **0 infracciones detectadas por axe en 54 vistas**, incluyendo buscador y editor, colores personalizados, administración, guía de llamada por WhatsApp, asistente, cocina, reservas, menú público y variantes móvil/oscura.
-- **0 errores de JavaScript** registrados y **ningún desbordamiento horizontal** en las vistas revisadas.
-- **0 vulnerabilidades conocidas** reportadas por npm audit en las dependencias de producción de esta entrega.
+- **90/90 pruebas de API, datos, seguridad y asistente**, incluidos aislamiento entre negocios, stock y capacidad concurrentes, recuperación, fotos privadas, publicación y webhooks firmados.
+- **29/29 recorridos de navegador**. Incluyen siete regresiones nuevas de red lenta, reservas, resumen, teclado móvil, notificaciones, stock, tildes, filtros compartidos y enlaces de regreso.
+- **33/33 casos de respuestas** en el analizador local del asistente: contexto, preguntas relacionadas, presupuestos, precios, ingredientes, alérgenos, existencias y privacidad.
+- **0 infracciones de axe en 59 vistas**, con panel claro/oscuro/celular, menú móvil, editor, administración, cocina, reservas, asistente, menú y pedido públicos y colores personalizados intermedios.
+- **0 errores de JavaScript y ningún desbordamiento horizontal** en las vistas de la auditoría.
+- **0 vulnerabilidades conocidas en npm audit completo**, incluidas dependencias de desarrollo, y también 0 en producción.
 
 | Lighthouse de escritorio · demo portátil servida localmente | Puntuación |
 | --- | ---: |
@@ -18,46 +18,55 @@ Medición de accesibilidad: 2026-11-04T20:35:55.839Z. Se usaron cuentas y datos 
 | Buenas prácticas | 100 |
 | SEO | 100 |
 
-Son mediciones locales: pueden variar con el dispositivo y alojamiento. El HTML portátil incluye el código para abrirlo con doble clic; el servidor carga las pantallas por secciones. Los resultados automáticos no certifican accesibilidad completa ni ausencia de vulnerabilidades.
+Lighthouse 13.5.0. Son mediciones locales, que varían con el equipo y alojamiento; no certifican ausencia de errores o accesibilidad completa. La demo reúne el código en un HTML para abrirlo con doble clic; la versión con servidor carga pantallas por secciones.
 
-## Páginas públicas y operación del restaurante
+## Errores encontrados y corregidos
 
-Cada restaurante dispone de una ruta /r/nombre, buscable por nombre, especialidades, ciudad y servicios. Su dueño responde preguntas de identidad y contacto para generar la página; puede editar textos, fotos, colores, tipografía, tamaño, portada, carta y orden de secciones. Guardar borrador, publicar y retirar la página son operaciones separadas. La revisión del borrador evita sobrescribir cambios simultáneos.
+| Área | Problema y corrección |
+| --- | --- |
+| Consultas periódicas | Un intervalo podía iniciar otra consulta antes de terminar la anterior y permitir respuestas desordenadas. Ahora se programa la siguiente tras completar o fallar la actual; al abandonar una vista se cancela la consulta. La prueba mantiene una petición bloqueada y comprueba que no se solape. |
+| Disponibilidad de reservas | Un fallo de conexión parecía un día sin horarios. Se muestra el error con reintento y no se confirma con disponibilidad fallida. El grupo inicial respeta un máximo de una persona y el calendario limita la anticipación configurada. |
+| Avisos antiguos | Leer los primeros 30 avisos podía traer uno anterior y anunciarlo como nuevo. Se conserva la referencia temporal y los identificadores observados para distinguirlos. |
+| Notificaciones del dispositivo | Algunos navegadores permiten solicitar permiso pero rechazan el constructor Notification. Se captura el error, se conservan los avisos dentro de Cerca y se puede desactivar la preferencia del dispositivo. |
+| Resumen del dueño | Una carga fallida podía mostrar ceros como si fueran datos reales. Ahora informa del fallo y ofrece reintento. |
+| Menú móvil | El menú oculto seguía en el recorrido del teclado. Se excluye con inert; al abrirlo se contiene el foco, se bloquea el fondo y Escape lo cierra. Ayuda, navegación y cierre de sesión liberan el foco y el desplazamiento. |
+| Carrito y búsqueda | Tras actualizar existencias podían quedar cantidades antiguas. El carrito se ajusta y avisa antes de reintentar; una prueba reduce el stock mientras el cliente prepara su compra y confirma después el pedido corregido. Buscar cafe encuentra Café. |
+| Filtros del buscador | Nombre, ciudad y servicio no se restauraban desde un enlace compartido. Se conservan en la dirección y se comprueban al recargar y volver desde un restaurante. |
+| Enlaces de regreso | Algunos enlaces salían del HTML portátil; recuperar la cuenta regresaba al buscador. Ahora se conserva la demo, el ingreso real vuelve a /#login y la pantalla de emergencia tiene una ruta válida desde /r/nombre. |
+| Colores propios | Con algunos grises tanto el texto claro como el marrón resultaban insuficientes. Se elige un color legible y se ajustan superficies, enlaces y texto secundario con contraste mínimo 4.5:1. Se comprueban 54 combinaciones y también el menú y carrito grises en el navegador. |
+| Herramientas de auditoría | npm audit completo detectó cinco alertas moderadas en la cadena de Lighthouse 13.6/Sentry 11/glob/minimatch. Fijar Lighthouse 13.5.0 elimina esa cadena vulnerable; no se usó audit fix --force. La auditoría completa queda añadida a CI. |
 
-El cliente ve los datos publicados y los contactos del restaurante correspondiente. Los pedidos conservan nombre, teléfono, productos y dirección para el equipo autorizado. La campana consulta avisos persistentes y el seguimiento privado muestra las etapas, incluido «En cocina». Ambos se actualizan cada cinco segundos mientras estén abiertos. La notificación del sistema es opcional y evita datos personales del cliente.
+## Diseño y uso diario
 
-La identidad visual utiliza terracota, crema, formas e ilustraciones propias de comida. Se corrigieron problemas de contraste en avisos, categorías, agotados y colores personalizados; la revisión final incluye fondos claros y oscuros. También se corrigió el proxy de fotos en desarrollo y se comprueba que las imágenes realmente se decodifican.
+El panel usa espresso, azafrán y tonos de comida, tipografía de menú e ilustración de vajilla. Las métricas tienen jerarquía y acentos; la preparación muestra progreso real. Un bloque visible explica si la página está publicada, permite abrirla y lleva directamente al editor. Se revisaron computador, celular y modo oscuro.
 
-El acceso «Soy el dueño de la plataforma» y /admin conduce a administración. La activación exige cuenta, contraseña y clave privada de instalación; registrarse como restaurante no otorga ese rol. Administración → Restaurantes muestra cantidades, estado y enlaces públicos. Se corrigió un error de autorización que producía un 500 sin sesión; ahora responde 401, y las cuentas sin rol reciben 403.
+Se conservaron la identidad de cada restaurante, sus colores, fotos, editor y borradores, contactos propios de WhatsApp/teléfono, pedidos, reservas, cocina, seguimiento y administración. Los enlaces para saltar al contenido, las cantidades con cifras alineadas y los espacios seguros del celular mejoran la navegación. Las capturas actualizadas están en capturas/.
 
-## Sofía y seguridad
+## Skills recomendadas y fuentes
 
-Sofía pausa el reconocimiento antes de hablar y espera brevemente al terminar para escuchar. «Interrumpir y hablar» cancela la voz y permite tomar el turno. La interrupción por voz es opcional para usar con auriculares. Se rechazan fragmentos cortos de la propia respuesta y eventos antiguos. Las pruebas simulan estos eventos y comprueban que el reconocimiento esté detenido durante la reproducción en el modo predeterminado.
+Se verificaron las fuentes públicas de **frontend-design** de Anthropic, **web-design-guidelines** de Vercel y **UI UX Pro Max**. La recomendación, enlaces y comandos están en [SKILLS_DISENO.md](../investigacion/SKILLS_DISENO.md). Se consultaron como documentación de diseño y revisión; no se ejecutaron sus herramientas para modificar el proyecto.
 
-El asistente consulta también nombre público, historia, descripción y especialidades del local. Conserva contexto y relaciona productos, presupuestos y documentos sin inventar precios, ingredientes ni existencias. El proveedor opcional propone búsquedas acotadas; el servidor valida identificadores y redacta los hechos a partir de los datos del negocio.
-
-Se mantienen contraseñas scrypt, sesiones opacas, cookies protegidas, CSRF, CSP con nonce, cifrado de integraciones, validación de fotografías y aislamiento entre cuentas. El editor admite opciones de diseño acotadas: no ejecuta HTML, CSS libre ni scripts del dueño. Los metadatos públicos se escapan; WhatsApp usa números validados. Las fotos de borradores permanecen privadas y el buscador excluye páginas sin publicar o suspendidas.
-
-Las fuentes y decisiones están en [PAGINAS_PUBLICAS_Y_VOZ.md](../investigacion/PAGINAS_PUBLICAS_Y_VOZ.md) y [DECISIONES.md](../investigacion/DECISIONES.md). Se leyeron documentación pública de TastyIgniter, Vercel Commerce y OWASP; no se afirma haber auditado todos los grandes sitios de restaurantes ni un ranking mundial.
+Las decisiones de las páginas públicas y de Sofía siguen documentadas en [PAGINAS_PUBLICAS_Y_VOZ.md](../investigacion/PAGINAS_PUBLICAS_Y_VOZ.md), y la arquitectura de restaurantes en [DECISIONES.md](../investigacion/DECISIONES.md). No se afirma un ranking mundial ni una inspección en vivo de todos los sitios de restaurantes.
 
 ## Producción y entrega
 
-El contenedor verificó páginas públicas, borrador, publicación, buscador y metadatos, además de demo desactivada, cookie Secure, primera cuenta propietaria y registro cerrado. Se conservaron sesión y datos después de reiniciar; se comprobó la copia de SQLite y fotos.
+El contenedor verificó página pública, borrador, publicación, búsqueda y metadatos, cookie Secure, primera cuenta propietaria, registro cerrado y demo desactivada. Conservó datos y sesión tras reiniciar y comprobó copia de SQLite y fotografías.
 
-El ZIP se comprueba por SHA-256, integridad, exclusión de archivos privados, extracción nueva, apertura del index sin API e instalación limpia del servidor empaquetado. La evidencia se adjunta en prueba-entrega.txt. La descarga publicada se verifica también desde una dirección de GitHub fijada al commit entregado.
+La entrega ZIP se verifica por integridad, exclusión de archivos privados, extracción nueva, apertura del index sin API e instalación limpia del servidor empaquetado. La evidencia está en prueba-entrega.txt. La descarga de GitHub se comprueba por HTTP 200, versión, tamaño y SHA-256 en un enlace fijado al commit final.
 
-## Activación y límites
+## Alcance de las comprobaciones
 
-No se hicieron llamadas telefónicas reales, pruebas de micrófono físico, envíos reales de correo ni consultas a un modelo con clave externa. Se usaron reconocimiento y síntesis simulados, webhooks firmados de Twilio/Meta y proveedores simulados. Para atender clientes externos hacen falta alojamiento HTTPS, disco persistente y datos reales del restaurante. El ZIP por sí solo no publica un servidor en Internet.
+La voz del navegador se probó con reconocimiento y síntesis simulados; los proveedores con respuestas controladas y webhooks firmados. No se usaron micrófono físico, llamada externa, correo real ni una clave de IA externa. Esas integraciones requieren configuración y prueba con las cuentas del operador.
 
-«Llamar por WhatsApp» abre una guía y el chat correcto: el cliente inicia la llamada desde WhatsApp. La recepción automática por WhatsApp requiere habilitar Business Calling con el proveedor. Meta, Twilio, OpenAI y Resend necesitan sus respectivas cuentas si se usan. La recuperación por códigos funciona sin correo.
+Para atender clientes externos se necesita alojamiento HTTPS y disco persistente. Publicar desde localhost no crea un dominio en Internet. Las notificaciones requieren el panel abierto, y el seguimiento se actualiza mientras esté abierto o al consultarlo de nuevo. La llamada por WhatsApp se inicia desde la aplicación; la atención automática requiere Business Calling habilitado con el proveedor.
 
-Las notificaciones requieren el panel abierto; no se incluye Web Push con el navegador cerrado. El dictado depende del navegador y hardware. Las reservas públicas requieren confirmación del equipo; los pagos se verifican manualmente. El soporte lo atiende el operador de la plataforma. SQLite utiliza una instancia con disco persistente; los datos de prueba no representan una prueba de carga de muchos locales operando simultáneamente.
+Los pagos se verifican manualmente, las reservas públicas requieren revisión del restaurante y el soporte lo atiende el operador de Cerca. Los datos de prueba no representan una prueba de carga de muchos locales operando simultáneamente. Las pruebas automáticas y la revisión no sustituyen una prueba operativa con los equipos y proveedores reales.
 
-## Evidencias y repetición
+## Evidencias
 
-- despues-axe.json, despues-lighthouse.json, ia-evaluacion.json y dependencias-produccion.json.
-- pruebas-api.txt, pruebas-navegador.txt, pruebas-paginas-publicas.txt y prueba-produccion.txt.
-- capturas/: buscador, editor, contactos, asistente, cocina, reservas, soporte, administración y menús.
-- antes-*.json, ingreso-antes-axe.json y pruebas-restaurantes.txt son evidencia histórica de versiones anteriores.
-- Comandos: npm run build, npm test, npm run test:e2e, npm run audit:assistant y npm run audit:site (Chromium necesario).
+- despues-axe.json, despues-lighthouse.json e ia-evaluacion.json.
+- pruebas-api.txt, pruebas-navegador.txt, pruebas-resiliencia.txt y prueba-produccion.txt.
+- dependencias-completas.json y dependencias-produccion.json: resultado final sin alertas conocidas. dependencias-antes-5.1.json conserva el hallazgo inicial.
+- capturas/: panel, navegación móvil, editor, carta, pedidos, voz, cocina, reservas y administración.
+- antes-*.json, ingreso-antes-axe.json, pruebas-restaurantes.txt y pruebas-paginas-publicas.txt son evidencia histórica de versiones anteriores.
+- Repetir: npm run build, npm test, npm run test:e2e, npm run audit:assistant, npm run audit:site y npm audit. La revisión visual requiere Chromium.

@@ -1,39 +1,46 @@
 
-> cerca-whatsapp-assistant@5.0.0 test:e2e
+> cerca-whatsapp-assistant@5.1.0 test:e2e
 > playwright test
 
-[WebServer] (node:18071) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:32822) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:18072) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:32823) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
-[WebServer] (node:18085) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (node:32838) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 [WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
 
-Running 22 tests using 1 worker
+Running 29 tests using 1 worker
 
-(node:18108) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:32919) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-  ✓   1 [chromium] › tests/e2e/platform.spec.mjs:3:1 › demo: panel, conversación, respuesta humana, simulador e historial (3.6s)
+  ✓   1 [chromium] › tests/e2e/platform.spec.mjs:3:1 › demo: panel, conversación, respuesta humana, simulador e historial (3.9s)
   ✓   2 [chromium] › tests/e2e/platform.spec.mjs:71:1 › una cuenta nueva puede administrar productos, pedidos y su asistente (10.0s)
-  ✓   3 [chromium] › tests/e2e/platform.spec.mjs:136:1 › en celular se puede navegar y probar; no hay desbordamiento horizontal (3.0s)
-  ✓   4 [chromium] › tests/e2e/restaurants.spec.mjs:4:1 › el dueño activa su panel privado y atiende una solicitud de soporte (2.5s)
-  ✓   5 [chromium] › tests/e2e/restaurants.spec.mjs:107:1 › un restaurante carga fotos, recibe un pedido público y lo prepara con seguimiento (6.5s)
-  ✓   6 [chromium] › tests/e2e/restaurants.spec.mjs:213:1 › reservar desde el celular, confirmar en el panel y cancelar desde el enlace privado (3.4s)
-  ✓   7 [chromium] › tests/e2e/restaurants.spec.mjs:272:1 › el negocio abre soporte y recupera su cuenta con el código guardado (2.4s)
-  ✓   8 [chromium] › tests/e2e/storefronts.spec.mjs:53:1 › el dueño genera, personaliza y publica su página; el cliente la encuentra y ve sus contactos (5.7s)
-  ✓   9 [chromium] › tests/e2e/storefronts.spec.mjs:186:1 › Andrés pide a domicilio, el dueño recibe el aviso y el cliente ve que su pedido está en cocina (8.5s)
-  ✓  10 [chromium] › tests/e2e/storefronts.spec.mjs:256:1 › el acceso del dueño está visible y /admin no concede permisos por visitar la dirección (1.9s)
-  ✓  11 [chromium] › tests/e2e/storefronts.spec.mjs:278:1 › la demo conserva el diseño público sin necesitar una API (3.1s)
-  ✓  12 [chromium] › tests/e2e/upgrades.spec.mjs:3:1 › la demo independiente funciona con la API bloqueada y conserva los cambios tras recargar (4.2s)
-  ✓  13 [chromium] › tests/e2e/upgrades.spec.mjs:55:1 › el catálogo se importa con revisión previa y la búsqueda global abre el producto correcto (4.2s)
-  ✓  14 [chromium] › tests/e2e/upgrades.spec.mjs:100:1 › un CSV incorrecto no permite importar ni cambia el catálogo (2.4s)
-  ✓  15 [chromium] › tests/e2e/upgrades.spec.mjs:123:1 › la nueva vista móvil no tiene desbordamiento y se pueden exportar los datos de la demo (2.8s)
-  ✓  16 [chromium] › tests/e2e/upgrades.spec.mjs:157:1 › la demo informa si el navegador no permite guardar y conserva la prueba en la pestaña (2.3s)
-  ✓  17 [chromium] › tests/e2e/voice.spec.mjs:79:1 › voz en demo sin API: escucha, responde con datos, conserva transcripción y detiene el micrófono (5.4s)
-  ✓  18 [chromium] › tests/e2e/voice.spec.mjs:135:1 › se puede interrumpir la voz; el eco y los eventos de respuestas viejas no generan consultas (2.8s)
-  ✓  19 [chromium] › tests/e2e/voice.spec.mjs:179:1 › Sofía mantiene el micrófono apagado mientras habla y no convierte su propia voz en otro turno (3.6s)
-  ✓  20 [chromium] › tests/e2e/voice.spec.mjs:221:1 › un cliente sin iniciar sesión puede llamar desde un enlace público sin ver el panel (2.1s)
-  ✓  21 [chromium] › tests/e2e/voice.spec.mjs:275:1 › la falta de permiso del micrófono permite continuar escribiendo y escuchar la respuesta (3.0s)
-  ✓  22 [chromium] › tests/e2e/voice.spec.mjs:296:1 › evaluación y menú editable muestran ingredientes reales y advierten cuando faltan (2.9s)
+  ✓   3 [chromium] › tests/e2e/platform.spec.mjs:136:1 › en celular se puede navegar y probar; no hay desbordamiento horizontal (3.1s)
+  ✓   4 [chromium] › tests/e2e/resilience.spec.mjs:58:1 › una consulta lenta no se solapa con otro sondeo del mismo recurso (1.5s)
+  ✓   5 [chromium] › tests/e2e/resilience.spec.mjs:115:1 › un error de disponibilidad se puede reintentar y una reserva individual empieza con una persona (1.7s)
+  ✓   6 [chromium] › tests/e2e/resilience.spec.mjs:161:1 › un resumen con error no inventa ceros y el menú móvil conserva el foco (3.5s)
+  ✓   7 [chromium] › tests/e2e/resilience.spec.mjs:240:1 › leer avisos no anuncia pedidos antiguos; se pueden apagar avisos y un navegador incompatible no rompe el panel (1.5s)
+  ✓   8 [chromium] › tests/e2e/resilience.spec.mjs:341:1 › la búsqueda ignora tildes y el carrito ajusta el stock antes de reintentar un pedido (1.9s)
+  ✓   9 [chromium] › tests/e2e/resilience.spec.mjs:393:1 › el buscador conserva nombre, ciudad y servicio al compartir, recargar y volver de un restaurante (3.2s)
+  ✓  10 [chromium] › tests/e2e/resilience.spec.mjs:433:1 › los enlaces de regreso conservan la demo y la recuperación vuelve al ingreso real (3.3s)
+  ✓  11 [chromium] › tests/e2e/restaurants.spec.mjs:4:1 › el dueño activa su panel privado y atiende una solicitud de soporte (2.5s)
+  ✓  12 [chromium] › tests/e2e/restaurants.spec.mjs:107:1 › un restaurante carga fotos, recibe un pedido público y lo prepara con seguimiento (6.5s)
+  ✓  13 [chromium] › tests/e2e/restaurants.spec.mjs:213:1 › reservar desde el celular, confirmar en el panel y cancelar desde el enlace privado (3.2s)
+  ✓  14 [chromium] › tests/e2e/restaurants.spec.mjs:272:1 › el negocio abre soporte y recupera su cuenta con el código guardado (2.5s)
+  ✓  15 [chromium] › tests/e2e/storefronts.spec.mjs:53:1 › el dueño genera, personaliza y publica su página; el cliente la encuentra y ve sus contactos (6.4s)
+  ✓  16 [chromium] › tests/e2e/storefronts.spec.mjs:186:1 › Andrés pide a domicilio, el dueño recibe el aviso y el cliente ve que su pedido está en cocina (8.7s)
+  ✓  17 [chromium] › tests/e2e/storefronts.spec.mjs:256:1 › el acceso del dueño está visible y /admin no concede permisos por visitar la dirección (1.9s)
+  ✓  18 [chromium] › tests/e2e/storefronts.spec.mjs:278:1 › la demo conserva el diseño público sin necesitar una API (2.9s)
+  ✓  19 [chromium] › tests/e2e/upgrades.spec.mjs:3:1 › la demo independiente funciona con la API bloqueada y conserva los cambios tras recargar (4.2s)
+  ✓  20 [chromium] › tests/e2e/upgrades.spec.mjs:55:1 › el catálogo se importa con revisión previa y la búsqueda global abre el producto correcto (3.7s)
+  ✓  21 [chromium] › tests/e2e/upgrades.spec.mjs:100:1 › un CSV incorrecto no permite importar ni cambia el catálogo (2.3s)
+  ✓  22 [chromium] › tests/e2e/upgrades.spec.mjs:123:1 › la nueva vista móvil no tiene desbordamiento y se pueden exportar los datos de la demo (2.6s)
+  ✓  23 [chromium] › tests/e2e/upgrades.spec.mjs:157:1 › la demo informa si el navegador no permite guardar y conserva la prueba en la pestaña (2.4s)
+  ✓  24 [chromium] › tests/e2e/voice.spec.mjs:79:1 › voz en demo sin API: escucha, responde con datos, conserva transcripción y detiene el micrófono (5.4s)
+  ✓  25 [chromium] › tests/e2e/voice.spec.mjs:135:1 › se puede interrumpir la voz; el eco y los eventos de respuestas viejas no generan consultas (2.7s)
+  ✓  26 [chromium] › tests/e2e/voice.spec.mjs:179:1 › Sofía mantiene el micrófono apagado mientras habla y no convierte su propia voz en otro turno (3.6s)
+  ✓  27 [chromium] › tests/e2e/voice.spec.mjs:221:1 › un cliente sin iniciar sesión puede llamar desde un enlace público sin ver el panel (2.2s)
+  ✓  28 [chromium] › tests/e2e/voice.spec.mjs:275:1 › la falta de permiso del micrófono permite continuar escribiendo y escuchar la respuesta (3.1s)
+  ✓  29 [chromium] › tests/e2e/voice.spec.mjs:296:1 › evaluación y menú editable muestran ingredientes reales y advierten cuando faltan (2.8s)
 
-  22 passed (1.5m)
+  29 passed (1.8m)

@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { isSpeechEcho, interruptionOnly } from "../shared/speech";
 import { api, post } from "./api";
+import { standaloneMode } from "./standalone";
 import type { StoreReply, VoiceSession } from "./types";
 import "./studio.css";
 import { Logo } from "./components";
@@ -734,7 +735,12 @@ export function PublicVoice({ token }: { token: string }) {
         <div className="card public-voice-error">
           <h1>Llamada no disponible</h1>
           <p>{error}</p>
-          <a href="/" className="button secondary">
+          <a
+            href={
+              standaloneMode ? location.pathname + "?explore=restaurants" : "/"
+            }
+            className="button secondary"
+          >
             <ArrowLeft size={16} /> Volver
           </a>
         </div>

@@ -80,6 +80,15 @@ try {
     );
   }
   await scan("panel", true);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await scan("panel-movil", true);
+  await page.getByRole("button", { name: "Abrir menú", exact: true }).click();
+  await scan("navegacion-movil", true);
+  await page.keyboard.press("Escape");
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.evaluate(() => (document.documentElement.dataset.theme = "dark"));
+  await scan("panel-oscuro", true);
+  await page.evaluate(() => (document.documentElement.dataset.theme = "light"));
   await page
     .getByRole("button", { name: /Ver notificaciones de pedidos/ })
     .click();
@@ -290,6 +299,27 @@ try {
   await page.reload();
   await page.locator(".public-menu-content").waitFor();
   await scan("menu-color-personalizado", true);
+  await page.evaluate(() => {
+    const data = JSON.parse(localStorage.getItem("cerca.demo.v2"));
+    data.restaurant.design = {
+      ...data.restaurant.design,
+      primaryColor: "#777777",
+      backgroundColor: "#888888",
+    };
+    localStorage.setItem("cerca.demo.v2", JSON.stringify(data));
+  });
+  await page.reload();
+  await page.locator(".public-menu-content").waitFor();
+  await scan("menu-contraste-intermedio", true);
+  await page
+    .getByRole("button", { name: /^Agregar .+ al pedido/ })
+    .first()
+    .click();
+  await page.locator(".public-cart-button").click();
+  await scan("pedido-contraste-intermedio", true);
+  await page
+    .getByRole("button", { name: "Cerrar ventana", exact: true })
+    .click();
   const native = await browser.newContext({
     viewport: { width: 1440, height: 1000 },
   });

@@ -26,6 +26,9 @@ import {
   Printer,
   Globe,
   ShieldCheck,
+  Paintbrush,
+  Eye,
+  X,
 } from "lucide-react";
 import { post, put, useResource, money, relativeTime } from "./api";
 import { useApp } from "./context";
@@ -46,6 +49,7 @@ import {
   defaultDesign,
   storefrontTheme,
   whatsappUrl,
+  foldSearch,
 } from "../shared/storefront";
 import {
   localParts,
@@ -163,17 +167,38 @@ export function DishArt({ kind = "dish" }: { kind?: string }) {
 }
 export function RestaurantDashboard() {
   const { session, navigate, version } = useApp();
-  const { data: profile } = useResource<RestaurantProfile>(
-      "/restaurant",
-      version,
-    ),
-    { data: orders } = useResource<KitchenOrder[]>("/kitchen", version, 10000),
-    { data: reservations } = useResource<Reservation[]>(
+  const profileResource = useResource<
+      RestaurantProfile & { publicUrl: string }
+    >("/restaurant", version),
+    ordersResource = useResource<KitchenOrder[]>("/kitchen", version, 10000),
+    reservationsResource = useResource<Reservation[]>(
       "/reservations",
       version,
       15000,
     ),
-    { data: products } = useResource<Product[]>("/products", version);
+    productsResource = useResource<Product[]>("/products", version);
+  const resources = [
+    profileResource,
+    ordersResource,
+    reservationsResource,
+    productsResource,
+  ];
+  if (resources.some((resource) => resource.loading))
+    return <Spinner label="Preparando el resumen de tu restaurante…" />;
+  const profile = profileResource.data,
+    orders = ordersResource.data,
+    reservations = reservationsResource.data,
+    products = productsResource.data;
+  const failure = resources.find((resource) => resource.error)?.error;
+  if (failure || !profile || !orders || !reservations || !products)
+    return (
+      <ErrorState
+        message={
+          failure || "No pudimos actualizar el resumen de tu restaurante."
+        }
+        retry={() => resources.forEach((resource) => resource.reload())}
+      />
+    );
   const today = localParts(
       new Date(),
       profile?.timezone ?? "America/Bogota",
@@ -183,13 +208,32 @@ export function RestaurantDashboard() {
         localParts(new Date(r.start_at), profile?.timezone ?? "America/Bogota")
           .date === today && !["cancelled", "no-show"].includes(r.status),
     ),
-    waiting = (reservations ?? []).filter((r) => r.status === "pending");
+    waiting = reservations.filter((r) => r.status === "pending"),
+    published = profile.publicEnabled && session.businessState !== "suspended",
+    tasks = [
+      {
+        done: products.length > 0,
+        label: "Cargar platos, precios y fotos",
+        to: "products" as const,
+      },
+      {
+        done: Boolean(profile.address),
+        label: "Configurar local y horarios",
+        to: "restaurant" as const,
+      },
+      {
+        done: published,
+        label: "Publicar la página del restaurante",
+        to: "storefront" as const,
+      },
+    ],
+    completed = tasks.filter((task) => task.done).length;
   return (
     <div className="restaurant-dashboard">
       <section className="restaurant-dashboard-hero">
         <div>
           <span className="restaurant-eyebrow">
-            <span /> TU RESTAURANTE, CONECTADO
+            <span /> {profile.displayName || session.workspace.name}
           </span>
           <h1>
             Hoy se cocina
@@ -228,6 +272,56 @@ export function RestaurantDashboard() {
           <span className="hero-float two">
             <Coffee size={19} />
           </span>
+        </div>
+      </section>
+      <section
+        className="restaurant-publication"
+        aria-label="Estado de tu página pública"
+      >
+        <span className="publication-icon">
+          <Globe size={23} />
+        </span>
+        <div className="publication-copy">
+          <span
+            className={"publication-state " + (published ? "is-published" : "")}
+          >
+            <i />{" "}
+            {published
+              ? "Página publicada"
+              : session.businessState === "suspended"
+                ? "Página suspendida"
+                : "Página sin publicar"}
+          </span>
+          <h2>
+            {published
+              ? "Tu carta ya tiene su lugar."
+              : "Dale una puerta de entrada a tu restaurante."}
+          </h2>
+          <p>
+            {published
+              ? profile.acceptingOrders
+                ? "Tus clientes pueden consultar la carta y enviar sus pedidos."
+                : "La carta está visible. Los pedidos están pausados por el equipo."
+              : "Prepara los textos, elige tus colores y revisa cómo la verán tus clientes."}
+          </p>
+        </div>
+        <div className="publication-actions">
+          {published && (
+            <a
+              className="button secondary"
+              href={profile.publicUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Eye size={16} /> Ver mi página
+            </a>
+          )}
+          <button
+            className="button primary"
+            onClick={() => navigate("storefront")}
+          >
+            <Paintbrush size={16} /> Personalizar mi página
+          </button>
         </div>
       </section>
       <div className="restaurant-metrics">
@@ -321,7 +415,7 @@ export function RestaurantDashboard() {
               </p>
               <button
                 className="button secondary"
-                onClick={() => navigate("restaurant")}
+                onClick={() => navigate("storefront")}
               >
                 Preparar mi menú público
               </button>
@@ -341,32 +435,18 @@ export function RestaurantDashboard() {
             Completa estos pasos para que tus clientes puedan elegir, pedir y
             reservar.
           </p>
-          {[
-            {
-              done: Boolean(products?.length),
-              label: "Cargar platos, precios y fotos",
-              to: "products",
-            },
-            {
-              done: Boolean(profile?.address),
-              label: "Configurar local y horarios",
-              to: "restaurant",
-            },
-            {
-              done: Boolean(profile?.publicEnabled),
-              label: "Publicar el menú del restaurante",
-              to: "restaurant",
-            },
-            {
-              done: Boolean(profile?.reservationsEnabled),
-              label: "Habilitar reservas con capacidad",
-              to: "restaurant",
-            },
-          ].map((x) => (
-            <button
-              key={x.label}
-              onClick={() => navigate(x.to as "restaurant")}
-            >
+          <div className="restaurant-setup-progress">
+            <span>
+              {completed} de {tasks.length} pasos completos
+            </span>
+            <progress
+              value={completed}
+              max={tasks.length}
+              aria-label="Preparación de la página del restaurante"
+            />
+          </div>
+          {tasks.map((x) => (
+            <button key={x.label} onClick={() => navigate(x.to)}>
               <span className={x.done ? "complete" : ""}>
                 {x.done ? <Check size={13} /> : <span />}
               </span>
@@ -1087,7 +1167,7 @@ export function BookingForm({
   const [date, setDate] = useState(
       localParts(new Date(), profile.timezone).date,
     ),
-    [party, setParty] = useState(2),
+    [party, setParty] = useState(Math.min(2, profile.maxParty)),
     [time, setTime] = useState(""),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
@@ -1095,7 +1175,12 @@ export function BookingForm({
   const availability = endpoint.startsWith("/public/")
     ? endpoint.replace(/\/reservations$/, "")
     : endpoint;
-  const { data, loading, reload } = useResource<{
+  const {
+    data,
+    loading,
+    error: availabilityError,
+    reload,
+  } = useResource<{
     slots: { time: string; remaining: number }[];
   }>(availability + "/availability?date=" + date + "&partySize=" + party);
   async function save(e: FormEvent<HTMLFormElement>) {
@@ -1135,6 +1220,12 @@ export function BookingForm({
             required
             value={date}
             min={localParts(new Date(), profile.timezone).date}
+            max={
+              localParts(
+                new Date(Date.now() + profile.horizonDays * 86400000),
+                profile.timezone,
+              ).date
+            }
             onChange={(e) => {
               setDate(e.target.value);
               setTime("");
@@ -1160,6 +1251,14 @@ export function BookingForm({
         <legend>Horarios disponibles · {profile.timezone}</legend>
         {loading ? (
           <Spinner label="Consultando disponibilidad…" />
+        ) : availabilityError ? (
+          <div className="booking-availability-error" role="alert">
+            <strong>No pudimos consultar los horarios.</strong>
+            <p>{availabilityError}</p>
+            <button className="button secondary" type="button" onClick={reload}>
+              Volver a consultar horarios
+            </button>
+          </div>
         ) : data?.slots.length ? (
           <div>
             {data.slots.map((s) => (
@@ -1217,7 +1316,10 @@ export function BookingForm({
           {error}
         </p>
       )}
-      <button className="button primary full-width" disabled={!time || busy}>
+      <button
+        className="button primary full-width"
+        disabled={!time || busy || loading || Boolean(availabilityError)}
+      >
         {busy ? (
           <Spinner label="Guardando reserva…" />
         ) : (
@@ -1236,6 +1338,7 @@ export function OrderCheckout({
   endpoint,
   onDone,
   onRefresh,
+  notice,
 }: {
   products: Product[];
   profile: RestaurantProfile;
@@ -1244,6 +1347,7 @@ export function OrderCheckout({
   endpoint: string;
   onDone: (r: { viewUrl: string; code: string; total: number }) => void;
   onRefresh?: () => void;
+  notice?: string;
 }) {
   const [fulfillment, setFulfillment] = useState<
       "dineIn" | "pickup" | "delivery"
@@ -1296,6 +1400,11 @@ export function OrderCheckout({
   }
   return (
     <form className="order-checkout modal-form" onSubmit={(e) => void save(e)}>
+      {notice && (
+        <p className="cart-update-notice" role="status">
+          {notice}
+        </p>
+      )}
       <div className="checkout-lines">
         {lines.map((p) => (
           <div key={p.id}>
@@ -1492,7 +1601,13 @@ export function PublicRestaurant({ slug }: { slug: string }) {
         <Logo />
         <h1>El restaurante no está disponible.</h1>
         <p>{error}</p>
-        <a href="/">Ir a Cerca</a>
+        <a
+          href={
+            standaloneMode ? location.pathname + "?explore=restaurants" : "/"
+          }
+        >
+          Ir a Cerca
+        </a>
       </main>
     );
   return <RestaurantStorefront data={data} slug={slug} reload={reload} />;
@@ -1511,6 +1626,7 @@ export function RestaurantStorefront({
   const [category, setCategory] = useState("Todas"),
     [search, setSearch] = useState(""),
     [cart, setCart] = useState<Record<string, number>>({}),
+    [cartNotice, setCartNotice] = useState(""),
     [modal, setModal] = useState<"booking" | "cart" | "whatsapp" | null>(null),
     [success, setSuccess] = useState<{
       viewUrl: string;
@@ -1522,12 +1638,33 @@ export function RestaurantStorefront({
     filtered = data.products.filter(
       (x) =>
         (category === "Todas" || x.category === category) &&
-        (x.name + " " + x.description + " " + (x.ingredients ?? ""))
-          .toLowerCase()
-          .includes(search.toLowerCase()),
+        foldSearch(
+          x.name + " " + x.description + " " + (x.ingredients ?? ""),
+        ).includes(foldSearch(search)),
     ),
     count = Object.values(cart).reduce((n, x) => n + x, 0),
     total = data.products.reduce((n, x) => n + x.price * (cart[x.id] ?? 0), 0);
+  useEffect(() => {
+    if (
+      category !== "Todas" &&
+      !data.products.some((product) => product.category === category)
+    )
+      setCategory("Todas");
+    const next: Record<string, number> = {};
+    for (const product of data.products) {
+      const quantity = Math.min(cart[product.id] ?? 0, product.stock, 20);
+      if (quantity > 0) next[product.id] = quantity;
+    }
+    if (
+      Object.keys(next).length !== Object.keys(cart).length ||
+      Object.keys(next).some((id) => next[id] !== cart[id])
+    ) {
+      setCart(next);
+      setCartNotice(
+        "La carta cambió. Ajustamos tu pedido a las existencias disponibles. Revisa el total antes de confirmar.",
+      );
+    }
+  }, [data.products, cart, category]);
   const design = { ...defaultDesign(p.accent), ...p.design },
     wa = whatsappUrl(p.whatsappNumber, data.name),
     phone = /^\+?[\d\s()-]{7,30}$/.test(p.phone || p.whatsappNumber)
@@ -1538,6 +1675,7 @@ export function RestaurantStorefront({
     : "/?explore=restaurants";
   function add(product: Product) {
     if (preview) return;
+    setCartNotice("");
     setCart((c) => ({
       ...c,
       [product.id]: Math.min((c[product.id] ?? 0) + 1, product.stock, 20),
@@ -1559,6 +1697,20 @@ export function RestaurantStorefront({
       }
       style={storefrontTheme(design) as CSSProperties}
     >
+      {!preview && (
+        <a
+          className="public-skip-link"
+          href="#carta-del-restaurante"
+          onClick={(event) => {
+            event.preventDefault();
+            const menu = document.getElementById("carta-del-restaurante");
+            menu?.focus();
+            menu?.scrollIntoView({ block: "start" });
+          }}
+        >
+          Ir a la carta
+        </a>
+      )}
       {standaloneMode && (
         <div className="restaurant-demo-banner" role="status">
           Restaurante de demostración. Los pedidos y reservas se guardan solo en
@@ -1577,7 +1729,7 @@ export function RestaurantStorefront({
           }
         >
           {p.logoImageUrl ? (
-            <img src={p.logoImageUrl} alt="" />
+            <img src={p.logoImageUrl} alt="" width={40} height={40} />
           ) : (
             <span>
               <UtensilsCrossed size={20} />
@@ -1664,7 +1816,13 @@ export function RestaurantStorefront({
         </div>
         <div className="public-menu-cover">
           {p.coverImageUrl ? (
-            <img src={p.coverImageUrl} alt={"El restaurante " + data.name} />
+            <img
+              src={p.coverImageUrl}
+              alt={"El restaurante " + data.name}
+              width={720}
+              height={480}
+              fetchPriority="high"
+            />
           ) : (
             <div className="public-menu-illustration">
               <DishArt />
@@ -1679,6 +1837,8 @@ export function RestaurantStorefront({
       <div className="public-storefront-sections">
         <section
           className="public-menu-content"
+          id={preview ? undefined : "carta-del-restaurante"}
+          tabIndex={-1}
           style={{ order: design.sections.indexOf("menu") }}
         >
           {!p.acceptingOrders && (
@@ -1700,6 +1860,16 @@ export function RestaurantStorefront({
                 aria-label="Buscar en el menú"
                 placeholder="¿Qué te provoca hoy?"
               />
+              {search && (
+                <button
+                  type="button"
+                  className="menu-clear-search"
+                  aria-label="Limpiar búsqueda del menú"
+                  onClick={() => setSearch("")}
+                >
+                  <X size={15} />
+                </button>
+              )}
             </label>
           </div>
           <div className="public-menu-categories">
@@ -1714,6 +1884,11 @@ export function RestaurantStorefront({
               </button>
             ))}
           </div>
+          {cartNotice && modal !== "cart" && (
+            <p className="cart-update-notice" role="status">
+              {cartNotice}
+            </p>
+          )}
           <div className="public-menu-grid">
             {filtered.map((product) => (
               <article
@@ -1728,6 +1903,8 @@ export function RestaurantStorefront({
                       src={product.image_url}
                       alt={product.name}
                       loading="lazy"
+                      width={480}
+                      height={320}
                     />
                   ) : (
                     <DishArt kind={product.kind} />
@@ -1926,7 +2103,11 @@ export function RestaurantStorefront({
               profile={p}
               products={data.products}
               cart={cart}
-              onCart={setCart}
+              onCart={(next) => {
+                setCart(next);
+                setCartNotice("");
+              }}
+              notice={cartNotice}
               endpoint={"/public/restaurants/" + slug + "/orders"}
               onRefresh={reload}
               onDone={(r) => {

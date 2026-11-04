@@ -1,12 +1,12 @@
-Cerca Restaurantes 5.0 · Verificación de la entrega
+Cerca Restaurantes 5.1 · Verificación de la entrega
 
 ZIP íntegro. El index empaquetado abre la demo y el asistente responde sin API ni servidor de aplicación: OK.
 Buscador público, acceso de administración y borrador de página en servidor empaquetado: OK.
 Instalación limpia, servidor empaquetado, carga por secciones, sesión, CSRF, menú y llamadas web: OK.
 La demo también carga con la política CSP del servidor y sin errores de JavaScript: OK.
 
-Prueba hecha en una extracción nueva: npm ci --omit=dev, servidor local real, index portátil sin API, buscador, borrador, acceso administrativo, CSP y consultas de voz con texto. No se usó un micrófono físico, teléfono ni proveedor externo real.
+Prueba en una extracción nueva: npm ci --omit=dev, servidor local real, index portátil sin API, buscador, borrador, acceso administrativo, CSP y consultas de voz con texto. No se usó micrófono físico, teléfono ni proveedor externo real.
 
-SHA-256 del paquete probado antes de adjuntar este informe: 2dbc9690cd0f106384bbc6eed080029999367c2f0896782cdcf70b0e8fe1afb0
-Huella del listado de archivos cotejados (excepto auditoría del proyecto): 84026fba0884353a9c5e16e0f2ead3694f9b09b01645e61f2c5e4c8ee37a249a
-El paquete final incorpora este informe. Se cotejan todos los otros archivos de la entrega y la igualdad de sus index para conservar exactamente el contenido probado. El hash final está en descargas/manifest.json del repositorio. La descarga de GitHub se comprueba después de publicar.
+SHA-256 del paquete probado antes de adjuntar este informe: 81de1f61dc6c758a6a5b53b556b4cb16bb81e1efac8ac78c0f4b531dc960eb1b
+Huella del listado cotejado, excepto auditoría del proyecto: 4e33a74f4e9e6544e98a3c8489302ef30067b2ce721eea53e9c4c3d09f27b0dd
+El paquete final incorpora este informe y se coteja el resto de archivos con el contenido probado. El SHA-256 final está en descargas/manifest.json. La descarga de GitHub se comprueba al publicar.

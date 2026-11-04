@@ -448,8 +448,25 @@ test("cada página pública entrega metadatos propios escapados y los borradores
   assert.equal((await fetch(c.base + "/r/mateo-papa")).status, 404);
 });
 test("el diseño conserva contraste y solo admite opciones acotadas; los enlaces WhatsApp usan el número del negocio", () => {
-  for (const backgroundColor of ["#ffffff", "#111111", "#fff0ba", "#335577"])
-    for (const primaryColor of ["#ffffbb", "#111111", "#ff6677", "#1122ff"]) {
+  for (const backgroundColor of [
+    "#ffffff",
+    "#111111",
+    "#fff0ba",
+    "#335577",
+    "#777777",
+    "#767676",
+    "#888888",
+    "#6e7777",
+    "#aaaaaa",
+  ])
+    for (const primaryColor of [
+      "#ffffbb",
+      "#111111",
+      "#ff6677",
+      "#1122ff",
+      "#777777",
+      "#888888",
+    ]) {
       const d = validateDesign({
           ...defaultDesign(),
           backgroundColor,
@@ -460,6 +477,17 @@ test("el diseño conserva contraste y solo admite opciones acotadas; los enlaces
       assert.ok(contrast(theme["--menu-ink"], backgroundColor) >= 4.5);
       assert.ok(contrast(theme["--menu-accent"], backgroundColor) >= 4.5);
       assert.ok(contrast(theme["--menu-button-text"], primaryColor) >= 4.5);
+      for (const text of ["--menu-ink", "--menu-muted", "--menu-accent"])
+        for (const surface of [
+          "--menu-bg",
+          "--menu-wash",
+          "--menu-pill",
+          "--menu-card",
+        ])
+          assert.ok(
+            contrast(theme[text], theme[surface]) >= 4.5,
+            `${text} sobre ${surface}: ${primaryColor}/${backgroundColor}`,
+          );
     }
   assert.match(
     whatsappUrl("+573001112233", "Mateo Papa"),

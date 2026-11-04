@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { api, post } from "./api";
 import { Logo } from "./components";
+import { standaloneMode } from "./standalone";
 export function AccountRecovery({ token }: { token: string }) {
   const reset = /^[a-f0-9]{64}$/.test(token),
     [mode, setMode] = useState(reset ? "reset" : "email"),
@@ -154,8 +155,12 @@ export function AccountRecovery({ token }: { token: string }) {
             {message}
           </p>
         )}
-        <a className="text-button" href="/">
-          <ArrowLeft size={15} /> Volver al ingreso
+        <a
+          className="text-button"
+          href={standaloneMode ? location.pathname : "/#login"}
+        >
+          <ArrowLeft size={15} />{" "}
+          {standaloneMode ? "Volver al panel de ejemplo" : "Volver al ingreso"}
         </a>
       </section>
       <footer>Cerca Restaurantes · Hecho para atender mejor.</footer>

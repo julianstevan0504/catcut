@@ -35,18 +35,45 @@ export function RestaurantDirectory({
   onAuthenticated,
 }: { onAuthenticated?: () => Promise<void> } = {}) {
   const params = new URLSearchParams(location.search),
-    [query, setQuery] = useState(params.get("q") ?? ""),
+    [query, setQuery] = useState((params.get("q") ?? "").slice(0, 100)),
     [term, setTerm] = useState(query),
-    [city, setCity] = useState(""),
-    [service, setService] = useState("all"),
-    [page, setPage] = useState(1);
+    [city, setCity] = useState((params.get("city") ?? "").slice(0, 100)),
+    [service, setService] = useState(
+      ["delivery", "pickup", "dineIn", "reservations"].includes(
+        params.get("service") ?? "",
+      )
+        ? params.get("service")!
+        : "all",
+    ),
+    [page, setPage] = useState(() => {
+      const value = Number(params.get("page") ?? 1);
+      return Number.isInteger(value) && value > 0 && value <= 1000 ? value : 1;
+    });
   useEffect(() => {
+    if (term === query) return;
     const timer = setTimeout(() => {
       setTerm(query);
       setPage(1);
     }, 300);
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [query, term]);
+  useEffect(() => {
+    const url = new URL(location.href);
+    for (const [key, value] of Object.entries({
+      q: term,
+      city,
+      service: service === "all" ? "" : service,
+      page: page === 1 ? "" : String(page),
+    })) {
+      if (value) url.searchParams.set(key, value);
+      else url.searchParams.delete(key);
+    }
+    try {
+      history.replaceState(null, "", url);
+    } catch {
+      /* Local previews can restrict history. Filters remain usable. */
+    }
+  }, [term, city, service, page]);
   const path =
       "/public/restaurants?" +
       new URLSearchParams({

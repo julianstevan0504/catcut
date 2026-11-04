@@ -1,0 +1,10 @@
+Cerca 5.1 · Regresiones comprobadas dentro de la suite completa de navegador
+
+  ✓   4 [chromium] › tests/e2e/resilience.spec.mjs:58:1 › una consulta lenta no se solapa con otro sondeo del mismo recurso (1.5s)
+  ✓   5 [chromium] › tests/e2e/resilience.spec.mjs:115:1 › un error de disponibilidad se puede reintentar y una reserva individual empieza con una persona (1.7s)
+  ✓   6 [chromium] › tests/e2e/resilience.spec.mjs:161:1 › un resumen con error no inventa ceros y el menú móvil conserva el foco (3.5s)
+  ✓   7 [chromium] › tests/e2e/resilience.spec.mjs:240:1 › leer avisos no anuncia pedidos antiguos; se pueden apagar avisos y un navegador incompatible no rompe el panel (1.5s)
+  ✓   8 [chromium] › tests/e2e/resilience.spec.mjs:341:1 › la búsqueda ignora tildes y el carrito ajusta el stock antes de reintentar un pedido (1.9s)
+  ✓   9 [chromium] › tests/e2e/resilience.spec.mjs:393:1 › el buscador conserva nombre, ciudad y servicio al compartir, recargar y volver de un restaurante (3.2s)
+  ✓  10 [chromium] › tests/e2e/resilience.spec.mjs:433:1 › los enlaces de regreso conservan la demo y la recuperación vuelve al ingreso real (3.3s)
+  29 passed (1.8m)

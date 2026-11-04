@@ -95,8 +95,10 @@ export function useResource<T>(path: string, version = 0, poll = 0) {
       currentPath.current = path;
       setLoading(true);
       setData(null);
+      setError("");
     }
     let alive = true;
+    let timer: ReturnType<typeof setTimeout> | undefined;
     async function load() {
       try {
         const result = await api<T>(path, { signal: controller.signal });
@@ -108,15 +110,17 @@ export function useResource<T>(path: string, version = 0, poll = 0) {
         if (alive && !controller.signal.aborted)
           setError(e instanceof Error ? e.message : "Error de conexión.");
       } finally {
-        if (alive) setLoading(false);
+        if (alive) {
+          setLoading(false);
+          if (poll) timer = setTimeout(() => void load(), poll);
+        }
       }
     }
     void load();
-    const timer = poll ? setInterval(() => void load(), poll) : undefined;
     return () => {
       alive = false;
       controller.abort();
-      clearInterval(timer);
+      clearTimeout(timer);
     };
   }, [path, version, revision, poll]);
   return { data, error, loading, reload };

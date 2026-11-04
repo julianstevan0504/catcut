@@ -1,3 +1,18 @@
+# Cerca Restaurantes 5.1
+
+- Consultas periódicas sin solapamiento: una respuesta lenta no puede hacer retroceder el seguimiento.
+- Las reservas distinguen un fallo de conexión de un día sin horarios, permiten reintentar y respetan el grupo máximo desde el primer render.
+- Los avisos antiguos que aparecen tras marcar otros como leídos no se anuncian como pedidos nuevos.
+- Notificaciones del dispositivo desactivables y alternativa dentro del panel cuando el navegador no permite crearlas.
+- El resumen muestra fallos de carga en vez de inventar ceros. Estado de publicación visible, enlace público y acceso directo al editor.
+- El carrito se ajusta a existencias al actualizar la carta; búsqueda sin tildes y filtros del buscador conservados en el enlace.
+- Navegación móvil con foco contenido, cierre con Escape, bloqueo del fondo y menú oculto excluido del teclado; enlaces para saltar al contenido.
+- Panel renovado en espresso y azafrán, métricas con acentos, progreso de preparación y mejoras de tipografía y uso en celular.
+- Guía de skills de diseño verificadas en GitHub y nuevas pruebas de fallos de red e interacción.
+- Enlaces de regreso corregidos en la demo, voz y recuperación; el recurso de emergencia también funciona desde rutas de restaurantes.
+- Se eliminaron cinco alertas moderadas de la cadena de dependencias de auditoría al fijar Lighthouse 13.5.0; npm audit completo vuelve a informar cero vulnerabilidades conocidas.
+- Contraste corregido para colores intermedios personalizados, incluidos textos secundarios, tarjetas, enlaces y botones; verificación de 54 combinaciones de colores.
+
 # Cerca Restaurantes 5.0
 
 - Buscador público por nombre, ciudad y tipo de atención; solo aparecen restaurantes publicados y activos.

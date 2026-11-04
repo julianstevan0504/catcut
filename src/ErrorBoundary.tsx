@@ -28,7 +28,12 @@ export class ErrorBoundary extends Component<
           <button className="button primary" onClick={() => location.reload()}>
             <RotateCcw size={16} /> Volver a abrir Cerca
           </button>
-          <a className="text-button" href="./Cerca.html">
+          <a
+            className="text-button"
+            href={
+              location.protocol === "file:" ? "./Cerca.html" : "/Cerca.html"
+            }
+          >
             Abrir la demo independiente
           </a>
         </main>
