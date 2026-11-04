@@ -136,6 +136,7 @@ test("se puede interrumpir la voz; el eco y los eventos de respuestas viejas no 
   page,
 }) => {
   await openVoice(page, true, 10000);
+  await page.getByLabel("Interrumpir por voz con auriculares").check();
   await page
     .getByRole("button", { name: "Hablar con el asistente", exact: true })
     .click();
@@ -171,6 +172,48 @@ test("se puede interrumpir la voz; el eco y los eventos de respuestas viejas no 
   await page.evaluate(() => window.__voiceTest.say("¿Qué ingredientes tiene?"));
   await expect(page.locator(".voice-line.assistant").last()).toContainText(
     "albahaca",
+  );
+  await page.getByRole("button", { name: "Terminar llamada" }).click();
+  expect(await page.evaluate(() => window.__voiceTest.current)).toBeNull();
+});
+test("Sofía mantiene el micrófono apagado mientras habla y no convierte su propia voz en otro turno", async ({
+  page,
+}) => {
+  await openVoice(page, true, 30000);
+  await page
+    .getByRole("button", { name: "Hablar con el asistente", exact: true })
+    .click();
+  await expect(
+    page.getByText("Tu asistente está hablando", { exact: true }),
+  ).toBeVisible();
+  expect(await page.evaluate(() => window.__voiceTest.current)).toBeNull();
+  expect(await page.evaluate(() => window.__voiceTest.starts)).toBe(0);
+  await page
+    .getByRole("button", { name: "Interrumpir y hablar", exact: true })
+    .click();
+  await expect(page.getByText("Te escucho", { exact: true })).toBeVisible();
+  await page.evaluate(() =>
+    window.__voiceTest.say("¿Qué lleva la Pizza Margarita?"),
+  );
+  await expect(page.locator(".voice-line.assistant").last()).toContainText(
+    "albahaca",
+  );
+  await expect(
+    page.getByText("Tu asistente está hablando", { exact: true }),
+  ).toBeVisible();
+  expect(await page.evaluate(() => window.__voiceTest.current)).toBeNull();
+  const count = await page.locator(".voice-line").count();
+  await page.evaluate(() =>
+    window.__voiceTest.late?.({
+      results: [[{ transcript: "Pizza Margarita" }]],
+    }),
+  );
+  await expect(page.locator(".voice-line")).toHaveCount(count);
+  await page.evaluate(() => window.__voiceTest.utterances.at(-1).onend?.());
+  await expect(page.getByText("Te escucho", { exact: true })).toBeVisible();
+  await page.evaluate(() => window.__voiceTest.say("¿Cuánto cuesta?"));
+  await expect(page.locator(".voice-line.assistant").last()).toContainText(
+    "28.000",
   );
   await page.getByRole("button", { name: "Terminar llamada" }).click();
   expect(await page.evaluate(() => window.__voiceTest.current)).toBeNull();

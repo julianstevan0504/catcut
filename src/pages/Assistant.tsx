@@ -125,7 +125,7 @@ export function Assistant() {
             <span /> CERCA INTELLIGENCE · TU ASISTENTE
           </span>
           <h1>
-            Tu tienda tiene
+            Tu restaurante tiene
             <br />
             una nueva voz<span>.</span>
           </h1>
@@ -894,7 +894,7 @@ function Simulator() {
             "¿Qué lleva la Pizza Margarita?",
             "¿Tienen sushi?",
             "¿Cuál es su horario?",
-            "¿Tienen el Bolso Alba?",
+            "¿Tienen la Hamburguesa de la Casa?",
             "¿Cómo va mi pedido LC-1042?",
           ].map((q) => (
             <button

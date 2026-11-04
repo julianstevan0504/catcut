@@ -1,4 +1,12 @@
+import { defaultDesign, validateDesign, businessTypes } from "./storefront.ts";
+import type { StorefrontDesign, BusinessType } from "./storefront.ts";
 export type RestaurantProfile = {
+  displayName: string;
+  city: string;
+  businessType: BusinessType;
+  specialties: string;
+  whatsappNumber: string;
+  design: StorefrontDesign;
   slug: string;
   publicEnabled: boolean;
   acceptingOrders: boolean;
@@ -24,6 +32,12 @@ export type RestaurantProfile = {
   minimumOrder: number;
 };
 export const defaultRestaurant = (id = "demo"): RestaurantProfile => ({
+  displayName: "",
+  city: "",
+  businessType: "restaurante",
+  specialties: "",
+  whatsappNumber: "",
+  design: defaultDesign(),
   slug:
     "restaurante-" +
     id
@@ -147,6 +161,17 @@ export function validateRestaurant(
   }
   if (!["jade", "terracotta", "violet"].includes(p.accent))
     throw fail("Color no válido.");
+  if (!Object.hasOwn(businessTypes, p.businessType))
+    throw fail("Elige el tipo de negocio.");
+  const whatsappNumber = str(
+    p.whatsappNumber,
+    "el WhatsApp del negocio",
+    30,
+  ).replace(/[\s()-]/g, "");
+  if (whatsappNumber && !/^\+[1-9]\d{7,14}$/.test(whatsappNumber))
+    throw fail(
+      "El WhatsApp debe incluir el código de país, por ejemplo +573001112233.",
+    );
   if (
     !p.services ||
     typeof p.services !== "object" ||
@@ -215,6 +240,12 @@ export function validateRestaurant(
     if (typeof id !== "string" || (id && !/^[a-f0-9-]{36}$/.test(id)))
       throw fail("Imagen no válida.");
   return {
+    displayName: str(p.displayName, "el nombre público", 120),
+    city: str(p.city, "la ciudad", 100),
+    businessType: p.businessType,
+    specialties: str(p.specialties, "las especialidades", 200),
+    whatsappNumber,
+    design: validateDesign(p.design, defaultDesign(p.accent)),
     slug,
     publicEnabled: p.publicEnabled,
     acceptingOrders: p.acceptingOrders,

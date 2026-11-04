@@ -9,14 +9,12 @@ import {
   ChevronDown,
   ArrowUpRight,
   LogOut,
-  Bell,
   Menu,
   X,
   CheckCircle2,
   CircleAlert,
   HelpCircle,
   Sparkles,
-  ArrowRight,
   Search,
   Moon,
   Sun,
@@ -26,8 +24,9 @@ import {
   UtensilsCrossed,
   Store,
   Headphones,
+  Paintbrush,
 } from "lucide-react";
-import { api, post, put, useResource, relativeTime } from "./api";
+import { api, post, put, useResource } from "./api";
 import { AppContext } from "./context";
 import { Avatar, Logo, Modal, HelpContent, Spinner } from "./components";
 import { Auth } from "./pages/Auth";
@@ -49,6 +48,12 @@ const SupportPage = lazy(() =>
 const PlatformPage = lazy(() =>
   import("./Support").then((m) => ({ default: m.PlatformPage })),
 );
+const RestaurantDirectory = lazy(() =>
+  import("./Directory").then((m) => ({ default: m.RestaurantDirectory })),
+);
+const StorefrontBuilder = lazy(() =>
+  import("./StorefrontBuilder").then((m) => ({ default: m.StorefrontBuilder })),
+);
 const Inbox = lazy(() =>
   import("./pages/Inbox").then((m) => ({ default: m.Inbox })),
 );
@@ -67,9 +72,10 @@ const ActivityLog = lazy(() =>
 const SettingsPage = lazy(() =>
   import("./pages/Settings").then((m) => ({ default: m.SettingsPage })),
 );
+import { OrderNotifications } from "./OrderNotifications";
 import { downloadCodes } from "./recoveryCodes";
 import { QuickSearch } from "./Workbench";
-import type { Activity, Conversation, Page, Session } from "./types";
+import type { Conversation, Page, Session } from "./types";
 
 const navigation = [
   {
@@ -89,6 +95,7 @@ const navigation = [
     group: "TU RESTAURANTE",
   },
   { id: "restaurant", label: "Mi restaurante", icon: Store },
+  { id: "storefront", label: "Mi página pública", icon: Paintbrush },
   { id: "orders", label: "Historial de pedidos", icon: ShoppingBag },
   {
     id: "activity",
@@ -103,9 +110,13 @@ const navigation = [
 const currentPage = (): Page =>
   navigation.some((p) => p.id === location.hash.slice(1))
     ? (location.hash.slice(1) as Page)
-    : "overview";
+    : location.pathname === "/admin" ||
+        new URLSearchParams(location.search).has("admin")
+      ? "platform"
+      : "overview";
 
 export default function App() {
+  const [entryHash, setEntryHash] = useState(location.hash);
   const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
@@ -118,7 +129,6 @@ export default function App() {
   );
   const [help, setHelp] = useState(false);
   const [mobile, setMobile] = useState(false);
-  const [notifications, setNotifications] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [navigationVersion, setNavigationVersion] = useState(0);
   const [theme, setTheme] = useState<"light" | "dark">(() => {
@@ -152,7 +162,10 @@ export default function App() {
       .finally(() => setLoading(false));
   }, []);
   useEffect(() => {
-    const handler = () => setPage(currentPage());
+    const handler = () => {
+      setPage(currentPage());
+      setEntryHash(location.hash);
+    };
     addEventListener("hashchange", handler);
     return () => removeEventListener("hashchange", handler);
   }, []);
@@ -204,13 +217,19 @@ export default function App() {
     addEventListener("cerca:storage-unavailable", warning);
     return () => removeEventListener("cerca:storage-unavailable", warning);
   }, []);
-  function navigate(next: Page, id?: string) {
+  function navigate(next: Page, id?: string, skipGuard = false) {
+    if (!skipGuard) {
+      const event = new CustomEvent("cerca:before-navigation", {
+        cancelable: true,
+        detail: { proceed: () => navigate(next, id, true) },
+      });
+      if (!dispatchEvent(event)) return;
+    }
     setConversationId(id);
     setNavigationVersion((v) => v + 1);
     setPage(next);
     location.hash = next;
     setMobile(false);
-    setNotifications(false);
   }
   async function logout() {
     try {
@@ -242,7 +261,19 @@ export default function App() {
         </a>
       </div>
     );
-  if (!session) return <Auth onAuthenticated={refreshSession} />;
+  if (!session)
+    return (
+      <Suspense fallback={<Spinner />}>
+        {entryHash === "#login" ||
+        entryHash === "#register" ||
+        location.pathname === "/admin" ||
+        new URLSearchParams(location.search).has("admin") ? (
+          <Auth onAuthenticated={refreshSession} />
+        ) : (
+          <RestaurantDirectory onAuthenticated={refreshSession} />
+        )}
+      </Suspense>
+    );
   const title = navigation.find((p) => p.id === page)?.label;
   return (
     <AppContext.Provider
@@ -393,22 +424,7 @@ export default function App() {
                   : "Asistente pausado"}
                 <ChevronDown size={13} />
               </button>
-              <div className="notification-wrap">
-                <button
-                  className={`icon-button notification-button ${notifications ? "selected" : ""}`}
-                  aria-label="Ver actividad reciente"
-                  aria-expanded={notifications}
-                  onClick={() => setNotifications((n) => !n)}
-                >
-                  <Bell size={19} />
-                </button>
-                {notifications && (
-                  <NotificationPanel
-                    version={version}
-                    onAll={() => navigate("activity")}
-                  />
-                )}
-              </div>
+              <OrderNotifications />
               <button
                 className="icon-button theme-toggle"
                 aria-label={
@@ -503,6 +519,7 @@ export default function App() {
               {page === "inbox" && <Inbox initialId={conversationId} />}
               {page === "assistant" && <Assistant />}
               {page === "restaurant" && <RestaurantSettings />}
+              {page === "storefront" && <StorefrontBuilder />}
               {page === "reservations" && <Reservations />}
               {page === "kitchen" && <Kitchen />}
               {page === "support" && <SupportPage />}
@@ -559,44 +576,4 @@ function InboxCounter({ version }: { version: number }) {
   );
   const count = data?.reduce((n, c) => n + (c.unread > 0 ? 1 : 0), 0) ?? 0;
   return count ? <span className="nav-count">{count}</span> : null;
-}
-function NotificationPanel({
-  version,
-  onAll,
-}: {
-  version: number;
-  onAll: () => void;
-}) {
-  const { data, loading, error } = useResource<Activity[]>(
-    "/activities",
-    version,
-  );
-  return (
-    <div className="notification-panel">
-      <div className="notification-title">
-        <strong>Lo que está pasando</strong>
-        <History size={17} />
-      </div>
-      {loading ? (
-        <Spinner />
-      ) : error ? (
-        <p className="muted">{error}</p>
-      ) : !data?.length ? (
-        <p className="muted">Todavía no hay actividad.</p>
-      ) : (
-        data.slice(0, 4).map((a) => (
-          <div className="notification-item" key={a.id}>
-            <span className="activity-dot" />
-            <div>
-              <p>{a.description}</p>
-              <small>{relativeTime(a.created_at)}</small>
-            </div>
-          </div>
-        ))
-      )}
-      <button onClick={onAll}>
-        Ver todo el registro <ArrowRight size={15} />
-      </button>
-    </div>
-  );
 }

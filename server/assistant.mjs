@@ -4,6 +4,7 @@ import {
 } from "./restaurant-actions.mjs";
 import { activity, now, settingsFor } from "./db.mjs";
 import { assistantReply, isInstructionAttack } from "../shared/advisor.ts";
+import { profileFor } from "./restaurant-db.mjs";
 import { reasonAboutStore } from "./reasoner.mjs";
 import { normalize, outside } from "../shared/replies.ts";
 export { normalize } from "../shared/replies.ts";
@@ -56,7 +57,7 @@ export async function answerMessage({
   );
   const input = {
     settings,
-    storeName: store.name,
+    storeName: profileFor(db, workspaceId).displayName || store.name,
     products,
     orders: voice
       ? []

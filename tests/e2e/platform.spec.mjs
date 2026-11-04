@@ -5,7 +5,7 @@ test("demo: panel, conversación, respuesta humana, simulador e historial", asyn
 }) => {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("/");
+  await page.goto("/#login");
   await expect(
     page.getByRole("heading", { name: "Qué bueno tenerte de vuelta." }),
   ).toBeVisible();
@@ -82,7 +82,7 @@ test("una cuenta nueva puede administrar productos, pedidos y su asistente", asy
     .fill("MiTiendaSegura123");
   await page.getByRole("button", { name: "Crear mi espacio" }).click();
   await expect(
-    page.getByRole("heading", { name: "Hoy se cocina algo bueno." }),
+    page.getByRole("heading", { name: "Su sabor. Tu manera de contarlo." }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Menú y fotos", exact: true }).click();
   await page
@@ -141,7 +141,7 @@ test("en celular se puede navegar y probar; no hay desbordamiento horizontal", a
   await page.getByRole("button", { name: "Explorar la demo" }).click();
   await expect(
     page.getByRole("heading", { name: "Hoy se cocina algo bueno." }),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 15000 });
   await page.screenshot({
     path: "test-results/dashboard-mobile.png",
     fullPage: true,

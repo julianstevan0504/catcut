@@ -1,0 +1,27 @@
+[WebServer] (node:13095) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:13096) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:13109) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 14 tests using 1 worker
+
+(node:13141) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › tests/e2e/restaurants.spec.mjs:4:1 › el dueño activa su panel privado y atiende una solicitud de soporte (3.7s)
+  ✓   2 [chromium] › tests/e2e/restaurants.spec.mjs:107:1 › un restaurante carga fotos, recibe un pedido público y lo prepara con seguimiento (7.1s)
+  ✓   3 [chromium] › tests/e2e/restaurants.spec.mjs:213:1 › reservar desde el celular, confirmar en el panel y cancelar desde el enlace privado (3.6s)
+  ✓   4 [chromium] › tests/e2e/restaurants.spec.mjs:272:1 › el negocio abre soporte y recupera su cuenta con el código guardado (2.8s)
+  ✓   5 [chromium] › tests/e2e/storefronts.spec.mjs:53:1 › el dueño genera, personaliza y publica su página; el cliente la encuentra y ve sus contactos (5.5s)
+  ✓   6 [chromium] › tests/e2e/storefronts.spec.mjs:179:1 › Andrés pide a domicilio, el dueño recibe el aviso y el cliente ve que su pedido está en cocina (9.0s)
+  ✓   7 [chromium] › tests/e2e/storefronts.spec.mjs:249:1 › el acceso del dueño está visible y /admin no concede permisos por visitar la dirección (2.1s)
+  ✓   8 [chromium] › tests/e2e/storefronts.spec.mjs:271:1 › la demo conserva el diseño público sin necesitar una API (2.6s)
+  ✓   9 [chromium] › tests/e2e/voice.spec.mjs:79:1 › voz en demo sin API: escucha, responde con datos, conserva transcripción y detiene el micrófono (5.8s)
+  ✓  10 [chromium] › tests/e2e/voice.spec.mjs:135:1 › se puede interrumpir la voz; el eco y los eventos de respuestas viejas no generan consultas (3.1s)
+  ✓  11 [chromium] › tests/e2e/voice.spec.mjs:179:1 › Sofía mantiene el micrófono apagado mientras habla y no convierte su propia voz en otro turno (4.2s)
+  ✓  12 [chromium] › tests/e2e/voice.spec.mjs:221:1 › un cliente sin iniciar sesión puede llamar desde un enlace público sin ver el panel (2.5s)
+  ✓  13 [chromium] › tests/e2e/voice.spec.mjs:275:1 › la falta de permiso del micrófono permite continuar escribiendo y escuchar la respuesta (3.7s)
+  ✓  14 [chromium] › tests/e2e/voice.spec.mjs:296:1 › evaluación y menú editable muestran ingredientes reales y advierten cuando faltan (3.6s)
+
+  14 passed (1.0m)

@@ -13,16 +13,22 @@ const GuestTracking = lazy(() =>
 const PublicVoice = lazy(() =>
   import("./VoiceConsole").then((m) => ({ default: m.PublicVoice })),
 );
+const RestaurantDirectory = lazy(() =>
+  import("./Directory").then((m) => ({ default: m.RestaurantDirectory })),
+);
 
 import { ErrorBoundary } from "./ErrorBoundary";
 import "./styles.css";
 import "./refinements.css";
 import "./restaurant.css";
+import "./storefront.css";
 document.documentElement.dataset.product = "restaurants";
 
 const query = new URLSearchParams(location.search);
 const voiceToken = query.get("voice"),
-  restaurant = query.get("restaurant"),
+  restaurant =
+    query.get("restaurant") ||
+    (location.pathname.match(/^\/r\/([a-z0-9-]+)\/?$/)?.[1] ?? null),
   recovery = query.get("recover"),
   order = query.get("order"),
   reservation = query.get("reservation");
@@ -39,6 +45,8 @@ createRoot(document.getElementById("root")!).render(
       >
         {recovery ? (
           <AccountRecovery token={recovery} />
+        ) : query.get("explore") === "restaurants" ? (
+          <RestaurantDirectory />
         ) : restaurant ? (
           <PublicRestaurant slug={restaurant} />
         ) : order ? (

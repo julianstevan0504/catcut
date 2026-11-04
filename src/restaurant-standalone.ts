@@ -1,4 +1,11 @@
 import type { DemoData } from "./standalone";
+import {
+  defaultDesign,
+  pageFromProfile,
+  presetColors,
+  foldSearch,
+} from "../shared/storefront";
+import type { StorefrontDraft } from "../shared/storefront";
 import type { RestaurantProfile } from "../shared/restaurant";
 import {
   defaultRestaurant,
@@ -27,6 +34,8 @@ type SupportTicket = {
 };
 type Extras = {
   restaurant?: RestaurantProfile;
+  pageDraft?: { draft: StorefrontDraft; revision: number; updatedAt: string };
+  notificationReadIds?: string[];
   reservations?: (Reservation & { token: string; requestId: string })[];
   kitchen?: (KitchenOrder & {
     token: string;
@@ -75,7 +84,13 @@ export function restaurantDemoRequest({
     welcome:
       "Buena comida, buenas conversaciones. Un restaurante de ejemplo para explorar Cerca.",
   };
+  d.restaurant = {
+    ...defaultRestaurant("la-mesa-demo"),
+    ...d.restaurant,
+    design: { ...defaultDesign(d.restaurant.accent), ...d.restaurant.design },
+  };
   d.restaurant.acceptingOrders ??= true;
+  d.notificationReadIds ??= [];
   d.reservations ??= [];
   d.kitchen ??= [];
   d.support ??= [];
@@ -269,8 +284,141 @@ export function restaurantDemoRequest({
   }
   const url = new URL(route, "https://local.invalid");
   const path = url.pathname;
+  const pageView = () => ({
+    profile: d.restaurant!,
+    draft: {
+      ...pageFromProfile(d.restaurant!),
+      ...d.pageDraft?.draft,
+      displayName:
+        d.pageDraft?.draft.displayName || d.restaurant!.displayName || d.name,
+    },
+    revision: d.pageDraft?.revision ?? 0,
+    updatedAt: d.pageDraft?.updatedAt ?? null,
+    publicUrl: link("restaurant", d.restaurant!.slug),
+    directoryUrl: link("explore", "restaurants"),
+    hasUnpublishedChanges:
+      !!d.pageDraft &&
+      JSON.stringify(d.pageDraft.draft) !==
+        JSON.stringify(pageFromProfile(d.restaurant!)),
+    productCount: d.products.length,
+  });
+  if (path === "/restaurant/page") {
+    if (method === "PUT") {
+      if (body.revision !== (d.pageDraft?.revision ?? 0))
+        throw error("El borrador cambió. Recarga antes de guardar.", 409);
+      const validated = validateRestaurant(
+        { ...p, ...(body.draft as object) },
+        p,
+      );
+      d.pageDraft = {
+        draft: pageFromProfile(validated),
+        revision: (d.pageDraft?.revision ?? 0) + 1,
+        updatedAt: stamp(),
+      };
+      event(
+        "storefront.draft.saved",
+        "Se guardó un borrador de la página pública de demostración.",
+      );
+    }
+    return done(pageView());
+  }
+  if (path === "/restaurant/page/publish" && method === "POST") {
+    if (body.revision !== (d.pageDraft?.revision ?? 0))
+      throw error("El borrador cambió. Recarga antes de publicar.", 409);
+    if (!d.products.length)
+      throw error("Agrega al menos un plato antes de publicar.");
+    if (!(d.pageDraft?.draft.whatsappNumber || p.whatsappNumber))
+      throw error("Agrega el WhatsApp del restaurante antes de publicar.");
+    d.restaurant = validateRestaurant(
+      { ...p, ...d.pageDraft?.draft, publicEnabled: true },
+      p,
+    );
+    event("storefront.published", "Se publicó la página de demostración.");
+    return done(pageView());
+  }
+  if (path === "/restaurant/page/unpublish" && method === "POST") {
+    d.restaurant!.publicEnabled = false;
+    return done(pageView());
+  }
+  if (path === "/public/restaurants") {
+    const query = foldSearch(url.searchParams.get("q")),
+      city = foldSearch(url.searchParams.get("city")),
+      service = url.searchParams.get("service") ?? "all",
+      page = Number(url.searchParams.get("page") ?? 1),
+      limit = Number(url.searchParams.get("limit") ?? 12);
+    const name = p.displayName || d.name,
+      match =
+        p.publicEnabled &&
+        d.businessState !== "suspended" &&
+        foldSearch([name, p.cuisine, p.city, p.specialties].join(" ")).includes(
+          query,
+        ) &&
+        (!city || city === foldSearch(p.city)) &&
+        (service === "all" ||
+          (service === "reservations"
+            ? p.reservationsEnabled
+            : p.services[service as keyof typeof p.services]));
+    const prices = d.products.filter((x) => x.stock > 0).map((x) => x.price);
+    return done({
+      restaurants:
+        match && page === 1
+          ? [
+              {
+                slug: p.slug,
+                name,
+                cuisine: p.cuisine,
+                city: p.city,
+                specialties: p.specialties,
+                welcome: p.welcome,
+                services: p.services,
+                reservationsEnabled: p.reservationsEnabled,
+                acceptingOrders: p.acceptingOrders,
+                coverImageUrl: d.images[p.coverImageId] ?? "",
+                logoImageUrl: d.images[p.logoImageId] ?? "",
+                primaryColor: p.design.primaryColor,
+                publicUrl: link("restaurant", p.slug),
+                items: d.products.length,
+                fromPrice: prices.length ? Math.min(...prices) : null,
+              },
+            ]
+          : [],
+      total: match ? 1 : 0,
+      page,
+      limit,
+      cities: p.publicEnabled && p.city ? [p.city] : [],
+    });
+  }
+  if (path === "/restaurant/notifications") {
+    const all = d.kitchen.filter((x) => !d.notificationReadIds!.includes(x.id));
+    return done({
+      items: all.slice(0, 30).map((x) => ({
+        ...x,
+        fulfillment: x.details.fulfillment,
+        delivery_address: x.details.delivery_address,
+      })),
+      unread: all.length,
+    });
+  }
+  if (path === "/restaurant/notifications/read" && method === "POST") {
+    d.notificationReadIds = [
+      ...new Set([...d.notificationReadIds, ...(body.ids as string[])]),
+    ];
+    return done({ ok: true });
+  }
   if (path === "/restaurant") {
     if (method === "PUT") {
+      if (
+        body.accent &&
+        body.accent !== p.accent &&
+        JSON.stringify(body.design) === JSON.stringify(p.design)
+      ) {
+        const colors = presetColors[body.accent as keyof typeof presetColors];
+        body.design = {
+          ...p.design,
+          primaryColor: colors.primary,
+          backgroundColor: colors.background,
+        };
+      }
       d.restaurant = validateRestaurant(body, p);
       d.settings.hours = restaurantHours(d.restaurant);
       d.settings.shipping = restaurantDelivery(d.restaurant);
@@ -299,6 +447,8 @@ export function restaurantDemoRequest({
     const used = new Set([
       p.coverImageId,
       p.logoImageId,
+      d.pageDraft?.draft.coverImageId,
+      d.pageDraft?.draft.logoImageId,
       ...d.products.map((x) => x.image_id),
     ]);
     const images = Object.entries(d.images).map(([id, url]) => ({
@@ -339,10 +489,10 @@ export function restaurantDemoRequest({
     return done({ imageId: id, url: image, bytes: image.length });
   }
   if (path === "/public/restaurants/" + p.slug) {
-    if (!p.publicEnabled)
+    if (!p.publicEnabled || d.businessState === "suspended")
       throw error("El menú de demostración no está publicado.", 404);
     return done({
-      name: d.name,
+      name: p.displayName || d.name,
       profile: {
         ...p,
         coverImageUrl: d.images[p.coverImageId] ?? "",
@@ -398,14 +548,18 @@ export function restaurantDemoRequest({
       endAt: r.end_at,
       status: r.status,
       notes: r.notes,
-      restaurant: d.name,
+      restaurant: p.displayName || d.name,
       timezone: p.timezone,
     });
   }
   if (path.startsWith("/public/orders/")) {
     const o = d.kitchen.find((x) => x.token === path.split("/")[3]);
     if (!o) throw error("Pedido no encontrado.", 404);
-    return done({ ...o, restaurant: d.name, prepMinutes: p.prepMinutes });
+    return done({
+      ...o,
+      restaurant: p.displayName || d.name,
+      prepMinutes: p.prepMinutes,
+    });
   }
   const reservation = path.match(/^\/reservations\/([^/]+)$/);
   if (reservation && method === "PUT") {
@@ -510,6 +664,9 @@ export function restaurantDemoRequest({
           id: "offline-workspace",
           name: d.name,
           owner_email: "demo@cerca.local",
+          public_name: p.displayName || d.name,
+          public_slug: p.slug,
+          public_enabled: p.publicEnabled ? 1 : 0,
           status: d.businessState ?? "active",
           reason: "",
           orders: d.kitchen.length,

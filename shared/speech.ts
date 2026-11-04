@@ -9,9 +9,10 @@ const words = (text: string) =>
 export function isSpeechEcho(heard: string, spoken: string) {
   const a = words(heard),
     b = words(spoken);
-  if (a.length < 5 || b.length < 5) return false;
+  if (!a.length || !b.length) return false;
   const source = " " + b.join(" ") + " ";
   if (source.includes(" " + a.join(" ") + " ")) return true;
+  if (a.length < 5 || b.length < 5) return false;
   const shared = a.filter((w) => b.includes(w)).length / a.length;
   let contiguous = 0;
   for (let i = 0; i < a.length - 2; i++)

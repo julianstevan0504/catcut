@@ -25,7 +25,12 @@ import {
 } from "./security.mjs";
 import { installRestaurants } from "./restaurants.mjs";
 import { installPlatform, issueRecoveryCodes } from "./platform.mjs";
-import { activeBusiness, isAdmin, platformSettings } from "./restaurant-db.mjs";
+import {
+  activeBusiness,
+  isAdmin,
+  platformSettings,
+  profileFor,
+} from "./restaurant-db.mjs";
 import { validateKnowledge } from "../shared/knowledge.ts";
 import { installVoice } from "./voice.mjs";
 import { answerMessage } from "./assistant.mjs";
@@ -541,6 +546,12 @@ export async function createApp(options = {}) {
               "SELECT data FROM restaurant_profiles WHERE workspace_id=?",
             )
             .get(req.workspaceId)?.data ?? null,
+        publicPageDraft:
+          db
+            .prepare(
+              "SELECT data,revision,updated_at FROM restaurant_page_drafts WHERE workspace_id=?",
+            )
+            .get(req.workspaceId) ?? null,
         restaurantOrders: db
           .prepare(
             "SELECT order_id,fulfillment,delivery_address,delivery_zone,delivery_fee,table_label,notes,payment_method,payment_status FROM restaurant_orders WHERE workspace_id=?",
@@ -1698,7 +1709,7 @@ export async function createApp(options = {}) {
   const dist = join(root, "dist");
   if (existsSync(join(dist, "index.html"))) {
     const htmlCache = new Map();
-    function sendHtml(res, name) {
+    function sendHtml(res, name, meta) {
       const file = join(dist, name);
       if (!existsSync(file))
         return res
@@ -1706,21 +1717,84 @@ export async function createApp(options = {}) {
           .type("text/plain")
           .send("La demo no está compilada. Ejecuta npm run build.");
       if (!htmlCache.has(name)) htmlCache.set(name, readFileSync(file, "utf8"));
+      let html = htmlCache.get(name);
+      if (meta) {
+        const escape = (value) =>
+          String(value).replace(
+            /[&<>"']/g,
+            (c) =>
+              ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;",
+              })[c],
+          );
+        html = html
+          .replace(
+            /<title>[\s\S]*?<\/title>/i,
+            () => "<title>" + escape(meta.title) + "</title>",
+          )
+          .replace(
+            /<meta\s+name="description"[\s\S]*?\/>/i,
+            () =>
+              '<meta name="description" content="' +
+              escape(meta.description) +
+              '" />',
+          )
+          .replace(
+            "</head>",
+            () =>
+              '<link rel="canonical" href="' +
+              escape(meta.canonical) +
+              '"/><meta property="og:title" content="' +
+              escape(meta.title) +
+              '"/><meta property="og:description" content="' +
+              escape(meta.description) +
+              '"/></head>',
+          );
+      }
       res.set("Cache-Control", "no-store");
       res
         .type("html")
         .send(
-          htmlCache
-            .get(name)
-            .replace(
-              /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi,
-              (_full, attributes, content) =>
-                `<script nonce="${res.locals.cspNonce}"${attributes}>${content}</script>`,
-            ),
+          html.replace(
+            /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi,
+            (_full, attributes, content) =>
+              `<script nonce="${res.locals.cspNonce}"${attributes}>${content}</script>`,
+          ),
         );
     }
     app.get(["/", "/index.html"], (_req, res) => sendHtml(res, "index.html"));
     app.get("/Cerca.html", (_req, res) => sendHtml(res, "Cerca.html"));
+    app.get("/r/:slug", (req, res) => {
+      const row = db
+        .prepare(
+          "SELECT p.workspace_id,w.name FROM restaurant_profiles p JOIN workspaces w ON w.id=p.workspace_id WHERE p.slug=?",
+        )
+        .get(req.params.slug);
+      if (!row || !activeBusiness(db, row.workspace_id))
+        return res
+          .status(404)
+          .type("html")
+          .send(
+            '<!doctype html><html lang="es"><title>Restaurante no disponible</title><h1>Este restaurante no está disponible.</h1><a href="/?explore=restaurants">Buscar restaurantes</a></html>',
+          );
+      const p = profileFor(db, row.workspace_id);
+      if (!p.publicEnabled)
+        return res
+          .status(404)
+          .type("html")
+          .send(
+            '<!doctype html><html lang="es"><title>Restaurante no disponible</title><h1>Este restaurante no está disponible.</h1><a href="/?explore=restaurants">Buscar restaurantes</a></html>',
+          );
+      sendHtml(res, "index.html", {
+        title: (p.displayName || row.name) + " · Carta y pedidos | Cerca",
+        description: p.welcome,
+        canonical: baseUrl + "/r/" + p.slug,
+      });
+    });
     app.use(express.static(dist, { maxAge: "1h", index: false }));
     app.use((req, res, next) =>
       req.method === "GET" &&

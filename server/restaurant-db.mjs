@@ -1,8 +1,11 @@
 import { defaultRestaurant } from "../shared/restaurant.ts";
+import { defaultDesign } from "../shared/storefront.ts";
 const now = () => new Date().toISOString();
 export function restaurantSchema(db) {
   db.exec(`
  CREATE TABLE IF NOT EXISTS restaurant_profiles(workspace_id TEXT PRIMARY KEY REFERENCES workspaces(id),slug TEXT NOT NULL UNIQUE,data TEXT NOT NULL,updated_at TEXT NOT NULL);
+ CREATE TABLE IF NOT EXISTS restaurant_page_drafts(workspace_id TEXT PRIMARY KEY REFERENCES workspaces(id),data TEXT NOT NULL,revision INTEGER NOT NULL DEFAULT 1,updated_at TEXT NOT NULL);
+ CREATE TABLE IF NOT EXISTS restaurant_notification_reads(workspace_id TEXT NOT NULL REFERENCES workspaces(id),order_id TEXT NOT NULL REFERENCES orders(id),read_at TEXT NOT NULL,PRIMARY KEY(workspace_id,order_id));
  CREATE TABLE IF NOT EXISTS business_states(workspace_id TEXT PRIMARY KEY REFERENCES workspaces(id),status TEXT NOT NULL DEFAULT 'active',reason TEXT NOT NULL DEFAULT '',updated_at TEXT NOT NULL);
  CREATE TABLE IF NOT EXISTS conversation_actions(conversation_id TEXT PRIMARY KEY REFERENCES conversations(id) ON DELETE CASCADE,draft TEXT NOT NULL,updated_at TEXT NOT NULL);
  CREATE TABLE IF NOT EXISTS platform_admins(user_id TEXT PRIMARY KEY REFERENCES users(id),created_at TEXT NOT NULL);
@@ -54,7 +57,14 @@ export function profileFor(db, ws) {
   const row = db
     .prepare("SELECT data FROM restaurant_profiles WHERE workspace_id=?")
     .get(ws);
-  if (row) return { ...defaultRestaurant(ws), ...JSON.parse(row.data) };
+  if (row) {
+    const p = JSON.parse(row.data);
+    return {
+      ...defaultRestaurant(ws),
+      ...p,
+      design: { ...defaultDesign(p.accent), ...p.design },
+    };
+  }
   const p = defaultRestaurant(ws);
   db.prepare("INSERT INTO restaurant_profiles VALUES (?,?,?,?)").run(
     ws,

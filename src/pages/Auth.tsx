@@ -20,6 +20,9 @@ export function Auth({
 }: {
   onAuthenticated: () => Promise<void>;
 }) {
+  const adminEntry =
+    location.pathname === "/admin" ||
+    new URLSearchParams(location.search).has("admin");
   const [register, setRegister] = useState(
     !standaloneMode && location.hash === "#register",
   );
@@ -59,7 +62,11 @@ export function Auth({
           }),
         );
       await onAuthenticated();
-      location.hash = "overview";
+      location.hash = adminEntry
+        ? "platform"
+        : register
+          ? "storefront"
+          : "overview";
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -72,7 +79,7 @@ export function Auth({
     try {
       await post("/auth/demo");
       await onAuthenticated();
-      location.hash = "overview";
+      location.hash = adminEntry ? "platform" : "overview";
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -161,6 +168,15 @@ export function Auth({
           )}
         </div>
         <div className="auth-form-container">
+          <a
+            className="auth-public-back"
+            href={
+              (standaloneMode ? location.pathname : "/") +
+              "?explore=restaurants"
+            }
+          >
+            ← Buscar un restaurante
+          </a>
           <span className="auth-form-icon">
             <MessageCircle size={26} />
           </span>
@@ -168,12 +184,16 @@ export function Auth({
           <h2>
             {register
               ? "El comienzo de algo bueno."
-              : "Qué bueno tenerte de vuelta."}
+              : adminEntry
+                ? "Acceso del dueño de la plataforma."
+                : "Qué bueno tenerte de vuelta."}
           </h2>
           <p>
             {register
               ? "Crea tu cuenta y dale una voz a tu restaurante."
-              : "Entra a tu espacio. Tu próxima conversación te espera."}
+              : adminEntry
+                ? "Inicia sesión con tu cuenta y abre Administración para ver los negocios registrados."
+                : "Entra a tu espacio. Tu próxima conversación te espera."}
           </p>
           {standaloneMode && (
             <div className="inline-notice">

@@ -1,3 +1,18 @@
+# Cerca Restaurantes 5.0
+
+- Buscador público por nombre, ciudad y tipo de atención; solo aparecen restaurantes publicados y activos.
+- Dirección propia por restaurante en /r/nombre, metadatos para compartir y acceso público al menú y pedidos.
+- Generador de página con preguntas sobre el negocio, especialidades, descripción y contactos.
+- Editor con vista previa en computador/celular, colores propios, tres tipografías, tamaños de letra, distribución y orden de secciones.
+- Borradores privados, revisión de cambios simultáneos y acciones independientes para guardar, publicar y retirar una página.
+- Botones de WhatsApp y llamadas propios de cada negocio; acceso guiado para llamar desde WhatsApp.
+- Avisos persistentes de pedidos en el panel y notificaciones opcionales del navegador mientras esté abierto; seguimiento del cliente con etapas y cambios de cocina.
+- Acceso visible del dueño de la plataforma en /admin, guía de activación y enlaces a las páginas públicas desde Administración.
+- Corrección del error administrativo sin sesión, privacidad de imágenes usadas en borradores, validación estricta de diseños y contraste automático.
+- Sofía usa turnos seguros: micrófono pausado durante su voz, espera breve al finalizar y botón de interrupción. Interrupción por voz con auriculares opcional, filtro de ecos cortos y protección de eventos antiguos.
+- Sofía consulta también la historia, descripción y especialidades publicadas del negocio.
+- Identidad visual cálida para restaurantes con terracota, crema, figuras gastronómicas y componentes renovados; corrección de carga de fotos durante desarrollo.
+
 # Cerca Restaurantes 4.0
 
 - Plataforma para varios restaurantes con aislamiento de cuentas, menús, conversaciones, fotos, pedidos y reservas.

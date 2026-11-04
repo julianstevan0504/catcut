@@ -7,6 +7,7 @@ export type Page =
   | "activity"
   | "settings"
   | "restaurant"
+  | "storefront"
   | "reservations"
   | "kitchen"
   | "support"

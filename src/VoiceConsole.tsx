@@ -85,6 +85,7 @@ export function VoiceConsole({
     [text, setText] = useState(""),
     [muted, setMuted] = useState(false),
     [speaker, setSpeaker] = useState(true),
+    [handsFree, setHandsFree] = useState(false),
     [elapsed, setElapsed] = useState(0),
     [activeUI, setActiveUI] = useState(false);
   const active = useRef(false),
@@ -103,6 +104,9 @@ export function VoiceConsole({
     silences = useRef(0),
     speaking = useRef(false),
     speakingText = useRef(""),
+    duplex = useRef(false),
+    quietUntil = useRef(0),
+    lastSpokenAt = useRef(0),
     speechEpoch = useRef(0),
     turnEpoch = useRef(0),
     queue = useRef<string | null>(null),
@@ -145,6 +149,18 @@ export function VoiceConsole({
     });
   }
   function listen(g: number, overlay = false) {
+    if (speaking.current && !duplex.current) {
+      stopListening();
+      return;
+    }
+    if (valid(g) && Date.now() < quietUntil.current) {
+      clearTimeout(retry.current);
+      retry.current = setTimeout(
+        () => listen(g, overlay),
+        Math.max(1, quietUntil.current - Date.now()),
+      );
+      return;
+    }
     if (!valid(g) || mute.current || (pending.current && !overlay)) {
       if (valid(g) && !pending.current) phaseNow("ready");
       return;
@@ -173,12 +189,22 @@ export function VoiceConsole({
     };
     r.onresult = (e) => {
       if (!valid(g) || mute.current || recognizer.current !== r) return;
+      if (
+        Date.now() < quietUntil.current ||
+        (speaking.current && !duplex.current)
+      )
+        return;
       for (let i = e.resultIndex ?? 0; i < e.results.length; i++) {
         const result = e.results[i],
           t = String(result?.[0]?.transcript ?? "").trim();
         if (!t) continue;
         const final = result.isFinal !== false;
-        if (speaking.current && isSpeechEcho(t, speakingText.current)) continue;
+        if (
+          (speaking.current ||
+            (duplex.current && Date.now() - lastSpokenAt.current < 2200)) &&
+          isSpeechEcho(t, speakingText.current)
+        )
+          continue;
         if (speaking.current) interrupt(true);
         if (!final) continue;
         gotResult = true;
@@ -250,6 +276,8 @@ export function VoiceConsole({
     }
     speechEpoch.current++;
     speaking.current = false;
+    quietUntil.current = Date.now() + (keepRecognition ? 0 : 350);
+    lastSpokenAt.current = Date.now();
     clearTimeout(speechTimer.current);
     if (speechSupported) window.speechSynthesis.cancel();
     if (wasSpeaking) {
@@ -283,6 +311,7 @@ export function VoiceConsole({
       return;
     }
     speaking.current = true;
+    if (!duplex.current) stopListening();
     speakingText.current = spoken(text);
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(speakingText.current);
@@ -298,6 +327,8 @@ export function VoiceConsole({
       if (finished || !valid(g) || epoch !== speechEpoch.current) return;
       finished = true;
       speaking.current = false;
+      quietUntil.current = Date.now() + 450;
+      lastSpokenAt.current = Date.now();
       clearTimeout(speechTimer.current);
       listen(g);
     };
@@ -316,7 +347,7 @@ export function VoiceConsole({
       Math.min(120000, Math.max(15000, text.length * 115)),
     );
     window.speechSynthesis.speak(u);
-    listen(g, true);
+    if (duplex.current) listen(g, true);
   }
   async function send(value: string, g = generation.current) {
     if (!value.trim() || !valid(g)) return;
@@ -475,6 +506,9 @@ export function VoiceConsole({
     if (!next && speechSupported) {
       speechEpoch.current++;
       speaking.current = false;
+      quietUntil.current = Date.now() + 450;
+      lastSpokenAt.current = Date.now();
+      stopListening();
       window.speechSynthesis.cancel();
       clearTimeout(speechTimer.current);
       if (phaseRef.current === "speaking") listen(generation.current);
@@ -575,9 +609,23 @@ export function VoiceConsole({
         )}
         {activeUI && (
           <p className="voice-barge-hint">
-            Puedes hablar para interrumpirme o pulsar «Interrumpir y hablar».
+            {handsFree
+              ? "Con auriculares puedes hablar para interrumpirme o pulsar «Interrumpir y hablar»."
+              : "Cuando hablo, pauso el micrófono para evitar escucharme. Pulsa «Interrumpir y hablar» para tomar tu turno."}
           </p>
         )}
+        <label className="voice-echo-mode">
+          <input
+            type="checkbox"
+            checked={handsFree}
+            disabled={activeUI}
+            onChange={(e) => {
+              setHandsFree(e.target.checked);
+              duplex.current = e.target.checked;
+            }}
+          />{" "}
+          Interrumpir por voz con auriculares
+        </label>
         <p className="voice-consent">
           Al iniciar, se guarda la transcripción en la tienda. Tu navegador
           puede procesar la voz mediante su propio servicio. Cerca no guarda

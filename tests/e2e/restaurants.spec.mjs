@@ -43,6 +43,12 @@ test("el dueño activa su panel privado y atiende una solicitud de soporte", asy
   await expect(
     page.getByText("Negocios registrados", { exact: true }),
   ).toBeVisible();
+  await expect(
+    page
+      .locator(".platform-business-list article")
+      .filter({ hasText: c.email })
+      .getByRole("link", { name: "Ver página pública", exact: true }),
+  ).toHaveAttribute("href", "/r/" + c.profile.slug);
   await page
     .getByRole("main")
     .getByRole("button", { name: "Soporte técnico", exact: true })
@@ -156,6 +162,13 @@ test("un restaurante carga fotos, recibe un pedido público y lo prepara con seg
   await expect(
     page.getByRole("img", { name: "Arepa de la Huerta", exact: true }),
   ).toBeVisible();
+  await expect
+    .poll(() =>
+      page
+        .getByRole("img", { name: "Arepa de la Huerta", exact: true })
+        .evaluate((e) => e.naturalWidth),
+    )
+    .toBeGreaterThan(0);
   await page
     .getByRole("button", { name: "Agregar Arepa de la Huerta al pedido" })
     .click();

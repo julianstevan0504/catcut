@@ -79,7 +79,34 @@ try {
       ),
     );
   }
-  await scan("panel");
+  await scan("panel", true);
+  await page
+    .getByRole("button", { name: /Ver notificaciones de pedidos/ })
+    .click();
+  await scan("avisos-de-pedidos", true);
+  await page
+    .getByRole("button", { name: /Ver notificaciones de pedidos/ })
+    .click();
+  await page
+    .getByRole("button", { name: "Mi página pública", exact: true })
+    .click();
+  await scan("editor-preguntas", true);
+  for (const [part, label] of [
+    ["contenido", "Contenido"],
+    ["apariencia", "Diseño"],
+    ["posiciones", "Posiciones"],
+    ["publicacion", "Publicar"],
+  ]) {
+    await page
+      .locator(".builder-tabs")
+      .getByRole("button", { name: label, exact: true })
+      .click();
+    await scan("editor-" + part, true);
+  }
+  await page
+    .getByRole("button", { name: "Vista previa en celular", exact: true })
+    .click();
+  await scan("editor-preview-celular", true);
   for (const [name, label] of [
     ["cocina", "Cocina"],
     ["reservas", "Reservas"],
@@ -197,9 +224,22 @@ try {
     await scan(name);
   }
   await page.evaluate(() => (document.documentElement.dataset.theme = "light"));
+  await page.evaluate(() => {
+    const data = JSON.parse(localStorage.getItem("cerca.demo.v2"));
+    data.restaurant.whatsappNumber = "+573001112233";
+    data.restaurant.phone = "+573004445566";
+    localStorage.setItem("cerca.demo.v2", JSON.stringify(data));
+  });
   await page.goto(url + "?restaurant=la-mesa-demo");
   await page.locator(".public-menu-content").waitFor();
   await scan("menu-publico", true);
+  await page
+    .getByRole("button", { name: "Llamar por WhatsApp", exact: true })
+    .click();
+  await scan("llamada-whatsapp-publica", true);
+  await page
+    .getByRole("button", { name: "Cerrar ventana", exact: true })
+    .click();
   await page
     .getByRole("button", { name: "Reservar mesa", exact: true })
     .click();
@@ -227,18 +267,46 @@ try {
     await page.evaluate((accent) => {
       const data = JSON.parse(localStorage.getItem("cerca.demo.v2"));
       data.restaurant.accent = accent;
+      const colors =
+        accent === "jade"
+          ? { primaryColor: "#2e6148", backgroundColor: "#f8fbf3" }
+          : { primaryColor: "#74517e", backgroundColor: "#fcf8ff" };
+      data.restaurant.design = { ...data.restaurant.design, ...colors };
       localStorage.setItem("cerca.demo.v2", JSON.stringify(data));
     }, accent);
     await page.reload();
     await page.locator(".public-menu-content").waitFor();
     await scan("menu-publico-" + accent, true);
   }
+  await page.evaluate(() => {
+    const data = JSON.parse(localStorage.getItem("cerca.demo.v2"));
+    data.restaurant.design = {
+      ...data.restaurant.design,
+      primaryColor: "#ffffaa",
+      backgroundColor: "#172120",
+    };
+    localStorage.setItem("cerca.demo.v2", JSON.stringify(data));
+  });
+  await page.reload();
+  await page.locator(".public-menu-content").waitFor();
+  await scan("menu-color-personalizado", true);
   const native = await browser.newContext({
     viewport: { width: 1440, height: 1000 },
   });
   page = await native.newPage();
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto(nativeBase + "/");
+  await page.getByRole("heading", { name: /Dónde comemos/ }).waitFor();
+  await scan("buscador-publico", true);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await scan("buscador-publico-movil", true);
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto(nativeBase + "/admin");
+  await page
+    .getByRole("heading", { name: "Acceso del dueño de la plataforma." })
+    .waitFor();
+  await scan("acceso-dueno", true);
+  await page.goto(nativeBase + "/#login");
   await page
     .getByRole("heading", { name: "Qué bueno tenerte de vuelta." })
     .waitFor();

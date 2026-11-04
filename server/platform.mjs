@@ -50,15 +50,17 @@ export function installPlatform({
   const recoveryLimit = rateLimiter({ limit: 8, windowMs: 15 * 60000 }),
     adminLimit = rateLimiter({ limit: 5, windowMs: 15 * 60000 });
   const admin = (req, res, next) =>
-    auth(req, res, () =>
-      isAdmin(db, req.user.id)
-        ? next()
-        : next(
-            fail(
-              403,
-              "Este apartado solo está disponible para la administración de la plataforma.",
+    auth(req, res, (error) =>
+      error
+        ? next(error)
+        : isAdmin(db, req.user.id)
+          ? next()
+          : next(
+              fail(
+                403,
+                "Este apartado solo está disponible para la administración de la plataforma.",
+              ),
             ),
-          ),
     );
   const setupAvailable = () =>
     typeof setupToken === "string" &&
@@ -292,7 +294,7 @@ export function installPlatform({
   app.get("/api/platform/overview", admin, (_req, res) => {
     const restaurants = db
       .prepare(
-        "SELECT w.id,w.name,w.created_at,COALESCE(s.status,'active') status,COALESCE(s.reason,'') reason,u.email owner_email,(SELECT COUNT(*) FROM orders o WHERE o.workspace_id=w.id) orders,(SELECT COUNT(*) FROM reservations r WHERE r.workspace_id=w.id) reservations,(SELECT COUNT(*) FROM media_images m WHERE m.workspace_id=w.id) images FROM workspaces w JOIN users u ON u.workspace_id=w.id LEFT JOIN business_states s ON s.workspace_id=w.id WHERE u.email<>? ORDER BY w.created_at DESC",
+        "SELECT w.id,w.name,w.created_at,json_extract(p.data,'$.displayName') public_name,p.slug public_slug,json_extract(p.data,'$.publicEnabled') public_enabled,COALESCE(s.status,'active') status,COALESCE(s.reason,'') reason,u.email owner_email,(SELECT COUNT(*) FROM orders o WHERE o.workspace_id=w.id) orders,(SELECT COUNT(*) FROM reservations r WHERE r.workspace_id=w.id) reservations,(SELECT COUNT(*) FROM media_images m WHERE m.workspace_id=w.id) images FROM workspaces w JOIN users u ON u.workspace_id=w.id LEFT JOIN business_states s ON s.workspace_id=w.id LEFT JOIN restaurant_profiles p ON p.workspace_id=w.id WHERE u.email<>? ORDER BY w.created_at DESC",
       )
       .all(demoEmail);
     res.json({

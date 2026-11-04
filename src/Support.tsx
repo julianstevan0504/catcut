@@ -1,3 +1,5 @@
+import { RecoveryPanel } from "./AccountRecovery";
+import { standaloneMode } from "./standalone";
 import { useState } from "react";
 import type { FormEvent } from "react";
 import {
@@ -24,7 +26,6 @@ import {
   PageHeading,
   Spinner,
   ErrorState,
-  EmptyState,
   SaveButton,
 } from "./components";
 type Ticket = {
@@ -359,6 +360,9 @@ type PlatformData = {
   restaurants: {
     id: string;
     name: string;
+    public_name?: string;
+    public_slug?: string;
+    public_enabled?: number;
     owner_email: string;
     status: string;
     reason: string;
@@ -400,10 +404,29 @@ export function PlatformPage() {
     [busy, setBusy] = useState(false);
   if (!session.platformAdmin)
     return (
-      <EmptyState
-        title="Este espacio es de la administración."
-        description="Activa el acceso con la clave de instalación en Datos y seguridad si administras esta plataforma."
-      />
+      <div className="platform-access-guide">
+        <span className="eyebrow">SOLO PARA EL DUEÑO DE ESTA PLATAFORMA</span>
+        <h1>Tu centro de administración.</h1>
+        <p>
+          La dirección de acceso es <strong>/admin</strong>. Después de activar
+          tu cuenta verás los negocios registrados, su estado y las solicitudes
+          de soporte.
+        </p>
+        <ol>
+          <li>Inicia sesión con tu correo y contraseña.</li>
+          <li>
+            Si usas el iniciador local, abre{" "}
+            <strong>proyecto/data/administracion-clave.txt</strong> en tu
+            computador. En alojamiento, usa el secreto PLATFORM_SETUP_TOKEN de
+            tu servidor.
+          </li>
+          <li>
+            Introduce esa clave y tu contraseña en el formulario de activación.
+            La clave es privada y no se muestra en la web.
+          </li>
+        </ol>
+        <RecoveryPanel />
+      </div>
     );
   if (loading) return <Spinner />;
   if (error || !data) return <ErrorState message={error} retry={reload} />;
@@ -511,7 +534,15 @@ export function PlatformPage() {
           <div className="platform-business-list">
             {data.restaurants
               .filter((r) =>
-                (r.name + " " + r.owner_email)
+                (
+                  r.name +
+                  " " +
+                  r.owner_email +
+                  " " +
+                  (r.public_name ?? "") +
+                  " " +
+                  (r.public_slug ?? "")
+                )
                   .toLowerCase()
                   .includes(search.toLowerCase()),
               )
@@ -521,8 +552,29 @@ export function PlatformPage() {
                     <Store size={21} />
                   </span>
                   <div>
-                    <h3>{r.name}</h3>
+                    <h3>{r.public_name || r.name}</h3>
                     <p>{r.owner_email}</p>
+                    <small>
+                      {r.public_enabled
+                        ? "Página pública publicada"
+                        : "Página sin publicar"}
+                    </small>
+                    {Boolean(r.public_enabled) &&
+                      r.status === "active" &&
+                      r.public_slug && (
+                        <a
+                          className="platform-public-link"
+                          href={
+                            (standaloneMode
+                              ? location.pathname + "?restaurant="
+                              : "/r/") + r.public_slug
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Ver página pública <ArrowRight size={12} />
+                        </a>
+                      )}
                     <small>
                       {r.orders} pedidos · {r.reservations} reservas ·{" "}
                       {r.images} fotos

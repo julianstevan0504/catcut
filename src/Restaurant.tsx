@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import type { FormEvent } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { CSSProperties, FormEvent } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -42,6 +42,11 @@ import { standaloneMode } from "./standalone";
 import { ImageUploader, PhotoLibrary, imageSrc } from "./Images";
 import type { Product } from "./types";
 import type { RestaurantProfile } from "../shared/restaurant";
+import {
+  defaultDesign,
+  storefrontTheme,
+  whatsappUrl,
+} from "../shared/storefront";
 import {
   localParts,
   restaurantStatusLabels,
@@ -1463,26 +1468,17 @@ export function OrderCheckout({
     </form>
   );
 }
+export type StorefrontData = {
+  name: string;
+  profile: RestaurantProfile & { coverImageUrl: string; logoImageUrl: string };
+  products: Product[];
+  assistantName: string;
+  voiceUrl: string | null;
+};
 export function PublicRestaurant({ slug }: { slug: string }) {
-  const { data, loading, error, reload } = useResource<{
-    name: string;
-    profile: RestaurantProfile & {
-      coverImageUrl: string;
-      logoImageUrl: string;
-    };
-    products: Product[];
-    assistantName: string;
-    voiceUrl: string | null;
-  }>("/public/restaurants/" + slug);
-  const [category, setCategory] = useState("Todas"),
-    [search, setSearch] = useState(""),
-    [cart, setCart] = useState<Record<string, number>>({}),
-    [modal, setModal] = useState<"booking" | "cart" | null>(null),
-    [success, setSuccess] = useState<{
-      viewUrl: string;
-      code: string;
-      status?: string;
-    } | null>(null);
+  const { data, loading, error, reload } = useResource<StorefrontData>(
+    "/public/restaurants/" + slug,
+  );
   if (loading)
     return (
       <main className="public-restaurant-loading">
@@ -1499,6 +1495,28 @@ export function PublicRestaurant({ slug }: { slug: string }) {
         <a href="/">Ir a Cerca</a>
       </main>
     );
+  return <RestaurantStorefront data={data} slug={slug} reload={reload} />;
+}
+export function RestaurantStorefront({
+  data,
+  slug,
+  reload = () => {},
+  preview = false,
+}: {
+  data: StorefrontData;
+  slug: string;
+  reload?: () => void;
+  preview?: boolean;
+}) {
+  const [category, setCategory] = useState("Todas"),
+    [search, setSearch] = useState(""),
+    [cart, setCart] = useState<Record<string, number>>({}),
+    [modal, setModal] = useState<"booking" | "cart" | "whatsapp" | null>(null),
+    [success, setSuccess] = useState<{
+      viewUrl: string;
+      code: string;
+      status?: string;
+    } | null>(null);
   const p = data.profile,
     categories = ["Todas", ...new Set(data.products.map((x) => x.category))],
     filtered = data.products.filter(
@@ -1510,14 +1528,37 @@ export function PublicRestaurant({ slug }: { slug: string }) {
     ),
     count = Object.values(cart).reduce((n, x) => n + x, 0),
     total = data.products.reduce((n, x) => n + x.price * (cart[x.id] ?? 0), 0);
+  const design = { ...defaultDesign(p.accent), ...p.design },
+    wa = whatsappUrl(p.whatsappNumber, data.name),
+    phone = /^\+?[\d\s()-]{7,30}$/.test(p.phone || p.whatsappNumber)
+      ? "tel:" + (p.phone || p.whatsappNumber).replace(/[^+0-9]/g, "")
+      : "";
+  const browseUrl = standaloneMode
+    ? location.pathname + "?explore=restaurants"
+    : "/?explore=restaurants";
   function add(product: Product) {
+    if (preview) return;
     setCart((c) => ({
       ...c,
       [product.id]: Math.min((c[product.id] ?? 0) + 1, product.stock, 20),
     }));
   }
+  const Container = preview ? "div" : "main";
   return (
-    <main className={"public-restaurant theme-" + p.accent}>
+    <Container
+      className={
+        "public-restaurant custom-storefront theme-" +
+        p.accent +
+        " hero-" +
+        design.heroLayout +
+        " menu-" +
+        design.menuLayout +
+        " align-" +
+        design.alignment +
+        (preview ? " storefront-preview" : "")
+      }
+      style={storefrontTheme(design) as CSSProperties}
+    >
       {standaloneMode && (
         <div className="restaurant-demo-banner" role="status">
           Restaurante de demostración. Los pedidos y reservas se guardan solo en
@@ -1525,7 +1566,16 @@ export function PublicRestaurant({ slug }: { slug: string }) {
         </div>
       )}
       <header className="public-menu-header">
-        <a className="public-restaurant-brand" href={"?restaurant=" + slug}>
+        <a
+          className="public-restaurant-brand"
+          href={
+            preview
+              ? undefined
+              : standaloneMode
+                ? "?restaurant=" + slug
+                : "/r/" + slug
+          }
+        >
           {p.logoImageUrl ? (
             <img src={p.logoImageUrl} alt="" />
           ) : (
@@ -1536,17 +1586,40 @@ export function PublicRestaurant({ slug }: { slug: string }) {
           <strong>{data.name}</strong>
         </a>
         <nav aria-label="Atención del restaurante">
+          {!preview && <a href={browseUrl}>Explorar restaurantes</a>}
+          {wa && (
+            <a
+              className="storefront-whatsapp"
+              href={preview ? undefined : wa}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              WhatsApp <ArrowUpRight size={14} />
+            </a>
+          )}
+          {phone && (
+            <a href={preview ? undefined : phone}>
+              <Phone size={15} /> Llamar al restaurante
+            </a>
+          )}
           {p.reservationsEnabled && (
-            <button onClick={() => setModal("booking")}>
+            <button disabled={preview} onClick={() => setModal("booking")}>
               <CalendarDays size={16} /> Reservar mesa
             </button>
           )}
           {data.voiceUrl && (
-            <a href={data.voiceUrl}>
+            <a href={preview ? undefined : data.voiceUrl}>
               <Phone size={16} /> Hablar con {data.assistantName}
             </a>
           )}
+          {wa && (
+            <button disabled={preview} onClick={() => setModal("whatsapp")}>
+              <Phone size={15} />
+              Llamar por WhatsApp
+            </button>
+          )}
           <button
+            disabled={preview}
             className="public-cart-button"
             onClick={() => setModal("cart")}
           >
@@ -1561,11 +1634,7 @@ export function PublicRestaurant({ slug }: { slug: string }) {
           <span className="public-menu-eyebrow">
             <span /> {p.cuisine.toUpperCase()}
           </span>
-          <h1>
-            Tu próxima
-            <br />
-            buena comida.
-          </h1>
+          <h1>{design.heroTitle}</h1>
           <p>{p.welcome}</p>
           <div className="public-menu-info">
             {p.address && (
@@ -1585,6 +1654,7 @@ export function PublicRestaurant({ slug }: { slug: string }) {
           </details>
           {p.reservationsEnabled && (
             <button
+              disabled={preview}
               className="button public-menu-primary"
               onClick={() => setModal("booking")}
             >
@@ -1606,115 +1676,177 @@ export function PublicRestaurant({ slug }: { slug: string }) {
           </span>
         </div>
       </section>
-      <section className="public-menu-content">
-        {!p.acceptingOrders && (
-          <div className="restaurant-demo-banner" role="status">
-            La cocina tiene pausada la recepción de pedidos. Puedes consultar la
-            carta y contactar con el equipo.
+      <div className="public-storefront-sections">
+        <section
+          className="public-menu-content"
+          style={{ order: design.sections.indexOf("menu") }}
+        >
+          {!p.acceptingOrders && (
+            <div className="restaurant-demo-banner" role="status">
+              La cocina tiene pausada la recepción de pedidos. Puedes consultar
+              la carta y contactar con el equipo.
+            </div>
+          )}
+          <div className="public-menu-section-heading">
+            <div>
+              <span className="eyebrow">ELIGE TU PRÓXIMO FAVORITO</span>
+              <h2>{design.menuTitle}</h2>
+            </div>
+            <label className="public-menu-search">
+              <Search size={17} />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                aria-label="Buscar en el menú"
+                placeholder="¿Qué te provoca hoy?"
+              />
+            </label>
           </div>
-        )}
-        <div className="public-menu-section-heading">
-          <div>
-            <span className="eyebrow">ELIGE TU PRÓXIMO FAVORITO</span>
-            <h2>Nuestra carta.</h2>
+          <div className="public-menu-categories">
+            {categories.map((c) => (
+              <button
+                className={category === c ? "selected" : ""}
+                key={c}
+                aria-pressed={category === c}
+                onClick={() => setCategory(c)}
+              >
+                {c}
+              </button>
+            ))}
           </div>
-          <label className="public-menu-search">
-            <Search size={17} />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              aria-label="Buscar en el menú"
-              placeholder="¿Qué te provoca hoy?"
-            />
-          </label>
-        </div>
-        <div className="public-menu-categories">
-          {categories.map((c) => (
-            <button
-              className={category === c ? "selected" : ""}
-              key={c}
-              aria-pressed={category === c}
-              onClick={() => setCategory(c)}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
-        <div className="public-menu-grid">
-          {filtered.map((product) => (
-            <article
-              className={
-                "public-dish-card " + (!product.stock ? "soldout" : "")
-              }
-              key={product.id}
-            >
-              <div className="public-dish-image">
-                {product.image_url ? (
-                  <img
-                    src={product.image_url}
-                    alt={product.name}
-                    loading="lazy"
-                  />
-                ) : (
-                  <DishArt kind={product.kind} />
-                )}
-                <span>{product.stock ? "Disponible" : "Agotado"}</span>
-              </div>
-              <div className="public-dish-body">
-                <small>{product.category}</small>
-                <h3>{product.name}</h3>
-                <p>{product.description}</p>
-                <details>
-                  <summary>Ingredientes y alérgenos</summary>
-                  <p>
-                    <strong>Ingredientes:</strong>{" "}
-                    {product.ingredients || "Por confirmar con el restaurante."}
-                  </p>
-                  <p>
-                    <strong>Alérgenos:</strong>{" "}
-                    {product.allergens ||
-                      "Sin información confirmada. Consulta al equipo si tienes una alergia."}
-                  </p>
-                </details>
-                <div>
-                  <strong>
-                    {money(product.price)}
-                    <small> COP</small>
-                  </strong>
-                  <button
-                    aria-label={
-                      "Agregar " +
-                      product.name +
-                      " al pedido" +
-                      (cart[product.id]
-                        ? ". " + cart[product.id] + " en tu pedido"
-                        : "")
-                    }
-                    disabled={
-                      !product.stock ||
-                      !p.acceptingOrders ||
-                      (cart[product.id] ?? 0) >= Math.min(product.stock, 20)
-                    }
-                    onClick={() => add(product)}
-                  >
-                    <Plus size={18} />
-                    {cart[product.id] ? (
-                      <b aria-hidden="true">{cart[product.id]}</b>
-                    ) : null}
-                  </button>
+          <div className="public-menu-grid">
+            {filtered.map((product) => (
+              <article
+                className={
+                  "public-dish-card " + (!product.stock ? "soldout" : "")
+                }
+                key={product.id}
+              >
+                <div className="public-dish-image">
+                  {product.image_url ? (
+                    <img
+                      src={product.image_url}
+                      alt={product.name}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <DishArt kind={product.kind} />
+                  )}
+                  <span>{product.stock ? "Disponible" : "Agotado"}</span>
                 </div>
-              </div>
-            </article>
-          ))}
-        </div>
-        {!filtered.length && (
-          <div className="restaurant-soft-empty">
-            <UtensilsCrossed size={35} />
-            <h3>Aún no hay opciones en esta selección.</h3>
-            <p>Prueba otra categoría o consulta con el restaurante.</p>
+                <div className="public-dish-body">
+                  <small>{product.category}</small>
+                  <h3>{product.name}</h3>
+                  <p>{product.description}</p>
+                  <details>
+                    <summary>Ingredientes y alérgenos</summary>
+                    <p>
+                      <strong>Ingredientes:</strong>{" "}
+                      {product.ingredients ||
+                        "Por confirmar con el restaurante."}
+                    </p>
+                    <p>
+                      <strong>Alérgenos:</strong>{" "}
+                      {product.allergens ||
+                        "Sin información confirmada. Consulta al equipo si tienes una alergia."}
+                    </p>
+                  </details>
+                  <div>
+                    <strong>
+                      {money(product.price)}
+                      <small> COP</small>
+                    </strong>
+                    <button
+                      aria-label={
+                        "Agregar " +
+                        product.name +
+                        " al pedido" +
+                        (cart[product.id]
+                          ? ". " + cart[product.id] + " en tu pedido"
+                          : "")
+                      }
+                      disabled={
+                        preview ||
+                        !product.stock ||
+                        !p.acceptingOrders ||
+                        (cart[product.id] ?? 0) >= Math.min(product.stock, 20)
+                      }
+                      onClick={() => add(product)}
+                    >
+                      <Plus size={18} />
+                      {cart[product.id] ? (
+                        <b aria-hidden="true">{cart[product.id]}</b>
+                      ) : null}
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
           </div>
+          {!filtered.length && (
+            <div className="restaurant-soft-empty">
+              <UtensilsCrossed size={35} />
+              <h3>Aún no hay opciones en esta selección.</h3>
+              <p>Prueba otra categoría o consulta con el restaurante.</p>
+            </div>
+          )}
+        </section>
+        {design.showStory && design.about && (
+          <section
+            className="storefront-story"
+            style={{ order: design.sections.indexOf("story") }}
+          >
+            <span className="eyebrow">DETRÁS DE CADA SABOR</span>
+            <h2>{design.aboutTitle}</h2>
+            <p>{design.about}</p>
+            <span className="storefront-story-mark" aria-hidden="true">
+              ✳
+            </span>
+          </section>
         )}
-      </section>
+        {design.showContact && (
+          <section
+            className="storefront-contact"
+            style={{ order: design.sections.indexOf("contact") }}
+          >
+            <div>
+              <span className="eyebrow">NOS VEMOS CERCA</span>
+              <h2>Encuéntranos y conversemos.</h2>
+              <p>
+                {p.address ||
+                  "Consulta con el restaurante la ubicación del local."}
+                {p.city ? " · " + p.city : ""}
+              </p>
+              <p>{p.phone}</p>
+              <details>
+                <summary>Horarios de atención</summary>
+                <p>{restaurantHours(p)}</p>
+              </details>
+            </div>
+            <div className="storefront-contact-actions">
+              {wa && (
+                <a
+                  href={preview ? undefined : wa}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Escribir por WhatsApp <ArrowUpRight size={17} />
+                </a>
+              )}
+              {phone && (
+                <a href={preview ? undefined : phone}>
+                  Llamar al restaurante <Phone size={17} />
+                </a>
+              )}
+              {data.voiceUrl && (
+                <a href={preview ? undefined : data.voiceUrl}>
+                  Hablar con {data.assistantName} <Phone size={17} />
+                </a>
+              )}
+            </div>
+          </section>
+        )}
+      </div>
       {count > 0 && (
         <button
           className="public-floating-cart"
@@ -1735,7 +1867,7 @@ export function PublicRestaurant({ slug }: { slug: string }) {
           <strong>{data.name}</strong>
         </div>
         <span>Con el cariño de siempre. Con la tecnología de Cerca.</span>
-        <a href="/">
+        <a href={preview ? undefined : browseUrl}>
           Cerca para restaurantes <ArrowUpRight size={14} />
         </a>
       </footer>
@@ -1744,16 +1876,43 @@ export function PublicRestaurant({ slug }: { slug: string }) {
           title={
             modal === "booking"
               ? "Una mesa para compartir."
-              : "Tu pedido, a tu gusto."
+              : modal === "whatsapp"
+                ? "Conversemos por WhatsApp."
+                : "Tu pedido, a tu gusto."
           }
           description={
             modal === "booking"
               ? "Elige un horario disponible. El restaurante revisará tu solicitud."
-              : "El total se verifica con los precios y las existencias actuales."
+              : modal === "whatsapp"
+                ? "Abre el chat de este restaurante y pulsa el icono de teléfono en WhatsApp para llamar."
+                : "El total se verifica con los precios y las existencias actuales."
           }
           onClose={() => setModal(null)}
         >
-          {modal === "booking" ? (
+          {modal === "whatsapp" ? (
+            <div className="whatsapp-call-guide">
+              <Phone size={32} />
+              <h3>{data.name}</h3>
+              <p>{p.whatsappNumber}</p>
+              <a
+                className="button primary"
+                href={wa}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Abrir WhatsApp para llamar <ArrowUpRight size={16} />
+              </a>
+              <p>
+                La llamada se inicia en WhatsApp. El restaurante debe tener
+                disponibles las llamadas en su número.
+              </p>
+              {data.voiceUrl && (
+                <a className="button secondary" href={data.voiceUrl}>
+                  Hablar con {data.assistantName} desde esta web
+                </a>
+              )}
+            </div>
+          ) : modal === "booking" ? (
             <BookingForm
               profile={p}
               endpoint={"/public/restaurants/" + slug + "/reservations"}
@@ -1803,7 +1962,7 @@ export function PublicRestaurant({ slug }: { slug: string }) {
           </div>
         </Modal>
       )}
-    </main>
+    </Container>
   );
 }
 export function GuestTracking({
@@ -1820,6 +1979,29 @@ export function GuestTracking({
     ),
     [busy, setBusy] = useState(false),
     [actionError, setActionError] = useState("");
+  const previousStatus = useRef<string | null>(null),
+    [statusNotice, setStatusNotice] = useState("");
+  useEffect(() => {
+    const status = String(data?.status ?? "");
+    if (!status) return;
+    if (
+      previousStatus.current &&
+      previousStatus.current !== status &&
+      type === "order"
+    )
+      setStatusNotice(
+        status === "preparing"
+          ? "¡Tu pedido ya está en cocina! El restaurante está preparando tus productos."
+          : status === "ready"
+            ? "Tu pedido está listo."
+            : status === "shipped"
+              ? "Tu pedido salió a domicilio."
+              : status === "delivered"
+                ? "Tu pedido fue marcado como entregado."
+                : "El restaurante actualizó el estado de tu pedido.",
+      );
+    previousStatus.current = status;
+  }, [data?.status, type]);
   if (loading)
     return (
       <div className="public-restaurant-loading">
@@ -1866,8 +2048,58 @@ export function GuestTracking({
               String(data.status))
             : (reservationLabels[String(data.status)] ?? String(data.status))}
         </span>
+        {statusNotice && (
+          <p className="guest-status-notice" role="status">
+            {statusNotice}
+          </p>
+        )}
         {type === "order" ? (
           <>
+            <ol
+              className="guest-order-timeline"
+              aria-label="Progreso del pedido"
+            >
+              {[
+                "confirmed",
+                "preparing",
+                "ready",
+                ...(details?.fulfillment === "delivery" ? ["shipped"] : []),
+                "delivered",
+              ].map((stage, i, stages) => (
+                <li
+                  key={stage}
+                  className={
+                    (stages.indexOf(String(data.status)) >= i ? "done " : "") +
+                    (String(data.status) === stage ? "current" : "")
+                  }
+                  aria-current={
+                    String(data.status) === stage ? "step" : undefined
+                  }
+                >
+                  <i>
+                    {stages.indexOf(String(data.status)) > i ? (
+                      <Check size={12} />
+                    ) : (
+                      i + 1
+                    )}
+                  </i>
+                  <span>
+                    {
+                      {
+                        confirmed: "Recibido",
+                        preparing: "En cocina",
+                        ready: "Listo",
+                        shipped: "En camino",
+                        delivered: "Entregado",
+                      }[stage]
+                    }
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <p className="guest-live-note">
+              El estado se actualiza aquí mientras tengas abierta esta página.
+            </p>
             <div className="guest-order-lines">
               {lines.map((l) => (
                 <div key={l.product_id}>
@@ -2202,6 +2434,15 @@ export function Kitchen() {
                       <span>{relativeTime(o.created_at)}</span>
                     </div>
                     <h3>{o.customer}</h3>
+                    {o.phone && (
+                      <a
+                        className="kitchen-customer-phone"
+                        href={"tel:" + o.phone}
+                      >
+                        <Phone size={12} />
+                        {o.phone}
+                      </a>
+                    )}
                     <span className="kitchen-service">
                       {serviceName[o.details.fulfillment]}
                       {o.details.table_label

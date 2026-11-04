@@ -1,4 +1,4 @@
-# Cerca Restaurantes 4.0
+# Cerca Restaurantes 5.0
 
 **[Descargar la plataforma completa en ZIP](https://github.com/julianstevan0504/catcut/raw/refs/heads/entrega-cerca-whatsapp/descargas/Cerca-WhatsApp.zip)**
 
@@ -21,6 +21,40 @@ npm run dev
 ```
 
 Cliente: http://localhost:5173. API: puerto 3000. **Explorar la demo** abre La Mesa, un restaurante ficticio compartido. **Crear tu cuenta** crea un restaurante vacío y aislado. Los datos de la demo del navegador y del servidor son independientes. Una actualización conserva las cuentas, productos y sesiones anteriores.
+
+## Buscar restaurantes y abrir su página pública
+
+La portada ofrece un **buscador público** por nombre, especialidades, ciudad y tipo de atención. Por ejemplo, busca «Mateo Papa» cuando su dueño haya publicado la página. Solo aparecen negocios publicados y activos; no se muestran borradores, correos de propietarios ni pedidos de otros clientes.
+
+Cada restaurante tiene una dirección como **https://tu-plataforma/r/mateo-papa**. El cliente entra sin cuenta, ve la carta, consulta ingredientes y precios, pide para mesa/recogida/domicilio o reserva según los servicios que el dueño habilite. El servidor envía el pedido al panel correcto con cliente, teléfono, productos y dirección de entrega.
+
+## Crear y personalizar la página que ve el cliente
+
+Al registrarte se abre el generador. Después puedes volver desde **Mi página pública** en tu panel privado:
+
+1. **Preguntas:** nombre público, tipo de negocio, ciudad, especialidades, descripción, WhatsApp, teléfono y dirección. El generador prepara los textos y una propuesta de diseño usando esas respuestas; los productos y precios se toman del menú real.
+2. **Contenido:** cambia títulos, presentación, historia, portada, logo, contactos y nombre del enlace.
+3. **Diseño:** elige colores propios o paletas, tres tipografías, tamaño entre 14 y 22 px, portada con foto a izquierda/derecha o centrada, carta en tarjetas/lista, alineación y ancho. Se ajustan los colores del texto para mantener contraste.
+4. **Posiciones:** sube o baja Carta, Historia y Contacto y elige qué secciones mostrar. La vista previa permite revisar computador y celular.
+5. Al navegar a otra sección desde el editor se guarda el borrador válido. **Guardar borrador** conserva los cambios de forma privada. **Publicar mi página/Publicar cambios** los muestra al público y en el buscador. **Retirar mi página de Internet** la oculta sin borrar pedidos. Ediciones simultáneas se rechazan para no perder trabajo.
+
+Añade al menos un producto y el WhatsApp del restaurante antes de publicar desde este editor. Las fotos utilizadas solo en borradores requieren sesión y están protegidas frente a borrado. El enlace público usa el alojamiento de la plataforma: publicar desde localhost genera una dirección local; para clientes externos despliega el servidor con HTTPS.
+
+## Contactos, avisos y seguimiento
+
+Cada página usa **su propio WhatsApp y teléfono**. «WhatsApp» abre el chat del negocio; «Llamar por WhatsApp» guía al cliente a abrir ese chat y pulsar su icono de llamada. «Llamar al restaurante» usa el teléfono configurado. Si el dueño habilita la voz web, también aparece «Hablar con Sofía». Una llamada por WhatsApp automatizada requiere el remitente Business Calling configurado con el proveedor.
+
+La campana del panel muestra **avisos persistentes de pedidos** del restaurante. Se revisan cada cinco segundos mientras el panel está abierto; puede activarse la notificación de ese dispositivo con permiso del navegador. Las notificaciones del sistema no incluyen el nombre o dirección del cliente. No se promete entrega de notificaciones con el navegador cerrado.
+
+El cliente conserva un enlace privado con progreso **Recibido → En cocina → Listo → En camino cuando corresponda → Entregado**. Cuando el dueño actualiza Cocina, el cliente ve el estado y un aviso en su seguimiento abierto, sin recargar manualmente. El enlace vuelve a mostrar el último estado al abrirlo después.
+
+## Entrar como dueño de la plataforma
+
+En el buscador pulsa **Soy el dueño de la plataforma**, al pie de la página, o abre **/admin** de tu instalación. Con el iniciador local: **http://localhost:3000/admin**.
+
+Inicia sesión con tu correo y contraseña. Si aún no activaste el rol de dueño, la pantalla explica cómo usar la clave privada de **proyecto/data/administracion-clave.txt**, creada por el iniciador, junto con tu contraseña. En alojamiento usa **PLATFORM_SETUP_TOKEN** del servidor. No compartas esa clave ni la subas a GitHub.
+
+Después abre **Administración → Restaurantes** para ver cantidad de negocios, buscar nombre/correo/enlace, revisar sus estados y abrir sus páginas públicas. La activación requiere sesión, contraseña y clave; visitar /admin no concede permisos. En la demo de doble clic, Administración muestra solo el negocio ficticio del navegador.
 
 ## Preparar un restaurante
 
@@ -76,7 +110,7 @@ El seguimiento por WhatsApp solo devuelve pedidos del número remitente. En llam
 
 ## Hablar y escuchar desde la web
 
-Abre **Asistente IA → Voz y llamadas**. Puedes iniciar, hablar para interrumpir la reproducción, pulsar «Interrumpir y hablar», silenciar micrófono/altavoz, escribir y terminar. Se filtra el eco y se cancelan consultas de IA pendientes al interrumpir o colgar. El resultado de la interrupción por voz depende del navegador y del micrófono. La transcripción se guarda en **Conversaciones** y en el historial de llamadas. Desde la bandeja puedes añadir notas internas para tu equipo; no se reproducen al cliente. No se graban archivos de audio. Al salir de la pantalla se detienen el dictado y la reproducción.
+Abre **Asistente IA → Voz y llamadas**. El modo predeterminado **pausa el micrófono mientras Sofía habla** y espera brevemente antes de escucharte para evitar que se responda a sí misma. Pulsa **Interrumpir y hablar** para tomar tu turno. Puedes silenciar micrófono/altavoz, escribir y terminar. La opción **Interrumpir por voz con auriculares** permite escucha simultánea y filtra repeticiones incluso cortas; úsala con auriculares para reducir el eco. Se cancelan consultas de IA pendientes al interrumpir o colgar y se ignoran eventos antiguos del navegador. La compatibilidad depende del navegador y del micrófono. La transcripción se guarda en **Conversaciones** y en el historial de llamadas. Desde la bandeja puedes añadir notas internas para tu equipo; no se reproducen al cliente. No se graban archivos de audio. Al salir de la pantalla se detienen el dictado y la reproducción.
 
 El dictado usa `SpeechRecognition` del navegador; la voz usa `speechSynthesis`. La compatibilidad depende del navegador, idioma, permisos y sistema. Prueba Chrome o Edge en **HTTPS o localhost**. Si el dictado no está disponible o no tiene permiso, puedes seguir por texto. La demo con doble clic puede no tener acceso al micrófono: para probarlo usa el iniciador local. El reconocimiento puede procesar audio mediante el servicio del navegador, que tiene sus propias condiciones. El aviso se muestra antes de iniciar.
 

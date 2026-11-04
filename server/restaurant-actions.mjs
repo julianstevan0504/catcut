@@ -21,6 +21,19 @@ export function restaurantSettings(db, ws) {
     knowledge: [
       ...(settings.knowledge ?? []),
       {
+        id: "automatic-public-story",
+        title: "Identidad, especialidades e historia del restaurante",
+        content: [
+          p.displayName,
+          p.cuisine,
+          p.specialties,
+          p.welcome,
+          p.design?.about,
+        ]
+          .filter(Boolean)
+          .join("\n\n"),
+      },
+      {
         id: "automatic-restaurant-location",
         title: "Ubicación y contacto del restaurante",
         content:

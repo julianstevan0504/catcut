@@ -2,6 +2,8 @@ import { createHmac, randomBytes, randomInt } from "node:crypto";
 import { join, dirname } from "node:path";
 import { mkdir, writeFile, readFile, unlink } from "node:fs/promises";
 import sharp from "sharp";
+import { presetColors } from "../shared/storefront.ts";
+import { installStorefronts } from "./storefronts.mjs";
 import { uid, now, settingsFor, activity } from "./db.mjs";
 import { rateLimiter, tokenHash } from "./security.mjs";
 import { profileFor, activeBusiness } from "./restaurant-db.mjs";
@@ -446,15 +448,37 @@ export function installRestaurants({
       )
         throw fail(400, "Una imagen no pertenece a tu restaurante.");
   }
+  const storefronts = installStorefronts({
+    app,
+    db,
+    auth,
+    baseUrl,
+    ownedImages,
+    imageUrl,
+    publicLimit,
+  });
   app.get("/api/restaurant", auth, (req, res) =>
     res.json({
       ...profileFor(db, req.workspaceId),
-      publicUrl:
-        baseUrl + "/?restaurant=" + profileFor(db, req.workspaceId).slug,
+      publicUrl: baseUrl + "/r/" + profileFor(db, req.workspaceId).slug,
     }),
   );
   app.put("/api/restaurant", auth, (req, res) => {
-    const p = validateRestaurant(req.body, profileFor(db, req.workspaceId));
+    const previous = profileFor(db, req.workspaceId);
+    if (
+      req.body.accent &&
+      req.body.accent !== previous.accent &&
+      JSON.stringify(req.body.design) === JSON.stringify(previous.design)
+    ) {
+      const colors = presetColors[req.body.accent];
+      if (colors)
+        req.body.design = {
+          ...previous.design,
+          primaryColor: colors.primary,
+          backgroundColor: colors.background,
+        };
+    }
+    const p = validateRestaurant(req.body, previous);
     ownedImages(req.workspaceId, [p.coverImageId, p.logoImageId]);
     db.prepare(
       "UPDATE restaurant_profiles SET slug=?,data=?,updated_at=? WHERE workspace_id=?",
@@ -488,7 +512,9 @@ export function installRestaurants({
         .get(ws),
       s = settingsFor(db, ws);
     res.json({
-      name: db.prepare("SELECT name FROM workspaces WHERE id=?").get(ws).name,
+      name:
+        p.displayName ||
+        db.prepare("SELECT name FROM workspaces WHERE id=?").get(ws).name,
       profile: {
         ...p,
         coverImageUrl: imageUrl(p.coverImageId),
@@ -768,7 +794,12 @@ export function installRestaurants({
   });
   app.get("/api/media/images", auth, (req, res) => {
     const p = profileFor(db, req.workspaceId);
+    const draft = JSON.parse(
+      storefronts.draftFor(req.workspaceId)?.data ?? "{}",
+    );
     const used = new Set([
+      draft.coverImageId,
+      draft.logoImageId,
       p.coverImageId,
       p.logoImageId,
       ...db
@@ -909,7 +940,18 @@ export function installRestaurants({
         res.sendStatus(404);
       }
     };
-    if (profileFor(db, image.workspace_id).publicEnabled) return serve();
+    const published = profileFor(db, image.workspace_id);
+    const onPublicPage =
+      [published.coverImageId, published.logoImageId].includes(image.id) ||
+      Boolean(
+        db
+          .prepare(
+            "SELECT id FROM products WHERE workspace_id=? AND image_id=? LIMIT 1",
+          )
+          .get(image.workspace_id, image.id),
+      );
+    if (published.publicEnabled && onPublicPage) return serve();
+    if (!req.headers.cookie) return res.sendStatus(404);
     auth(req, res, (error) => {
       if (error) return next(error);
       if (req.workspaceId !== image.workspace_id) return res.sendStatus(404);
@@ -922,11 +964,19 @@ export function installRestaurants({
       .get(req.params.id, req.workspaceId);
     if (!row) throw fail(404, "Foto no encontrada.");
     const profile = profileFor(db, req.workspaceId);
+    const draft = JSON.parse(
+      storefronts.draftFor(req.workspaceId)?.data ?? "{}",
+    );
     if (
       db
         .prepare("SELECT id FROM products WHERE image_id=? AND workspace_id=?")
         .get(row.id, req.workspaceId) ||
-      [profile.coverImageId, profile.logoImageId].includes(row.id)
+      [
+        profile.coverImageId,
+        profile.logoImageId,
+        draft.coverImageId,
+        draft.logoImageId,
+      ].includes(row.id)
     )
       throw fail(
         409,

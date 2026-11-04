@@ -1,7 +1,7 @@
 {
   "tool": "axe-core",
   "version": "4.14.0",
-  "generatedAt": "2026-11-04T05:51:40.628Z",
+  "generatedAt": "2026-11-04T20:35:55.839Z",
   "url": "Demo portátil servida localmente",
   "scans": [
     {
@@ -26,6 +26,221 @@
         "html-lang-valid",
         "meta-viewport",
         "nested-interactive"
+      ]
+    },
+    {
+      "page": "avisos-de-pedidos",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "button-name",
+        "color-contrast",
+        "document-title",
+        "html-has-lang",
+        "html-lang-valid",
+        "meta-viewport",
+        "nested-interactive"
+      ]
+    },
+    {
+      "page": "editor-preguntas",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive",
+        "scrollable-region-focusable",
+        "select-name",
+        "summary-name"
+      ]
+    },
+    {
+      "page": "editor-contenido",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive",
+        "scrollable-region-focusable",
+        "summary-name"
+      ]
+    },
+    {
+      "page": "editor-apariencia",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive",
+        "scrollable-region-focusable",
+        "select-name",
+        "summary-name"
+      ]
+    },
+    {
+      "page": "editor-posiciones",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive",
+        "scrollable-region-focusable",
+        "summary-name"
+      ]
+    },
+    {
+      "page": "editor-publicacion",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive",
+        "scrollable-region-focusable",
+        "summary-name"
+      ]
+    },
+    {
+      "page": "editor-preview-celular",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive",
+        "scrollable-region-focusable",
+        "summary-name"
       ]
     },
     {
@@ -313,12 +528,14 @@
         "aria-valid-attr",
         "avoid-inline-spacing",
         "button-name",
+        "bypass",
         "color-contrast",
         "document-title",
         "form-field-multiple-labels",
         "html-has-lang",
         "html-lang-valid",
         "label",
+        "link-name",
         "meta-viewport",
         "nested-interactive"
       ]
@@ -856,12 +1073,14 @@
         "aria-valid-attr",
         "avoid-inline-spacing",
         "button-name",
+        "bypass",
         "color-contrast",
         "document-title",
         "form-field-multiple-labels",
         "html-has-lang",
         "html-lang-valid",
         "label",
+        "link-name",
         "meta-viewport",
         "nested-interactive"
       ]
@@ -916,10 +1135,45 @@
         "aria-roles",
         "aria-valid-attr-value",
         "aria-valid-attr",
+        "avoid-inline-spacing",
         "button-name",
         "bypass",
         "color-contrast",
         "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive",
+        "summary-name"
+      ]
+    },
+    {
+      "page": "llamada-whatsapp-publica",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "duplicate-id-aria",
         "form-field-multiple-labels",
         "html-has-lang",
         "html-lang-valid",
@@ -1035,7 +1289,6 @@
         "link-name",
         "meta-viewport",
         "nested-interactive",
-        "scrollable-region-focusable",
         "select-name",
         "summary-name"
       ]
@@ -1071,7 +1324,6 @@
         "link-name",
         "meta-viewport",
         "nested-interactive",
-        "scrollable-region-focusable",
         "summary-name"
       ]
     },
@@ -1093,6 +1345,7 @@
         "aria-roles",
         "aria-valid-attr-value",
         "aria-valid-attr",
+        "avoid-inline-spacing",
         "button-name",
         "bypass",
         "color-contrast",
@@ -1125,6 +1378,7 @@
         "aria-roles",
         "aria-valid-attr-value",
         "aria-valid-attr",
+        "avoid-inline-spacing",
         "button-name",
         "bypass",
         "color-contrast",
@@ -1137,6 +1391,130 @@
         "meta-viewport",
         "nested-interactive",
         "summary-name"
+      ]
+    },
+    {
+      "page": "menu-color-personalizado",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive",
+        "summary-name"
+      ]
+    },
+    {
+      "page": "buscador-publico",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "duplicate-id-aria",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label-content-name-mismatch",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive",
+        "select-name"
+      ]
+    },
+    {
+      "page": "buscador-publico-movil",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "duplicate-id-aria",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label-content-name-mismatch",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive",
+        "select-name"
+      ]
+    },
+    {
+      "page": "acceso-dueno",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "autocomplete-valid",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive"
       ]
     },
     {
@@ -1185,12 +1563,14 @@
         "aria-valid-attr",
         "autocomplete-valid",
         "button-name",
+        "bypass",
         "color-contrast",
         "document-title",
         "form-field-multiple-labels",
         "html-has-lang",
         "html-lang-valid",
         "label",
+        "link-name",
         "meta-viewport",
         "nested-interactive"
       ]
