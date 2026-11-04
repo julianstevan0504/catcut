@@ -7,6 +7,9 @@ export const uid = () => randomUUID();
 export const now = () => new Date().toISOString();
 export { defaultSettings } from "../shared/defaults.ts";
 import { defaultSettings } from "../shared/defaults.ts";
+import { seedRestaurant } from "./restaurant-seed.mjs";
+import { restaurantSchema } from "./restaurant-db.mjs";
+import { businessExamples } from "../shared/business-examples.ts";
 import { menuExamples } from "../shared/menu-examples.ts";
 
 export function createDatabase(path) {
@@ -107,9 +110,21 @@ export function createDatabase(path) {
     );
     CREATE INDEX IF NOT EXISTS voice_sessions_workspace ON voice_sessions(workspace_id, created_at);
   `);
-  const productColumns = new Set(db.prepare('PRAGMA table_info(products)').all().map(c => c.name));
-  for (const [column, defaultValue] of [['ingredients',''],['allergens',''],['kind','product']])
-    if (!productColumns.has(column)) db.exec(`ALTER TABLE products ADD COLUMN ${column} TEXT NOT NULL DEFAULT '${defaultValue}'`);
+  const productColumns = new Set(
+    db
+      .prepare("PRAGMA table_info(products)")
+      .all()
+      .map((c) => c.name),
+  );
+  for (const [column, defaultValue] of [
+    ["ingredients", ""],
+    ["allergens", ""],
+    ["kind", "product"],
+  ])
+    if (!productColumns.has(column))
+      db.exec(
+        `ALTER TABLE products ADD COLUMN ${column} TEXT NOT NULL DEFAULT '${defaultValue}'`,
+      );
   const columns = new Set(
     db
       .prepare("PRAGMA table_info(sessions)")
@@ -135,6 +150,7 @@ export function createDatabase(path) {
   db.prepare(
     "UPDATE jobs SET status = 'pending' WHERE status = 'processing'",
   ).run();
+  restaurantSchema(db);
   return db;
 }
 
@@ -181,11 +197,16 @@ export function addMessage(db, conversationId, role, text, options = {}) {
   return db.prepare("SELECT * FROM messages WHERE id = ?").get(id);
 }
 
-export function createWorkspace(db, name, { sample = false } = {}) {
+export function createWorkspace(
+  db,
+  name,
+  { sample = false, restaurant = false } = {},
+) {
   const id = uid();
   const settings = {
     ...defaultSettings,
-    welcome: defaultSettings.welcome.replace("de la tienda", `de ${name}`),
+    knowledge: sample ? businessExamples : [],
+    welcome: defaultSettings.welcome.replace("del restaurante", `de ${name}`),
   };
   db.prepare("INSERT INTO workspaces VALUES (?, ?, ?, ?)").run(
     id,
@@ -194,7 +215,10 @@ export function createWorkspace(db, name, { sample = false } = {}) {
     now(),
   );
   activity(db, id, "workspace.created", `Se creó la tienda ${name}.`);
-  if (sample) seedStore(db, id);
+  if (sample) {
+    if (restaurant) seedRestaurant(db, id, settings);
+    else seedStore(db, id);
+  }
   return id;
 }
 
@@ -256,12 +280,26 @@ function seedStore(db, workspaceId) {
     ],
   ];
   for (const product of products)
-    db.prepare("INSERT INTO products (id, workspace_id, name, sku, description, category, price, stock, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run(
+    db.prepare(
+      "INSERT INTO products (id, workspace_id, name, sku, description, category, price, stock, color) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    ).run(uid(), workspaceId, ...product);
+  for (const p of menuExamples)
+    db.prepare(
+      "INSERT INTO products (id,workspace_id,name,sku,description,category,price,stock,color,ingredients,allergens,kind) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+    ).run(
       uid(),
       workspaceId,
-      ...product,
+      p.name,
+      p.sku,
+      p.description,
+      p.category,
+      p.price,
+      p.stock,
+      p.color,
+      p.ingredients,
+      p.allergens,
+      p.kind,
     );
-  for (const p of menuExamples) db.prepare('INSERT INTO products (id,workspace_id,name,sku,description,category,price,stock,color,ingredients,allergens,kind) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)').run(uid(),workspaceId,p.name,p.sku,p.description,p.category,p.price,p.stock,p.color,p.ingredients,p.allergens,p.kind);
   const contacts = [
     [
       "Valentina Rojas",

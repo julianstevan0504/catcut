@@ -1,5 +1,12 @@
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { randomBytes } from "node:crypto";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+  chmodSync,
+} from "node:fs";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { setTimeout as delay } from "node:timers/promises";
@@ -22,7 +29,9 @@ if (!existsSync(join(root, "dist/index.html"))) {
 if (
   !existsSync(join(root, "node_modules/express/package.json")) ||
   !existsSync(join(root, "node_modules/helmet/package.json")) ||
-  !existsSync(join(root, "node_modules/dotenv/package.json"))
+  !existsSync(join(root, "node_modules/dotenv/package.json")) ||
+  !existsSync(join(root, "node_modules/sharp/package.json")) ||
+  !existsSync(join(root, "node_modules/twilio/package.json"))
 ) {
   console.log(
     "Primera apertura: instalando las dependencias oficiales. Necesitas conexión a internet.",
@@ -49,6 +58,20 @@ if (!Number.isInteger(port) || port < 1024 || port > 65535) {
   console.error("CERCA_LOCAL_PORT debe ser un número entre 1024 y 65535.");
   process.exit(1);
 }
+const localDatabase =
+  process.env.CERCA_LOCAL_DATABASE ?? join(root, "data/cerca.sqlite");
+const setupPath = join(dirname(localDatabase), "administracion-clave.txt");
+let platformToken = process.env.PLATFORM_SETUP_TOKEN;
+if (!platformToken) {
+  mkdirSync(dirname(setupPath), { recursive: true, mode: 0o700 });
+  if (!existsSync(setupPath))
+    writeFileSync(setupPath, randomBytes(32).toString("hex"), {
+      mode: 0o600,
+      flag: "wx",
+    });
+  chmodSync(setupPath, 0o600);
+  platformToken = readFileSync(setupPath, "utf8").trim();
+}
 const url = `http://localhost:${port}`;
 const child = spawn(process.execPath, ["--use-env-proxy", "server/index.mjs"], {
   cwd: root,
@@ -59,6 +82,7 @@ const child = spawn(process.execPath, ["--use-env-proxy", "server/index.mjs"], {
     HOST: "127.0.0.1",
     PORT: String(port),
     APP_URL: url,
+    PLATFORM_SETUP_TOKEN: platformToken,
     DATABASE_PATH:
       process.env.CERCA_LOCAL_DATABASE ?? join(root, "data/cerca.sqlite"),
     DEMO_MODE: "true",
@@ -104,6 +128,11 @@ try {
     );
   console.log(
     `\nCerca está lista. Abre ${url} y pulsa «Explorar la demo» o crea tu cuenta.`,
+  );
+  console.log(
+    "La clave privada para activar Administración está en " +
+      setupPath +
+      ". No la compartas.",
   );
   console.log(
     "No cierres esta ventana mientras uses la plataforma. Pulsa Ctrl+C para detenerla.",

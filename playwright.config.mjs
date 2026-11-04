@@ -29,6 +29,8 @@ export default defineConfig({
       REGISTRATION_OPEN: "true",
       APP_URL: "http://127.0.0.1:5173",
       OPENAI_API_KEY: "",
+      PLATFORM_SETUP_TOKEN:
+        "test_only_platform_activation_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     },
     timeout: 30000,
   },

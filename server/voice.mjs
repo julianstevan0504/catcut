@@ -8,6 +8,7 @@ import {
   safeEqual,
   rateLimiter,
 } from "./security.mjs";
+import { activeBusiness } from "./restaurant-db.mjs";
 import { answerMessage } from "./assistant.mjs";
 const fail = (status, message) => Object.assign(new Error(message), { status });
 const number = (value) =>
@@ -23,8 +24,20 @@ const cleanSpeech = (value) =>
 const say = (response, text) =>
   response.say({ language: "es-US", voice: "Polly.Lupe" }, cleanSpeech(text));
 
-export function installVoice({ app, db, auth, key, baseUrl, demoEmail }) {
-  const inflight = new Map();
+export function installVoice({
+  app,
+  db,
+  auth,
+  key,
+  baseUrl,
+  demoEmail,
+  openaiKey,
+  model,
+  fetcher,
+}) {
+  const inflight = new Map(),
+    voiceAbort = new Map();
+  const turnLimit = rateLimiter({ limit: 90, windowMs: 60000 });
   const limit = rateLimiter({ limit: 20, windowMs: 60000 });
   function channel(ws) {
     let row = db
@@ -51,6 +64,8 @@ export function installVoice({ app, db, auth, key, baseUrl, demoEmail }) {
       )
       .get(token);
     if (!row) throw fail(404, "Este enlace de llamadas no está disponible.");
+    if (!activeBusiness(db, row.workspace_id))
+      throw fail(404, "Este restaurante no está disponible.");
     const s = settingsFor(db, row.workspace_id);
     if (!s.active || !s.voiceEnabled)
       throw fail(409, "El asistente de voz está en pausa.");
@@ -161,6 +176,8 @@ export function installVoice({ app, db, auth, key, baseUrl, demoEmail }) {
     });
   });
   function createSession(ws, mode, from = "", callSid = null) {
+    if (!activeBusiness(db, ws))
+      throw fail(409, "Este restaurante no está disponible.");
     const s = settingsFor(db, ws);
     if (!s.active || !s.voiceEnabled)
       throw fail(409, "El asistente de voz está en pausa.");
@@ -202,6 +219,9 @@ export function installVoice({ app, db, auth, key, baseUrl, demoEmail }) {
         time,
       );
     db.prepare("DELETE FROM conversation_memory WHERE conversation_id=?").run(
+      cid,
+    );
+    db.prepare("DELETE FROM conversation_actions WHERE conversation_id=?").run(
       cid,
     );
     db.prepare(
@@ -259,12 +279,14 @@ export function installVoice({ app, db, auth, key, baseUrl, demoEmail }) {
       throw fail(410, "El enlace de llamadas fue desactivado.");
     return row;
   }
-  async function turn(row, text) {
+  async function turn(row, text, signal) {
     if (row.turn_count >= 40)
       throw fail(
         410,
         "Alcanzaste el límite de esta llamada. Inicia una nueva para continuar.",
       );
+    if (!activeBusiness(db, row.workspace_id))
+      throw fail(409, "El restaurante no está disponible.");
     const settings = settingsFor(db, row.workspace_id),
       conversation = db
         .prepare("SELECT * FROM conversations WHERE id=?")
@@ -280,6 +302,12 @@ export function installVoice({ app, db, auth, key, baseUrl, demoEmail }) {
       conversation,
       text,
       voice: true,
+      apiKey: openaiKey,
+      model,
+      fetcher,
+      actionKey: key,
+      baseUrl,
+      signal,
     });
     addMessage(db, conversation.id, "assistant", reply.text, {
       source: "voice",
@@ -294,22 +322,49 @@ export function installVoice({ app, db, auth, key, baseUrl, demoEmail }) {
     );
     return reply;
   }
-  app.post("/api/voice/sessions/:id/turn", limit, async (req, res) => {
+  app.post("/api/voice/sessions/:id/turn", turnLimit, async (req, res) => {
     const row = webSession(req),
       text = req.body.text;
     if (typeof text !== "string" || !text.trim() || text.length > 1500)
       throw fail(400, "Escribe o di un mensaje de hasta 1500 caracteres.");
     if (inflight.has(row.id)) throw fail(409, "Espera la respuesta anterior.");
-    const pending = turn(row, text.trim());
+    const abort = new AbortController();
+    voiceAbort.set(row.id, abort);
+    const pending = turn(row, text.trim(), abort.signal);
     inflight.set(row.id, pending);
     try {
       res.json(await pending);
+    } catch (error) {
+      if (abort.signal.aborted)
+        return res
+          .status(409)
+          .json({ error: "Consulta interrumpida por el cliente." });
+      throw error;
     } finally {
+      voiceAbort.delete(row.id);
       inflight.delete(row.id);
     }
   });
-  app.post("/api/voice/sessions/:id/end", limit, (req, res) => {
+  app.post("/api/voice/sessions/:id/interrupt", turnLimit, (req, res) => {
     const row = webSession(req);
+    voiceAbort.get(row.id)?.abort();
+    const state = JSON.parse(row.state);
+    state.interruptions = Math.min(100, (state.interruptions ?? 0) + 1);
+    db.prepare("UPDATE voice_sessions SET state=? WHERE id=?").run(
+      JSON.stringify(state),
+      row.id,
+    );
+    activity(
+      db,
+      row.workspace_id,
+      "voice.interrupted",
+      "El cliente interrumpió una respuesta de voz para continuar la conversación.",
+    );
+    res.json({ ok: true });
+  });
+  app.post("/api/voice/sessions/:id/end", turnLimit, (req, res) => {
+    const row = webSession(req);
+    voiceAbort.get(row.id)?.abort();
     db.prepare("UPDATE voice_sessions SET ended_at=? WHERE id=?").run(
       now(),
       row.id,
@@ -370,6 +425,7 @@ export function installVoice({ app, db, auth, key, baseUrl, demoEmail }) {
     const action = `${baseUrl}/api/webhooks/voice/twilio/${ws}/turn?step=${step}`;
     const gather = response.gather({
       input: "speech dtmf",
+      bargeIn: true,
       language: "es-CO",
       speechTimeout: "auto",
       timeout: 6,
@@ -428,7 +484,7 @@ export function installVoice({ app, db, auth, key, baseUrl, demoEmail }) {
       if (row && row.workspace_id !== ws)
         throw fail(403, "Llamada no autorizada.");
       const settings = settingsFor(db, ws);
-      if (!settings.active || !settings.voiceEnabled)
+      if (!activeBusiness(db, ws) || !settings.active || !settings.voiceEnabled)
         return res
           .type("text/xml")
           .send(

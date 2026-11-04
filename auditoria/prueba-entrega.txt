@@ -1,0 +1,11 @@
+Cerca Restaurantes 4.0 · Verificación de la entrega
+
+ZIP íntegro. El index empaquetado abre la demo y el asistente responde sin API ni servidor de aplicación: OK.
+Instalación limpia, servidor empaquetado, carga por secciones, sesión, CSRF, menú y llamadas web: OK.
+La demo también carga con la política CSP del servidor y sin errores de JavaScript: OK.
+
+Prueba hecha en una extracción nueva: npm ci --omit=dev, servidor local real, index portátil sin API, CSP y consultas de voz con texto. No se usó teléfono ni un proveedor externo real.
+
+SHA-256 del paquete probado antes de adjuntar este informe: ddbc8a5454fcb5a5f6f9b96036eb3119397850a51ffe3b83dbc800e3445ff1a4
+Huella del listado de archivos cotejados del proyecto (excepto auditoría): 0c089351caf8b879fc687dd0b4812744ddb869dde6ece46fe13acbfe60d6ae44
+El paquete final incorpora este informe y la evidencia de producción; se coteja el resto del proyecto y su index para conservar exactamente el contenido probado. El hash del ZIP final está en descargas/manifest.json del repositorio.

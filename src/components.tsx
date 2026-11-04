@@ -156,6 +156,7 @@ export function StatusBadge({ status }: { status: string }) {
     resolved: "Resuelta",
     confirmed: "Confirmado",
     preparing: "Preparando",
+    ready: "Listo",
     shipped: "En camino",
     delivered: "Entregado",
     cancelled: "Cancelado",

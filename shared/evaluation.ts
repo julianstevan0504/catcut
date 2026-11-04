@@ -1,4 +1,4 @@
-import { localReply } from "./replies.ts";
+import { assistantReply } from "./advisor.ts";
 import type { Product, Settings, Order } from "../src/types.ts";
 export function evaluateStore({
   settings,
@@ -10,7 +10,7 @@ export function evaluateStore({
   products: Product[];
 }) {
   const run = (text: string, extra = {}) =>
-    localReply({
+    assistantReply({
       settings,
       storeName,
       products,

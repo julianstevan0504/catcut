@@ -5,30 +5,33 @@ export const defaultSettings: Settings = {
   tone: "cercano",
   voiceEnabled: true,
   voiceRate: 1,
-  description: "Una tienda independiente de moda y accesorios en Colombia.",
+  knowledge: [],
+  rememberPreferences: true,
+  description:
+    "Un restaurante independiente en Colombia. Ofrecemos atención cercana y una carta que se actualiza con los datos del local.",
   timezone: "America/Bogota",
   hours:
-    "Lunes a viernes de 9:00 a. m. a 6:00 p. m. y sábados de 9:00 a. m. a 1:00 p. m. (hora de Colombia). Domingos y festivos no hay atención humana.",
+    "Lunes a viernes de 12:00 m. a 10:00 p. m.; sábados y domingos de 12:00 m. a 10:00 p. m. (hora de Colombia). Confirma días festivos con el equipo.",
   shipping:
-    "Hacemos envíos a toda Colombia. El tiempo estimado es de 2 a 5 días hábiles. El costo se confirma con la dirección antes de la compra.",
+    "Los servicios de mesa, recogida y domicilio dependen de la configuración del restaurante. La zona y la tarifa de entrega se confirman antes de registrar el pedido.",
   returns:
-    "Puedes solicitar un cambio dentro de los 15 días siguientes a la entrega, con el producto sin usar y sus etiquetas. Escríbenos para revisar tu caso.",
+    "Si hay un problema con tu pedido, escríbenos cuanto antes con su código y lo que ocurrió. El equipo revisará tu caso y confirmará la solución.",
   payments:
-    "Aceptamos transferencia bancaria, Nequi y tarjetas mediante un enlace de pago que te envía una persona del equipo. Nunca pedimos contraseñas ni códigos de seguridad.",
+    "Los medios de pago se confirman con el equipo del restaurante. La plataforma no cobra automáticamente ni solicita contraseñas o códigos bancarios.",
   welcome:
-    "¡Hola! Soy Sofía, la asistente virtual de la tienda 🌿 ¿Te ayudo con un producto o con tu pedido?",
+    "¡Hola! Soy Sofía, la asistente virtual del restaurante 🌿 ¿Te ayudo a elegir, reservar una mesa o preparar un pedido?",
   faqs: [
     {
-      id: "faq-size",
-      question: "¿Cómo puedo saber mi talla?",
+      id: "faq-ingredients",
+      question: "¿Cómo conozco los ingredientes y alérgenos?",
       answer:
-        "Dime qué prenda te gusta y te pongo en contacto con el equipo para confirmar sus medidas y ayudarte a elegir tu talla.",
+        "Dime qué plato te interesa y reviso los ingredientes registrados. Si tienes una alergia, confirma los ingredientes y posibles trazas con el equipo antes de consumir.",
     },
     {
       id: "faq-pickup",
       question: "¿Puedo recoger mi pedido?",
       answer:
-        "Por ahora vendemos online y hacemos envíos. Si necesitas una entrega especial, te comunico con una persona del equipo.",
+        "Si el restaurante tiene habilitada la recogida, puedes seleccionar esa opción al preparar tu pedido. Confirma el horario con el equipo.",
     },
   ],
 };

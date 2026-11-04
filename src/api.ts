@@ -22,7 +22,9 @@ export async function api<T>(
   if (options.signal?.aborted) controller.abort();
   const timeout = setTimeout(
     () => controller.abort(),
-    path === "/simulator" ? 45000 : 15000,
+    path === "/simulator" || /\/voice\/sessions\/.+\/turn$/.test(path)
+      ? 45000
+      : 15000,
   );
   try {
     const response = await fetch(`/api${path}`, {

@@ -12,7 +12,7 @@ test("la demo independiente funciona con la API bloqueada y conserva los cambios
   });
   await page.goto("/Cerca.html");
   await expect(
-    page.getByRole("heading", { name: "Tu tienda, en buenas manos." }),
+    page.getByRole("heading", { name: "Hoy se cocina algo bueno." }),
   ).toBeVisible();
   await expect(
     page.getByText("Demo interactiva · sin instalación", { exact: true }),
@@ -21,7 +21,7 @@ test("la demo independiente funciona con la API bloqueada y conserva los cambios
     path: "test-results/plataforma-v2-panel.png",
     fullPage: true,
   });
-  await page.getByRole("button", { name: "Productos", exact: true }).click();
+  await page.getByRole("button", { name: "Menú y fotos", exact: true }).click();
   await page
     .getByRole("button", { name: "Agregar producto", exact: true })
     .click();
@@ -56,7 +56,7 @@ test("el catálogo se importa con revisión previa y la búsqueda global abre el
   page,
 }) => {
   await page.goto("/Cerca.html");
-  await page.getByRole("button", { name: "Productos", exact: true }).click();
+  await page.getByRole("button", { name: "Menú y fotos", exact: true }).click();
   await page.getByRole("button", { name: "Importar CSV", exact: true }).click();
   await page.getByLabel("Archivo CSV del catálogo").setInputFiles({
     name: "catalogo.csv",
@@ -101,7 +101,7 @@ test("un CSV incorrecto no permite importar ni cambia el catálogo", async ({
   page,
 }) => {
   await page.goto("/Cerca.html");
-  await page.getByRole("button", { name: "Productos", exact: true }).click();
+  await page.getByRole("button", { name: "Menú y fotos", exact: true }).click();
   await page.getByRole("button", { name: "Importar CSV", exact: true }).click();
   await page.getByLabel("Archivo CSV del catálogo").setInputFiles({
     name: "malo.csv",
@@ -126,7 +126,7 @@ test("la nueva vista móvil no tiene desbordamiento y se pueden exportar los dat
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/Cerca.html");
   await expect(
-    page.getByRole("heading", { name: "Tu tienda, en buenas manos." }),
+    page.getByRole("heading", { name: "Hoy se cocina algo bueno." }),
   ).toBeVisible();
   expect(
     await page.evaluate(
@@ -166,7 +166,7 @@ test("la demo informa si el navegador no permite guardar y conserva la prueba en
     };
   });
   await page.goto("/Cerca.html");
-  await page.getByRole("button", { name: "Productos", exact: true }).click();
+  await page.getByRole("button", { name: "Menú y fotos", exact: true }).click();
   await page
     .getByRole("button", { name: "Agregar producto", exact: true })
     .click();

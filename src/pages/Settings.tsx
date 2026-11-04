@@ -22,6 +22,7 @@ import {
 import { post, put } from "../api";
 import { useApp } from "../context";
 import { Avatar, PageHeading, SaveButton } from "../components";
+import { RecoveryPanel } from "../AccountRecovery";
 import { SecurityTools } from "../Workbench";
 
 export function SettingsPage() {
@@ -90,7 +91,12 @@ export function SettingsPage() {
           )}{" "}
           {tab === "whatsapp" && <WhatsAppSettings />}
           {tab === "account" && <AccountSettings />}
-          {tab === "security" && <SecurityTools />}
+          {tab === "security" && (
+            <>
+              <SecurityTools />
+              <RecoveryPanel />
+            </>
+          )}
           <div className="settings-bottom-note">
             <LockKeyhole size={13} />
             {session.offline
@@ -228,9 +234,9 @@ function GeneralSettings({ onWhatsApp }: { onWhatsApp: () => void }) {
       <div className="info-note ai-explanation">
         <Zap size={18} />
         <p>
-          La clasificación con IA es opcional y puede tener costos de uso. Se configura en
-          el alojamiento con una clave del proveedor. Sin ella, puedes seguir
-          usando el asistente local.
+          La clasificación con IA es opcional y puede tener costos de uso. Se
+          configura en el alojamiento con una clave del proveedor. Sin ella,
+          puedes seguir usando el asistente local.
         </p>
       </div>
     </>

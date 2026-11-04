@@ -1,24 +1,18 @@
-# Cerca · Tu tienda, siempre cerca
+# Cerca Restaurantes 4.0
 
 **[Descargar la plataforma completa en ZIP](https://github.com/julianstevan0504/catcut/raw/refs/heads/entrega-cerca-whatsapp/descargas/Cerca-WhatsApp.zip)**
 
-**Versión 3.0:** descomprime el ZIP y abre **index.html** en la carpeta principal. Se abre una demo interactiva con productos, pedidos, conversaciones, importación CSV, búsqueda, modo oscuro, simulador, menú editable y consola de voz. **La demo no necesita Node.js ni servidor.** Para trabajar con cuentas reales y WhatsApp, usa el iniciador del servidor con Node.js 24 o superior.
+Plataforma en español para varios restaurantes: cada negocio tiene su cuenta, menú con fotos, pedidos, reservas, conversaciones, asistente y registro de actividad. Incluye un panel independiente para el dueño de la plataforma y soporte por solicitudes. React + TypeScript + Express + SQLite. Node.js **24 o superior**.
 
-Plataforma en español para una tienda independiente en Colombia. Incluye registro e inicio de sesión, bandeja de conversaciones, inventario, seguimiento de pedidos, configuración del asistente y registro de actividad. React + TypeScript + Vite, servidor Express y base de datos SQLite persistente. Requiere **Node.js 24 o superior**.
+## Abrir y probar
 
-## Probar en desarrollo
+Descomprime todo el ZIP y abre **index.html** de la carpeta principal con doble clic. Es una demo completa en un solo HTML: permite explorar cocina, reservas, fotos, los tres estilos del menú, asistente, voz y administración. No necesita Node.js ni conexión a una API. También puedes abrir **Cerca.html**. Las pruebas se guardan en este navegador si su almacenamiento lo permite; es una demostración, no un negocio real, y no acepta credenciales de proveedores.
 
-### Abrir la demo con doble clic
+Para cuentas reales, usa **INICIAR_WINDOWS.bat**, **INICIAR_MAC.command** o **INICIAR_LINUX.sh**. Instala antes Node.js 24; el iniciador descarga dependencias desde npm la primera vez, comprueba el servidor y abre el navegador. También puedes ejecutar `node scripts/start-local.mjs` dentro de `proyecto/`. Mantén abierta su ventana. Este iniciador escucha solo en localhost; para atender clientes externos debes publicar el servidor con HTTPS.
 
-El `index.html` de la carpeta principal del ZIP contiene toda la demo en un único archivo, incluidos scripts, estilos y tipografía. También puedes abrir `Cerca.html`. Las pruebas se conservan en el almacenamiento de ese navegador cuando está disponible; no se guardan contraseñas ni credenciales reales. La demo es local y no envía WhatsApp. En **Configuración → Datos y seguridad** puedes exportar tus pruebas y reiniciarla.
+El `index.html` del código de desarrollo redirige a `Cerca.html` al abrirlo como archivo local. El de la raíz del ZIP ya contiene toda la demo. Con servidor, se carga la aplicación por secciones.
 
-El `index.html` del código de desarrollo redirige a `Cerca.html` cuando lo abres como archivo local. En una dirección HTTP ejecuta la aplicación con servidor. La pantalla inicial ofrece recuperación e instrucciones si algo no carga. `ABRIR_PRIMERO.html`, en el ZIP, también explica las dos modalidades.
-
-### Iniciar la aplicación con servidor
-
-El ZIP incluye `dist/` ya compilado. Con Node instalado, puedes usar el iniciador de Windows, Mac o Linux de la carpeta principal. También puedes entrar a `proyecto/` y ejecutar `node scripts/start-local.mjs`. El iniciador instala las dependencias cuando hace falta, espera a que el servidor esté listo y abre el navegador. No publiques esta modalidad de demo local como servidor de producción.
-
-El iniciador escucha solo en la interfaz local del computador. Para recibir mensajes reales necesitas publicar el servidor con HTTPS. Los datos del servidor se guardan en SQLite y están separados de los datos de la demo del navegador.
+Para desarrollar:
 
 ```bash
 npm ci
@@ -26,57 +20,63 @@ cp .env.example .env
 npm run dev
 ```
 
-El cliente usa el puerto 5173 y el servidor, el 3000. Abre el cliente en tu navegador. Puedes **Explorar la demo** (Luna Store, datos ficticios) o **Crear tu cuenta** para empezar con una tienda vacía. No hace falta conectar servicios externos para usar el panel y el simulador.
+Cliente: http://localhost:5173. API: puerto 3000. **Explorar la demo** abre La Mesa, un restaurante ficticio compartido. **Crear tu cuenta** crea un restaurante vacío y aislado. Los datos de la demo del navegador y del servidor son independientes. Una actualización conserva las cuentas, productos y sesiones anteriores.
 
-La cuenta de ejemplo del servidor es compartida y tampoco acepta credenciales reales. La demo independiente pertenece a tu navegador. Las cuentas reales nuevas tienen datos aislados y no se crean contraseñas predeterminadas. Usa la máquina aislada y el checkout existente; no necesitas un worktree adicional.
+## Preparar un restaurante
 
-## Qué puedes hacer
+1. Regístrate y **descarga los ocho códigos de recuperación** que se muestran una sola vez. Guárdalos en un lugar privado.
+2. En **Mi restaurante**, configura identidad, enlace único, foto de portada, logo y estilo Tierra, Jade o Ciruela. En **Gestionar fotos y espacio** puedes borrar imágenes sin uso; las que usa el menú están protegidas.
+3. En **Menú y fotos**, carga platos, bebidas, precios COP, existencias, ingredientes confirmados y alérgenos. Cada foto se optimiza; nunca se deducen ingredientes de una imagen. Puedes importar hasta 500 filas por CSV con revisión previa y actualización explícita de SKU.
+4. En **Atención y pedidos**, habilita mesa, recogida o domicilio y sus zonas/tarifas. Define pedido mínimo y tiempo estimado de preparación. Puedes pausar manualmente la recepción de pedidos al cerrar o si la cocina está saturada; el menú y las reservas siguen disponibles.
+5. En **Horarios y reservas**, configura zona horaria IANA, franjas por día, aforo, tamaño de grupo, duración y fechas de cierre. Guardar el restaurante actualiza también horarios y servicios del asistente.
+6. Publica el menú y comparte el enlace o descarga su QR. La publicación empieza desactivada en cuentas reales. Las fotos son privadas mientras el menú está sin publicar.
+7. En **Asistente IA → Configurar → Guía del negocio**, escribe detalles del local, accesibilidad, terraza, mascotas, preparación y políticas, o importa textos .txt/.md. Hasta 60 documentos, 12.000 caracteres por documento y 180.000 en total. Carga solo información que puedas compartir con clientes.
 
-- Crear una cuenta, iniciar/cerrar sesión y cambiar la contraseña. El registro puede cerrarse después de la primera cuenta propietaria.
-- Ver las conversaciones y el historial de respuestas. Tomar el control para pausar el bot en un chat, responder manualmente, devolverlo al asistente o marcarlo como resuelto.
-- Agregar, editar y eliminar productos con precios en COP y unidades disponibles. El stock se mantiene manualmente; las consultas no reservan ni descuentan unidades.
-- Registrar pedidos, actualizar su estado y agregar la guía y un enlace HTTPS de seguimiento. No consulta transportadoras ni tiendas externas automáticamente.
-- Configurar nombre, bienvenida, tono, horarios, envíos, cambios, pagos y preguntas frecuentes.
-- Probar consultas sin enviar mensajes reales. El simulador representa el número **+573001112233**; un pedido de prueba debe usar ese número para poder consultarlo.
-- Revisar accesos, cambios, respuestas y errores en el registro de actividad. El panel y su exportación muestran los últimos 200 eventos; la base guarda el historial completo.
-- Exportar conversaciones, pedidos y actividad a CSV.
-- Importar hasta 500 productos desde CSV de Excel o Google Sheets, con plantilla, vista previa, validación y opción explícita de actualizar SKU existentes. Las importaciones en el servidor se guardan en una transacción: un error revierte el lote completo.
-- Exportar el catálogo, filtrar stock y buscar productos, pedidos y conversaciones con **Ctrl+K / ⌘+K**.
-- Cambiar entre modo claro y oscuro y usar formularios con tamaños adecuados para celular.
-- Consultar y revocar sesiones de otros dispositivos. Exportar los datos de tu tienda a JSON sin credenciales.
+El menú público muestra ingredientes, alérgenos, horarios, existencias y el total antes de confirmar. No ofrece modificaciones ni productos inexistentes como si estuvieran disponibles. Confirma con cocina los alérgenos y posibles trazas; la aplicación no garantiza seguridad alimentaria.
 
-## Seguridad y sesiones
+## Pedidos, cocina y reservas
 
-Las cuentas del servidor usan scrypt para las contraseñas y tokens de sesión aleatorios que se guardan como hashes. En producción la cookie usa el prefijo `__Host-`, `Secure`, `HttpOnly`, `SameSite=Lax` y ninguna propiedad Domain. Las sesiones caducan a los siete días o tras 24 horas sin actividad.
+El cliente elige mesa, recogida o domicilio y confirma productos, cantidades y total. **El servidor calcula el precio**, aplica la tarifa de zona y descuenta existencias en una transacción. Si cambian precios o stock, se exige revisar el pedido. Reintentar la misma solicitud no crea otro pedido.
 
-Las acciones autenticadas de escritura requieren `X-CSRF-Token`. El cliente lo obtiene al iniciar sesión o consultar `/api/me`. Un cliente externo debe conservar la cookie y usar el token de esa misma sesión. Los webhooks de Meta usan firma HMAC y no necesitan ese token.
+En **Cocina**, los pedidos pasan por recibido, preparando, listo, enviado si corresponde y entregado. Se pueden imprimir comandas y marcar un pago como verificado por el equipo. Cancelar restituye existencias una sola vez. **No se cobran tarjetas ni se verifican transferencias bancarias automáticamente.** El historial anterior sigue disponible en **Historial de pedidos**; esos registros manuales no descuentan stock ni pueden saltarse los estados de un pedido de cocina.
 
-Las respuestas HTML del servidor no se almacenan en caché y cada respuesta tiene un nonce distinto en su política CSP. En desarrollo no se fuerza la actualización de recursos locales a HTTPS. Los valores de contraseñas conservan sus espacios; las credenciales de Meta se cifran con AES-256-GCM. Los cambios y accesos quedan en el registro.
+Las reservas consideran la superposición real de visitas y el aforo. El cliente elige entre horarios disponibles y confirma sus datos; la solicitud queda pendiente de confirmación del restaurante y ocupa capacidad. El panel permite confirmar, recibir, completar, cancelar o marcar ausencia. El cliente puede consultar y cancelar desde un enlace privado aleatorio. No se publican listas de clientes ni se permite buscar reservas por un teléfono adivinado.
 
-El servidor limita intentos de acceso, cambios de contraseña y exportaciones. SQLite se crea con permisos restrictivos. `TRUST_PROXY=1` debe usarse solo detrás de un proxy de confianza; el blueprint de Render lo configura. No son pruebas de penetración ni una garantía de ausencia de vulnerabilidades: las pruebas automatizadas verifican los casos que se incluyen en `tests/`.
+El enlace de seguimiento de un pedido o reserva es privado: quien lo tenga puede consultar ese registro. Compártelo solo con la persona correspondiente. Conserva avisos de privacidad y una política de tratamiento de datos adecuados a tu operación.
 
-## Menú y respuestas limitadas al negocio
+## Dueño de la plataforma y soporte
 
-En **Productos**, elige el tipo **Producto / Plato del menú / Bebida del menú**. Guarda precio en COP, stock, ingredientes confirmados y alérgenos o posibles trazas. El menú solo ofrece platos y bebidas con stock mayor que cero. Un producto agotado se informa como agotado; un producto o modificación sin registrar no se confirma. Los ingredientes nunca se deducen de una foto o del nombre. Cuando faltan datos, el asistente lo dice y pide confirmarlos con el equipo. Las consultas sobre alergias incluyen una recomendación de verificación humana, sin prometer seguridad alimentaria.
+El registro de un negocio **no lo convierte en administrador**. La activación del dueño requiere su sesión, su contraseña y la clave privada de instalación `PLATFORM_SETUP_TOKEN` (32 caracteres aleatorios como mínimo). Solo se permite una activación inicial.
 
-El CSV acepta las columnas `nombre,sku,descripcion,categoria,precio,stock,color,tipo,ingredientes,alergenos`. Tipo: `producto`, `plato` o `bebida` (también `product`, `dish`, `drink`). Las columnas nuevas son opcionales para conservar los archivos anteriores. Los platos de ejemplo se crean únicamente en una demo nueva; una cuenta real empieza vacía. Una actualización conserva las cuentas, productos y sesiones anteriores.
+Con el iniciador local, la clave se crea en **proyecto/data/administracion-clave.txt**. Ábrela tú mismo y pégala en **Configuración → Datos y seguridad → Activar administración de la plataforma**, junto con tu contraseña. No la compartas ni subas `data/` a GitHub. En Render, usa el secreto generado en las variables de entorno del servicio.
 
-## Asistente local y clasificación opcional con IA
+La sección **Administración** muestra negocios registrados y activos, cuentas propietarias, totales de pedidos y reservas, solicitudes de soporte e historial administrativo. Puedes abrir/cerrar el registro y suspender o reactivar un restaurante con un motivo. El panel no incluye las conversaciones privadas de otros negocios. Un restaurante suspendido conserva acceso a recuperación y soporte; sus canales públicos se detienen.
 
-Sin claves, funciona un asistente en español basado en reglas y datos. OpenAI es opcional: se usa para **clasificar consultas ambiguas** mediante un esquema JSON cerrado. El servidor escribe la respuesta final con información guardada. El modelo no redacta precios, inventa ingredientes, ve pedidos privados ni ejecuta compras o reservas. Las consultas claras se resuelven directamente; los intentos de cambiar las instrucciones y las preguntas ajenas al negocio se limitan al alcance de la tienda.
+Cada restaurante crea y sigue solicitudes en **Soporte técnico**. El administrador responde desde su panel y actualiza su estado. Es un sistema de tickets atendido por quien opera la plataforma; no implica personal externo contratado ni atención humana 24/7.
 
-```dotenv
-OPENAI_API_KEY=<configurar como secreto en el alojamiento>
-OPENAI_MODEL=gpt-4.1-mini
-```
+## Recuperación y seguridad
 
-Se envía la consulta ambigua y los títulos/identificadores de las preguntas frecuentes; no se envían números de cliente, pedidos ni historial de conversaciones al clasificador. Se usa la Responses API con `store: false`. Una respuesta fuera del esquema se descarta. Un fallo del proveedor usa la respuesta local y deja constancia. Las pruebas del proveedor emplean mocks: no validan un modelo real ni consumen una clave externa.
+En el acceso, **Olvidé mi contraseña** permite recuperar con correo y un código de un solo uso. Renovar códigos en Datos y seguridad requiere la contraseña actual e invalida los anteriores. Restablecer la contraseña revoca todas las sesiones.
 
-El seguimiento por mensaje solo devuelve pedidos del número remitente de WhatsApp. **Las llamadas no revelan pedidos**, porque no autentican la identidad de compra; piden continuar por WhatsApp desde el número registrado. «Hablar con una persona» pausa el bot en la conversación y deja la solicitud pendiente. El asistente se presenta como virtual.
+Para recuperación por correo, configura `RESEND_API_KEY` y `EMAIL_FROM` con un remitente verificado en Resend. El enlace dura 30 minutos y solo sirve una vez. La respuesta pública no revela si existe una cuenta ni devuelve el enlace. Sin proveedor configurado, la interfaz ofrece los códigos. El envío se probó con un proveedor simulado.
+
+Contraseñas scrypt; sesiones aleatorias guardadas como hashes; cookies `HttpOnly`, `SameSite=Lax`, `__Host-` y `Secure` en producción; caducidad a siete días o 24 horas sin actividad; CSRF por sesión; CSP con nonce por respuesta; integraciones cifradas AES-256-GCM. La cuenta del negocio procede de la sesión, nunca de un identificador elegido en el navegador. El administrador también necesita autorización del servidor.
+
+Fotos: JPG/PNG/WebP decodificados y recodificados con Sharp, tamaño/píxeles limitados, eliminación de metadatos, nombres aleatorios y almacenamiento fuera de los archivos públicos. Hasta 200 fotos y 50 MB por restaurante, dos conversiones simultáneas como máximo. No se aceptan SVG ni URLs externas. También se limitan intentos de acceso, recuperación, cargas y acciones públicas. Los CSV exportados neutralizan fórmulas.
+
+## Asesoría con contexto e IA opcional
+
+El asistente relaciona productos, documentos y preguntas anteriores: compara platos, recomienda según presupuesto y personas, calcula cantidades, sugiere bebidas y responde varias consultas de la operación. Puedes borrar el contexto o desactivar el recuerdo de preferencias. Los detalles ausentes se reconocen como faltantes; se puede solicitar atención humana.
+
+Sin claves hay un motor local en español. Con `OPENAI_API_KEY` y `OPENAI_MODEL` (por defecto `gpt-4.1-mini`), la Responses API genera un plan cerrado y puede buscar de nuevo en el catálogo y la guía del negocio. Se permiten hasta tres rondas de búsqueda y se valida cada identificador. **El servidor redacta con hechos guardados y calcula los totales.** El modelo no tiene acceso a pedidos privados, credenciales ni a Internet; no ejecuta operaciones libremente. Se envían la consulta, contexto comercial y fragmentos relevantes, con redacción de teléfonos, correos y códigos. Se usa `store:false`.
+
+Para pedidos y reservas conversacionales se prepara un resumen y se pide **«confirmar pedido»** o **«confirmar reserva»**. Solo entonces el servidor valida existencias o capacidad y registra la operación. Los borradores caducan a los 30 minutos. Las preguntas relacionadas no descartan automáticamente un borrador. Una respuesta inválida o un fallo del proveedor usa las fuentes locales y deja constancia.
+
+El seguimiento por WhatsApp solo devuelve pedidos del número remitente. En llamadas no se revelan pedidos anteriores; se pide continuar desde el número de compra por WhatsApp. El asistente se presenta como virtual. El proveedor de IA se verificó con respuestas simuladas válidas y hostiles; hace falta probar el modelo real al configurar la clave.
 
 ## Hablar y escuchar desde la web
 
-Abre **Asistente IA → Voz y llamadas**. Puedes iniciar, silenciar el micrófono o el altavoz, escribir durante la llamada y terminarla. La transcripción se guarda en **Conversaciones** y en el historial de llamadas. Desde la bandeja puedes añadir notas internas para tu equipo; no se reproducen al cliente. No se graban archivos de audio. Al salir de la pantalla se detienen el dictado y la reproducción.
+Abre **Asistente IA → Voz y llamadas**. Puedes iniciar, hablar para interrumpir la reproducción, pulsar «Interrumpir y hablar», silenciar micrófono/altavoz, escribir y terminar. Se filtra el eco y se cancelan consultas de IA pendientes al interrumpir o colgar. El resultado de la interrupción por voz depende del navegador y del micrófono. La transcripción se guarda en **Conversaciones** y en el historial de llamadas. Desde la bandeja puedes añadir notas internas para tu equipo; no se reproducen al cliente. No se graban archivos de audio. Al salir de la pantalla se detienen el dictado y la reproducción.
 
 El dictado usa `SpeechRecognition` del navegador; la voz usa `speechSynthesis`. La compatibilidad depende del navegador, idioma, permisos y sistema. Prueba Chrome o Edge en **HTTPS o localhost**. Si el dictado no está disponible o no tiene permiso, puedes seguir por texto. La demo con doble clic puede no tener acceso al micrófono: para probarlo usa el iniciador local. El reconocimiento puede procesar audio mediante el servicio del navegador, que tiene sus propias condiciones. El aviso se muestra antes de iniciar.
 
@@ -92,7 +92,7 @@ La integración implementa webhooks de Twilio Programmable Voice y TwiML con rec
 4. Copia las direcciones de llamada entrante y estado al remitente/canal de voz del proveedor, ambas con **POST**. Configura allí los eventos de finalización.
 5. Prueba una llamada real. La pantalla distingue **configuración guardada** de **webhook firmado recibido**; recibir un webhook no certifica por sí solo toda la calidad de audio.
 
-Se verifica la firma con el SDK oficial y la URL pública, Account SID y número de destino; se rechazan llamadas de otro canal. Los turnos se deduplican y tres silencios consecutivos terminan la llamada. Puedes marcar cero o pedir una persona. Si configuras un número del equipo, se intenta una transferencia de voz a ese número; puede implicar tarifas adicionales y depende de su disponibilidad. Si no hay destino, la solicitud queda pendiente y se informa al cliente. No se realizan llamadas salientes automáticas ni se activa el servicio desde este repositorio.
+Se verifica la firma con el SDK oficial y la URL pública, Account SID y número de destino; se rechazan llamadas de otro canal. Los turnos se deduplican, Gather habilita `bargeIn` y tres silencios consecutivos terminan la llamada. Puedes marcar cero o pedir una persona. Si configuras un número del equipo, se intenta una transferencia de voz a ese número; puede implicar tarifas adicionales y depende de su disponibilidad. Si no hay destino, la solicitud queda pendiente y se informa al cliente. No se realizan llamadas salientes automáticas ni se activa el servicio desde este repositorio.
 
 No se ha validado una llamada real en esta entrega porque no se proporcionaron credenciales ni un remitente habilitado. Se probaron webhooks firmados, TwiML, reintentos, silencios, privacidad y flujo de navegador con voz simulada. Referencia: [WhatsApp Business Calling de Twilio](https://www.twilio.com/docs/voice/whatsapp-business-calling).
 
@@ -105,7 +105,7 @@ npm run audit:assistant  # Casos de alcance, precios, ingredientes, privacidad y
 npm run audit:site       # axe-core + Lighthouse; requiere Chromium (CHROMIUM_PATH opcional)
 ```
 
-Consulta `auditoria/INFORME.md`, los JSON y las capturas para ver hallazgos, correcciones y límites de la revisión. La medición Lighthouse usa la demo portátil servida localmente; los números pueden variar según el equipo y el alojamiento.
+Consulta `investigacion/DECISIONES.md`, `auditoria/INFORME.md`, los JSON y las capturas para ver hallazgos, correcciones y límites de la revisión. La medición Lighthouse usa la demo portátil servida localmente; los números pueden variar según el equipo y el alojamiento.
 
 ## Conectar WhatsApp Business real
 
@@ -130,9 +130,9 @@ No se ha contratado alojamiento ni publicado un dominio. Se incluyen un `Dockerf
 
 1. Sube estos cambios a tu repositorio y crea un Blueprint de Render con `render.yaml`.
 2. Revisa el plan y el disco persistente antes de contratar. El blueprint usa un servicio `starter` y 1 GB de disco; no depende de almacenamiento efímero gratuito.
-3. El blueprint genera `APP_ENCRYPTION_KEY`, deshabilita la demo y cierra el registro tras la primera cuenta. El servidor detecta la URL HTTPS asignada mediante `RENDER_EXTERNAL_URL`. Para un dominio personalizado configura `APP_URL=https://tu-dominio`.
-4. Abre el sitio y registra inmediatamente tu primera cuenta. La primera alta se permite con `REGISTRATION_OPEN=false`; las siguientes quedan cerradas. Para admitir más tiendas independientes, cambia explícitamente esa variable a `true`.
-5. Agrega `OPENAI_API_KEY` como secreto si quieres clasificación con IA y conecta Meta desde tu cuenta. Conserva la clave de cifrado para poder restaurar las credenciales.
+3. El blueprint genera `APP_ENCRYPTION_KEY` y `PLATFORM_SETUP_TOKEN`, deshabilita la demo y empieza con registro cerrado tras la primera cuenta. El servidor detecta la URL HTTPS asignada mediante `RENDER_EXTERNAL_URL`. Para un dominio personalizado configura `APP_URL=https://tu-dominio`.
+4. Abre el sitio y registra inmediatamente tu primera cuenta. La primera alta se permite con `REGISTRATION_OPEN=false`; las siguientes quedan cerradas. Activa tu administración con la clave privada y abre el registro desde su panel para admitir más restaurantes.
+5. Agrega `OPENAI_API_KEY` como secreto si quieres asesoría con IA y conecta Meta desde tu cuenta. Conserva la clave de cifrado para poder restaurar las credenciales.
 
 El blueprint no ejecuta una publicación desde este chat. Estos pasos requieren tu cuenta del alojamiento y la publicación del repositorio. No incluyas `.env` ni `data/` en Git.
 
@@ -157,7 +157,10 @@ DEMO_MODE=false
 REGISTRATION_OPEN=false
 # Si hay exactamente un proxy inverso de confianza delante:
 # TRUST_PROXY=1
+# PLATFORM_SETUP_TOKEN=<otro secreto aleatorio privado, mínimo 32 caracteres>
 # OPENAI_API_KEY=<opcional>
+# RESEND_API_KEY=<opcional>
+# EMAIL_FROM=<remitente verificado opcional>
 ```
 
 Genera el secreto con `node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"` y guárdalo de forma segura. Coloca un proxy HTTPS delante del puerto 3000 y configura `TRUST_PROXY` según tu instalación. Configura **un solo proceso/instancia** para SQLite y el trabajador; esta versión no tiene una cola distribuida ni está preparada para escalado horizontal.
@@ -167,11 +170,12 @@ También puedes ejecutar `npm run build` y `NODE_ENV=production npm start` con l
 ### Red y datos
 
 - Instalación: HTTPS a `registry.npmjs.org`. Docker también necesita el registro oficial de imágenes de Node.
-- Ejecución: `graph.facebook.com` para WhatsApp y, opcionalmente, `api.openai.com` para clasificación con IA. Los webhooks de Twilio requieren acceso HTTPS entrante; el servidor devuelve TwiML y no envía audio a OpenAI. Si el alojamiento limita la salida de red, habilita esos destinos conservando las reglas existentes.
+- Ejecución: `graph.facebook.com` para WhatsApp y, opcionalmente, `api.openai.com` para asesoría con IA; `api.resend.com` si activas el correo de recuperación. Los webhooks de Twilio requieren acceso HTTPS entrante; el servidor devuelve TwiML y no envía audio a OpenAI. Si el alojamiento limita la salida de red, habilita esos destinos conservando las reglas existentes.
 - Entrada pública HTTPS a `/api/webhooks/whatsapp/:workspaceId`. No expongas la base ni las credenciales.
 - La base por defecto está en `data/cerca.sqlite`. En desarrollo se genera una clave en `data/.encryption-key`, con permisos restrictivos. Producción exige `APP_ENCRYPTION_KEY` y HTTPS.
-- Copias consistentes: `npm run backup -- /ruta/segura/cerca.sqlite`. Conserva por separado la clave de cifrado necesaria para restaurar las integraciones. El script no imprime datos de clientes ni credenciales.
-- No hay envío de correo ni recuperación automática de contraseña. El panel maneja una cuenta propietaria por tienda; no incluye invitaciones ni roles de equipo.
+- Copias consistentes: `npm run backup -- /ruta/segura/cerca.sqlite`. El script copia SQLite y sus fotos a `cerca.sqlite.media/`. Conserva por separado `APP_ENCRYPTION_KEY` y las claves de instalación. Para restaurar, detén el servicio, restaura la base y copia esa carpeta a `media/` junto a la base, con permisos del usuario del servidor. Verifica el resultado antes de reabrir el servicio. El script no imprime datos de clientes ni credenciales.
+- El disco persistente contiene la base y las fotos. Dimensiona el almacenamiento para el conjunto de negocios, vigila su uso y mantén copias externas. Los 50 MB son un límite por restaurante, no una reserva de espacio.
+- Cada restaurante tiene una cuenta propietaria; no se incluyen invitaciones ni roles de camarero/cocina por usuario. Para escalar a varias instancias deben migrarse SQLite, archivos y cola a servicios compartidos; revisa investigacion/DECISIONES.md.
 
 ## Validación
 

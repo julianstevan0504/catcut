@@ -1,3 +1,18 @@
+# Cerca Restaurantes 4.0
+
+- Plataforma para varios restaurantes con aislamiento de cuentas, menús, conversaciones, fotos, pedidos y reservas.
+- Registro, ocho códigos de recuperación de un uso, recuperación opcional por correo con Resend y revocación de sesiones al restablecer la contraseña.
+- Panel del dueño de la plataforma con activación privada, estadísticas, control del registro, suspensión de negocios, soporte por tickets e historial.
+- Menú público con tres estilos, fotos optimizadas sin metadatos, búsqueda, ingredientes, alérgenos y QR descargable.
+- Pedidos para mesa, recoger y domicilio con tarifas por zona, cálculo en servidor, existencias atómicas, reintentos sin duplicados y seguimiento privado.
+- Pausa manual de la recepción de pedidos sin ocultar la carta ni las reservas.
+- Cocina con estados, comandas imprimibles, verificación manual de pagos y restitución de existencias al cancelar una sola vez.
+- Reservas con zona horaria, horarios, cierres, aforo, duración, confirmación del equipo y cancelación por enlace privado.
+- Asesoría contextual, comparaciones, presupuesto, cantidades, documentos del negocio y búsqueda opcional con IA; hechos y totales controlados por el servidor.
+- Interrupción de la voz, filtrado de eco, cancelación de consultas pendientes y protección frente a eventos de reproducción antiguos. Twilio usa Gather con bargeIn.
+- Pruebas ampliadas de concurrencia, fotos, recuperación, permisos, pedidos, reservas e interrupciones; revisión axe/Lighthouse y copias que incluyen fotos.
+- Se conserva la demo completa para doble clic y la migración de cuentas de versiones anteriores.
+
 # Cerca 3.0
 
 - Estudio del asistente con diseño nuevo, vista previa, voz, configuración y evaluación.

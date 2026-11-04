@@ -11,7 +11,7 @@ test("demo: panel, conversación, respuesta humana, simulador e historial", asyn
   ).toBeVisible();
   await page.getByRole("button", { name: "Explorar la demo" }).click();
   await expect(
-    page.getByRole("heading", { name: "Tu tienda, en buenas manos." }),
+    page.getByRole("heading", { name: "Hoy se cocina algo bueno." }),
   ).toBeVisible();
   await page.screenshot({
     path: "test-results/dashboard-desktop.png",
@@ -73,7 +73,7 @@ test("una cuenta nueva puede administrar productos, pedidos y su asistente", asy
 }) => {
   await page.goto("/#register");
   await page.getByLabel("Tu nombre", { exact: true }).fill("Laura");
-  await page.getByLabel("Nombre de tu tienda").fill("Tienda de Laura");
+  await page.getByLabel("Nombre de tu restaurante").fill("Tienda de Laura");
   await page
     .getByLabel("Correo electrónico")
     .fill(`laura-${Date.now()}@example.test`);
@@ -82,9 +82,9 @@ test("una cuenta nueva puede administrar productos, pedidos y su asistente", asy
     .fill("MiTiendaSegura123");
   await page.getByRole("button", { name: "Crear mi espacio" }).click();
   await expect(
-    page.getByRole("heading", { name: "Tu tienda, en buenas manos." }),
+    page.getByRole("heading", { name: "Hoy se cocina algo bueno." }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Productos", exact: true }).click();
+  await page.getByRole("button", { name: "Menú y fotos", exact: true }).click();
   await page
     .getByRole("button", { name: "Agregar producto", exact: true })
     .click();
@@ -99,7 +99,9 @@ test("una cuenta nueva puede administrar productos, pedidos y su asistente", asy
   await expect(
     page.getByRole("heading", { name: "Vela Cerezo" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Pedidos", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Historial de pedidos", exact: true })
+    .click();
   await page
     .getByRole("button", { name: "Registrar pedido", exact: true })
     .first()
@@ -114,7 +116,7 @@ test("una cuenta nueva puede administrar productos, pedidos y su asistente", asy
     .click();
   await expect(page.getByText("#LA-1001", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Asistente IA", exact: true }).click();
-  await page.getByRole("button",{name:"Configurar",exact:true}).click();
+  await page.getByRole("button", { name: "Configurar", exact: true }).click();
   await page.getByLabel("Nombre de tu asistente").fill("Luna");
   await page
     .getByRole("button", { name: "Guardar cambios", exact: true })
@@ -138,7 +140,7 @@ test("en celular se puede navegar y probar; no hay desbordamiento horizontal", a
   await page.goto("/");
   await page.getByRole("button", { name: "Explorar la demo" }).click();
   await expect(
-    page.getByRole("heading", { name: "Tu tienda, en buenas manos." }),
+    page.getByRole("heading", { name: "Hoy se cocina algo bueno." }),
   ).toBeVisible();
   await page.screenshot({
     path: "test-results/dashboard-mobile.png",

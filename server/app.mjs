@@ -23,6 +23,10 @@ import {
   encryptionKey,
   rateLimiter,
 } from "./security.mjs";
+import { installRestaurants } from "./restaurants.mjs";
+import { installPlatform, issueRecoveryCodes } from "./platform.mjs";
+import { activeBusiness, isAdmin, platformSettings } from "./restaurant-db.mjs";
+import { validateKnowledge } from "../shared/knowledge.ts";
 import { installVoice } from "./voice.mjs";
 import { answerMessage } from "./assistant.mjs";
 import { validateProduct, validateImport } from "../shared/catalog.ts";
@@ -115,7 +119,10 @@ export async function createApp(options = {}) {
     demoMode &&
     !db.prepare("SELECT id FROM users WHERE email = ?").get(DEMO_EMAIL)
   ) {
-    const workspaceId = createWorkspace(db, "Luna Store", { sample: true });
+    const workspaceId = createWorkspace(db, "La Mesa", {
+      sample: true,
+      restaurant: true,
+    });
     db.prepare("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)").run(
       uid(),
       workspaceId,
@@ -254,6 +261,20 @@ export async function createApp(options = {}) {
       db.prepare(
         "UPDATE sessions SET last_seen_at = ? WHERE token_hash = ?",
       ).run(now(), tokenHash(token));
+    if (
+      !activeBusiness(db, user.workspace_id) &&
+      !req.path.startsWith("/api/support") &&
+      !req.path.startsWith("/api/account/") &&
+      req.path !== "/api/me" &&
+      !req.path.startsWith("/api/auth") &&
+      !(isAdmin(db, user.id) && req.path.startsWith("/api/platform"))
+    )
+      return next(
+        fail(
+          403,
+          "El restaurante está suspendido. Puedes contactar con soporte desde tu cuenta.",
+        ),
+      );
     req.user = user;
     req.workspaceId = user.workspace_id;
     next();
@@ -295,6 +316,10 @@ export async function createApp(options = {}) {
         model: openaiKey ? model : "Asistente local",
       },
       demo: req.user.email === DEMO_EMAIL,
+      platformAdmin: isAdmin(db, req.user.id),
+      businessState: activeBusiness(db, req.workspaceId)
+        ? "active"
+        : "suspended",
       csrfToken: csrfFor(readToken(req)),
     });
   }
@@ -306,11 +331,20 @@ export async function createApp(options = {}) {
   app.get("/api/bootstrap", (_req, res) =>
     res.json({
       demoEnabled: demoMode,
-      registrationAllowed: registrationOpen || ownerCount() === 0,
+      registrationAllowed:
+        platformSettings(db, registrationOpen).registrationOpen ||
+        ownerCount() === 0,
+      emailRecoveryEnabled: Boolean(
+        (options.mailKey ?? process.env.RESEND_API_KEY) &&
+        process.env.EMAIL_FROM,
+      ),
     }),
   );
   app.post("/api/auth/register", async (req, res) => {
-    if (!registrationOpen && ownerCount() > 0)
+    if (
+      !platformSettings(db, registrationOpen).registrationOpen &&
+      ownerCount() > 0
+    )
       throw fail(
         403,
         "El registro está cerrado. Contacta con la persona que administra esta instalación.",
@@ -332,9 +366,13 @@ export async function createApp(options = {}) {
     // Hashing yields to the event loop: recheck under the transaction to prevent
     // simultaneous requests from bypassing closed, first-owner registration.
     db.exec("BEGIN IMMEDIATE");
-    let userId;
+    let userId,
+      recoveryCodes = [];
     try {
-      if (!registrationOpen && ownerCount() > 0)
+      if (
+        !platformSettings(db, registrationOpen).registrationOpen &&
+        ownerCount() > 0
+      )
         throw fail(403, "El registro está cerrado.");
       const workspaceId = createWorkspace(db, storeName, {
         sample: req.body.sample === true,
@@ -355,13 +393,14 @@ export async function createApp(options = {}) {
         `${name} creó su cuenta.`,
         name,
       );
+      recoveryCodes = issueRecoveryCodes(db, userId);
       db.exec("COMMIT");
     } catch (error) {
       db.exec("ROLLBACK");
       throw error;
     }
     const csrfToken = session(req, res, userId);
-    res.status(201).json({ ok: true, csrfToken });
+    res.status(201).json({ ok: true, csrfToken, recoveryCodes });
   });
   app.post("/api/auth/login", async (req, res) => {
     const email = field(req.body.email, "correo", { max: 254 }).toLowerCase();
@@ -489,6 +528,27 @@ export async function createApp(options = {}) {
         calls: db
           .prepare(
             "SELECT id,conversation_id,mode,created_at,expires_at,ended_at,turn_count FROM voice_sessions WHERE workspace_id=? ORDER BY created_at",
+          )
+          .all(req.workspaceId),
+        reservations: db
+          .prepare(
+            "SELECT id,code,name,phone,party_size,start_at,end_at,status,notes,source,created_at,updated_at FROM reservations WHERE workspace_id=?",
+          )
+          .all(req.workspaceId),
+        restaurant:
+          db
+            .prepare(
+              "SELECT data FROM restaurant_profiles WHERE workspace_id=?",
+            )
+            .get(req.workspaceId)?.data ?? null,
+        restaurantOrders: db
+          .prepare(
+            "SELECT order_id,fulfillment,delivery_address,delivery_zone,delivery_fee,table_label,notes,payment_method,payment_status FROM restaurant_orders WHERE workspace_id=?",
+          )
+          .all(req.workspaceId),
+        photos: db
+          .prepare(
+            "SELECT id,bytes,width,height,created_at FROM media_images WHERE workspace_id=?",
           )
           .all(req.workspaceId),
         activities: db
@@ -814,7 +874,11 @@ export async function createApp(options = {}) {
           .get(id);
       }
       addMessage(db, conversation.id, "user", text);
-      if (conversation.handoff || !settingsFor(db, req.workspaceId).active)
+      if (
+        conversation.handoff ||
+        !settingsFor(db, req.workspaceId).active ||
+        !activeBusiness(db, req.workspaceId)
+      )
         return res.json({
           conversationId: conversation.id,
           text: null,
@@ -826,6 +890,8 @@ export async function createApp(options = {}) {
         conversation,
         text,
         apiKey: openaiKey,
+        actionKey: key,
+        baseUrl,
         model,
         fetcher,
       });
@@ -848,6 +914,9 @@ export async function createApp(options = {}) {
     },
   );
   app.post("/api/simulator/reset", auth, (req, res) => {
+    db.prepare(
+      "DELETE FROM conversation_actions WHERE conversation_id IN (SELECT id FROM conversations WHERE workspace_id=? AND channel='sandbox')",
+    ).run(req.workspaceId);
     db.prepare(
       "DELETE FROM conversation_memory WHERE conversation_id IN (SELECT id FROM conversations WHERE workspace_id = ? AND channel = 'sandbox')",
     ).run(req.workspaceId);
@@ -945,8 +1014,15 @@ export async function createApp(options = {}) {
         .all(req.workspaceId),
     ),
   );
-  function productFields(body) {
+  function productFields(body, workspaceId) {
     const p = validateProduct(body);
+    if (
+      p.image_id &&
+      !db
+        .prepare("SELECT id FROM media_images WHERE id=? AND workspace_id=?")
+        .get(p.image_id, workspaceId)
+    )
+      throw fail(400, "La foto no pertenece a este restaurante.");
     return [
       p.name,
       p.sku,
@@ -958,14 +1034,15 @@ export async function createApp(options = {}) {
       p.ingredients,
       p.allergens,
       p.kind,
+      p.image_id ?? "",
     ];
   }
 
   app.post("/api/products", auth, (req, res) => {
-    const fields = productFields(req.body),
+    const fields = productFields(req.body, req.workspaceId),
       id = uid();
     db.prepare(
-      "INSERT INTO products (id,workspace_id,name,sku,description,category,price,stock,color,ingredients,allergens,kind) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO products (id,workspace_id,name,sku,description,category,price,stock,color,ingredients,allergens,kind,image_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     ).run(id, req.workspaceId, ...fields);
     activity(
       db,
@@ -977,10 +1054,10 @@ export async function createApp(options = {}) {
     res.status(201).json({ id });
   });
   app.put("/api/products/:id", auth, (req, res) => {
-    const fields = productFields(req.body);
+    const fields = productFields(req.body, req.workspaceId);
     const result = db
       .prepare(
-        "UPDATE products SET name = ?, sku = ?, description = ?, category = ?, price = ?, stock = ?, color = ?, ingredients = ?, allergens = ?, kind = ? WHERE id = ? AND workspace_id = ?",
+        "UPDATE products SET name = ?, sku = ?, description = ?, category = ?, price = ?, stock = ?, color = ?, ingredients = ?, allergens = ?, kind = ?, image_id = ? WHERE id = ? AND workspace_id = ?",
       )
       .run(...fields, req.params.id, req.workspaceId);
     if (!result.changes) throw fail(404, "Producto no encontrado.");
@@ -1081,6 +1158,17 @@ export async function createApp(options = {}) {
     res.status(201).json({ id });
   });
   app.put("/api/orders/:id", auth, (req, res) => {
+    if (
+      db
+        .prepare(
+          "SELECT order_id FROM restaurant_orders WHERE order_id=? AND workspace_id=?",
+        )
+        .get(req.params.id, req.workspaceId)
+    )
+      throw fail(
+        409,
+        "Actualiza los pedidos del menú desde Cocina para conservar el control de stock y estados.",
+      );
     const fields = orderFields(req.body);
     const result = db
       .prepare(
@@ -1126,6 +1214,13 @@ export async function createApp(options = {}) {
       if (typeof body.active !== "boolean")
         throw fail(400, "Estado no válido.");
       next.active = body.active;
+    }
+    if (body.knowledge !== undefined)
+      next.knowledge = validateKnowledge(body.knowledge);
+    if (body.rememberPreferences !== undefined) {
+      if (typeof body.rememberPreferences !== "boolean")
+        throw fail(400, "Preferencia de memoria no válida.");
+      next.rememberPreferences = body.rememberPreferences;
     }
     if (body.voiceEnabled !== undefined) {
       if (typeof body.voiceEnabled !== "boolean")
@@ -1457,7 +1552,9 @@ export async function createApp(options = {}) {
             : null;
           if (
             !reply &&
-            (conversation.handoff || !settingsFor(db, job.workspace_id).active)
+            (conversation.handoff ||
+              !settingsFor(db, job.workspace_id).active ||
+              !activeBusiness(db, job.workspace_id))
           ) {
             db.prepare("UPDATE jobs SET status = 'skipped' WHERE id = ?").run(
               job.id,
@@ -1474,6 +1571,8 @@ export async function createApp(options = {}) {
               conversation,
               text: incoming.text,
               apiKey: openaiKey,
+              actionKey: key,
+              baseUrl,
               model,
               fetcher,
             });
@@ -1559,7 +1658,39 @@ export async function createApp(options = {}) {
     timer.unref();
   }
 
-  installVoice({ app, db, auth, key, baseUrl, demoEmail: DEMO_EMAIL });
+  installRestaurants({
+    app,
+    db,
+    auth,
+    key,
+    baseUrl,
+    databasePath,
+    mediaDirectory: options.mediaDirectory,
+    demoEmail: DEMO_EMAIL,
+  });
+  const platformServices = installPlatform({
+    app,
+    db,
+    auth,
+    baseUrl,
+    registrationOpen,
+    setupToken: options.platformSetupToken ?? process.env.PLATFORM_SETUP_TOKEN,
+    mailKey: options.mailKey ?? process.env.RESEND_API_KEY,
+    mailFrom: options.mailFrom ?? process.env.EMAIL_FROM,
+    fetcher,
+    demoEmail: DEMO_EMAIL,
+  });
+  installVoice({
+    app,
+    db,
+    auth,
+    key,
+    baseUrl,
+    demoEmail: DEMO_EMAIL,
+    openaiKey,
+    model,
+    fetcher,
+  });
 
   app.use("/api", (_req, res) =>
     res.status(404).json({ error: "Ruta no encontrada." }),
@@ -1601,6 +1732,14 @@ export async function createApp(options = {}) {
   }
   app.use((error, _req, res, _next) => {
     if (
+      error.message?.includes(
+        "UNIQUE constraint failed: restaurant_profiles.slug",
+      )
+    )
+      return res.status(409).json({
+        error: "Ese enlace de restaurante ya está en uso. Elige otro nombre.",
+      });
+    if (
       error.code?.startsWith("SQLITE_CONSTRAINT") ||
       [1555, 2067].includes(error.errcode)
     )
@@ -1629,6 +1768,7 @@ export async function createApp(options = {}) {
     processJobs,
     close: () => {
       clearInterval(timer);
+      platformServices.close();
       db.close();
     },
   };

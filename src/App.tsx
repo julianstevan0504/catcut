@@ -3,7 +3,6 @@ import {
   LayoutDashboard,
   MessagesSquare,
   Bot,
-  Package,
   ShoppingBag,
   History,
   Settings,
@@ -22,12 +21,34 @@ import {
   Moon,
   Sun,
   ShieldCheck,
+  CalendarDays,
+  ChefHat,
+  UtensilsCrossed,
+  Store,
+  Headphones,
 } from "lucide-react";
 import { api, post, put, useResource, relativeTime } from "./api";
 import { AppContext } from "./context";
 import { Avatar, Logo, Modal, HelpContent, Spinner } from "./components";
 import { Auth } from "./pages/Auth";
-import { Dashboard } from "./pages/Dashboard";
+const Dashboard = lazy(() =>
+  import("./Restaurant").then((m) => ({ default: m.RestaurantDashboard })),
+);
+const RestaurantSettings = lazy(() =>
+  import("./Restaurant").then((m) => ({ default: m.RestaurantSettings })),
+);
+const Reservations = lazy(() =>
+  import("./Restaurant").then((m) => ({ default: m.Reservations })),
+);
+const Kitchen = lazy(() =>
+  import("./Restaurant").then((m) => ({ default: m.Kitchen })),
+);
+const SupportPage = lazy(() =>
+  import("./Support").then((m) => ({ default: m.SupportPage })),
+);
+const PlatformPage = lazy(() =>
+  import("./Support").then((m) => ({ default: m.PlatformPage })),
+);
 const Inbox = lazy(() =>
   import("./pages/Inbox").then((m) => ({ default: m.Inbox })),
 );
@@ -46,6 +67,7 @@ const ActivityLog = lazy(() =>
 const SettingsPage = lazy(() =>
   import("./pages/Settings").then((m) => ({ default: m.SettingsPage })),
 );
+import { downloadCodes } from "./recoveryCodes";
 import { QuickSearch } from "./Workbench";
 import type { Activity, Conversation, Page, Session } from "./types";
 
@@ -58,8 +80,16 @@ const navigation = [
   },
   { id: "inbox", label: "Conversaciones", icon: MessagesSquare },
   { id: "assistant", label: "Asistente IA", icon: Bot },
-  { id: "products", label: "Productos", icon: Package, group: "TU TIENDA" },
-  { id: "orders", label: "Pedidos", icon: ShoppingBag },
+  { id: "kitchen", label: "Cocina", icon: ChefHat, group: "EL SERVICIO" },
+  { id: "reservations", label: "Reservas", icon: CalendarDays },
+  {
+    id: "products",
+    label: "Menú y fotos",
+    icon: UtensilsCrossed,
+    group: "TU RESTAURANTE",
+  },
+  { id: "restaurant", label: "Mi restaurante", icon: Store },
+  { id: "orders", label: "Historial de pedidos", icon: ShoppingBag },
   {
     id: "activity",
     label: "Registro de actividad",
@@ -67,6 +97,8 @@ const navigation = [
     group: "GESTIÓN",
   },
   { id: "settings", label: "Configuración", icon: Settings },
+  { id: "support", label: "Soporte técnico", icon: Headphones },
+  { id: "platform", label: "Administración", icon: ShieldCheck },
 ] as const;
 const currentPage = (): Page =>
   navigation.some((p) => p.id === location.hash.slice(1))
@@ -74,6 +106,7 @@ const currentPage = (): Page =>
     : "overview";
 
 export default function App() {
+  const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [connectionError, setConnectionError] = useState("");
@@ -95,6 +128,15 @@ export default function App() {
       return "light";
     }
   });
+  useEffect(() => {
+    const receive = (e: Event) => {
+      const codes = (e as CustomEvent).detail;
+      if (Array.isArray(codes) && codes.every((x) => typeof x === "string"))
+        setRecoveryCodes(codes);
+    };
+    addEventListener("cerca:recovery-codes", receive);
+    return () => removeEventListener("cerca:recovery-codes", receive);
+  }, []);
   const refresh = () => setVersion((v) => v + 1);
   const notify = (text: string, error = false) => setToast({ text, error });
   const refreshSession = async () => {
@@ -174,6 +216,7 @@ export default function App() {
     try {
       await post("/auth/logout");
       setSession(null);
+      setRecoveryCodes([]);
       location.hash = "login";
     } catch (e) {
       notify((e as Error).message, true);
@@ -233,29 +276,31 @@ export default function App() {
             </span>
             <span>
               <strong>{session.workspace.name}</strong>
-              <small>Tu tienda online</small>
+              <small>Tu restaurante</small>
             </span>
             <ChevronDown size={15} />
           </button>
           <nav aria-label="Navegación principal">
-            {navigation.map((item) => (
-              <div key={item.id}>
-                {"group" in item && (
-                  <div className="nav-group">{item.group}</div>
-                )}
-                <button
-                  className={`nav-item ${page === item.id ? "active" : ""}`}
-                  onClick={() => navigate(item.id)}
-                >
-                  <item.icon size={19} strokeWidth={1.7} />
-                  <span>{item.label}</span>
-                  {item.id === "inbox" && (
-                    <InboxCounter version={version} />
-                  )}{" "}
-                  {page === item.id && <span className="nav-active-dot" />}
-                </button>
-              </div>
-            ))}
+            {navigation
+              .filter((item) => item.id !== "platform" || session.platformAdmin)
+              .map((item) => (
+                <div key={item.id}>
+                  {"group" in item && (
+                    <div className="nav-group">{item.group}</div>
+                  )}
+                  <button
+                    className={`nav-item ${page === item.id ? "active" : ""}`}
+                    onClick={() => navigate(item.id)}
+                  >
+                    <item.icon size={19} strokeWidth={1.7} />
+                    <span>{item.label}</span>
+                    {item.id === "inbox" && (
+                      <InboxCounter version={version} />
+                    )}{" "}
+                    {page === item.id && <span className="nav-active-dot" />}
+                  </button>
+                </div>
+              ))}
           </nav>
           <div className="sidebar-bottom">
             <div className="sidebar-tip">
@@ -412,6 +457,43 @@ export default function App() {
               </button>
             </div>
           )}
+          {recoveryCodes.length > 0 && (
+            <div
+              className="recovery-new-account-banner"
+              role="region"
+              aria-label="Códigos de recuperación de tu cuenta"
+            >
+              <ShieldCheck size={20} />
+              <span>
+                <strong>
+                  Tu cuenta está lista. Guarda una forma de volver.
+                </strong>
+                <small>
+                  Descarga los códigos privados que te permitirán recuperar el
+                  acceso.
+                </small>
+              </span>
+              <button
+                className="button secondary"
+                onClick={() => downloadCodes(recoveryCodes)}
+              >
+                Descargar códigos
+              </button>
+              <button
+                className="icon-button"
+                aria-label="Cerrar aviso de recuperación"
+                onClick={() => setRecoveryCodes([])}
+              >
+                <X size={16} />
+              </button>
+            </div>
+          )}
+          {session.businessState === "suspended" && (
+            <div className="voice-error" role="alert">
+              Tu restaurante está suspendido. Consulta el motivo con Soporte
+              técnico.
+            </div>
+          )}
           <main
             className={`main-content page-${page}`}
             key={`${page}:${navigationVersion}`}
@@ -420,6 +502,11 @@ export default function App() {
               {page === "overview" && <Dashboard />}
               {page === "inbox" && <Inbox initialId={conversationId} />}
               {page === "assistant" && <Assistant />}
+              {page === "restaurant" && <RestaurantSettings />}
+              {page === "reservations" && <Reservations />}
+              {page === "kitchen" && <Kitchen />}
+              {page === "support" && <SupportPage />}
+              {page === "platform" && <PlatformPage />}
               {page === "products" && <Products initialId={conversationId} />}
               {page === "orders" && <Orders initialId={conversationId} />}
               {page === "activity" && <ActivityLog />}

@@ -1,11 +1,83 @@
 {
   "tool": "axe-core",
   "version": "4.14.0",
-  "generatedAt": "2026-11-04T00:32:30.113Z",
+  "generatedAt": "2026-11-04T05:51:40.628Z",
   "url": "Demo portátil servida localmente",
   "scans": [
     {
       "page": "panel",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "button-name",
+        "color-contrast",
+        "document-title",
+        "html-has-lang",
+        "html-lang-valid",
+        "meta-viewport",
+        "nested-interactive"
+      ]
+    },
+    {
+      "page": "cocina",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "button-name",
+        "color-contrast",
+        "document-title",
+        "html-has-lang",
+        "html-lang-valid",
+        "meta-viewport",
+        "nested-interactive"
+      ]
+    },
+    {
+      "page": "reservas",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "button-name",
+        "color-contrast",
+        "document-title",
+        "html-has-lang",
+        "html-lang-valid",
+        "meta-viewport",
+        "nested-interactive"
+      ]
+    },
+    {
+      "page": "restaurante-identidad",
       "engine": {
         "name": "axe-core",
         "version": "4.14.0"
@@ -23,13 +95,318 @@
         "aria-valid-attr-value",
         "aria-valid-attr",
         "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive"
+      ]
+    },
+    {
+      "page": "galeria-fotos",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "duplicate-id-aria",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive"
+      ]
+    },
+    {
+      "page": "restaurante-servicios",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive"
+      ]
+    },
+    {
+      "page": "restaurante-horarios",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive",
+        "select-name"
+      ]
+    },
+    {
+      "page": "soporte",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
         "color-contrast",
         "document-title",
         "html-has-lang",
         "html-lang-valid",
         "meta-viewport",
+        "nested-interactive"
+      ]
+    },
+    {
+      "page": "soporte-formulario",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "color-contrast",
+        "document-title",
+        "duplicate-id-aria",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "meta-viewport",
         "nested-interactive",
-        "svg-img-alt"
+        "select-name"
+      ]
+    },
+    {
+      "page": "soporte-conversacion",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "color-contrast",
+        "document-title",
+        "duplicate-id-aria",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "meta-viewport",
+        "nested-interactive"
+      ]
+    },
+    {
+      "page": "administracion",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "meta-viewport",
+        "nested-interactive"
+      ]
+    },
+    {
+      "page": "administracion-configuracion",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "meta-viewport",
+        "nested-interactive"
+      ]
+    },
+    {
+      "page": "administracion-soporte",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "color-contrast",
+        "document-title",
+        "html-has-lang",
+        "html-lang-valid",
+        "meta-viewport",
+        "nested-interactive"
+      ]
+    },
+    {
+      "page": "administracion-registro",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "color-contrast",
+        "document-title",
+        "html-has-lang",
+        "html-lang-valid",
+        "meta-viewport",
+        "nested-interactive"
       ]
     },
     {
@@ -47,6 +424,7 @@
         "aria-prohibited-attr",
         "aria-valid-attr-value",
         "aria-valid-attr",
+        "avoid-inline-spacing",
         "button-name",
         "color-contrast",
         "document-title",
@@ -76,6 +454,7 @@
         "aria-roles",
         "aria-valid-attr-value",
         "aria-valid-attr",
+        "avoid-inline-spacing",
         "button-name",
         "color-contrast",
         "document-title",
@@ -105,6 +484,7 @@
         "aria-roles",
         "aria-valid-attr-value",
         "aria-valid-attr",
+        "avoid-inline-spacing",
         "button-name",
         "color-contrast",
         "document-title",
@@ -135,6 +515,7 @@
         "aria-roles",
         "aria-valid-attr-value",
         "aria-valid-attr",
+        "avoid-inline-spacing",
         "button-name",
         "color-contrast",
         "document-title",
@@ -165,6 +546,38 @@
         "aria-roles",
         "aria-valid-attr-value",
         "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "meta-viewport",
+        "nested-interactive",
+        "select-name"
+      ]
+    },
+    {
+      "page": "asistente-guia",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
         "button-name",
         "color-contrast",
         "document-title",
@@ -192,6 +605,7 @@
         "aria-prohibited-attr",
         "aria-valid-attr-value",
         "aria-valid-attr",
+        "avoid-inline-spacing",
         "button-name",
         "color-contrast",
         "document-title",
@@ -216,6 +630,7 @@
         "aria-prohibited-attr",
         "aria-valid-attr-value",
         "aria-valid-attr",
+        "avoid-inline-spacing",
         "button-name",
         "color-contrast",
         "document-title",
@@ -243,6 +658,7 @@
         "aria-prohibited-attr",
         "aria-valid-attr-value",
         "aria-valid-attr",
+        "avoid-inline-spacing",
         "button-name",
         "color-contrast",
         "document-title",
@@ -272,6 +688,7 @@
         "aria-prohibited-attr",
         "aria-valid-attr-value",
         "aria-valid-attr",
+        "avoid-inline-spacing",
         "button-name",
         "color-contrast",
         "document-title",
@@ -299,6 +716,7 @@
         "aria-prohibited-attr",
         "aria-valid-attr-value",
         "aria-valid-attr",
+        "avoid-inline-spacing",
         "button-name",
         "color-contrast",
         "document-title",
@@ -328,6 +746,7 @@
         "aria-roles",
         "aria-valid-attr-value",
         "aria-valid-attr",
+        "avoid-inline-spacing",
         "button-name",
         "color-contrast",
         "document-title",
@@ -336,7 +755,8 @@
         "html-lang-valid",
         "label",
         "meta-viewport",
-        "nested-interactive"
+        "nested-interactive",
+        "scrollable-region-focusable"
       ]
     },
     {
@@ -357,6 +777,7 @@
         "aria-roles",
         "aria-valid-attr-value",
         "aria-valid-attr",
+        "avoid-inline-spacing",
         "button-name",
         "color-contrast",
         "document-title",
@@ -366,6 +787,356 @@
         "label",
         "meta-viewport",
         "nested-interactive"
+      ]
+    },
+    {
+      "page": "cocina-oscuro",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "color-contrast",
+        "document-title",
+        "html-has-lang",
+        "html-lang-valid",
+        "meta-viewport",
+        "nested-interactive"
+      ]
+    },
+    {
+      "page": "soporte-oscuro",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "color-contrast",
+        "document-title",
+        "html-has-lang",
+        "html-lang-valid",
+        "meta-viewport",
+        "nested-interactive"
+      ]
+    },
+    {
+      "page": "administracion-oscuro",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "meta-viewport",
+        "nested-interactive"
+      ]
+    },
+    {
+      "page": "restaurante-oscuro",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive"
+      ]
+    },
+    {
+      "page": "menu-publico",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive",
+        "summary-name"
+      ]
+    },
+    {
+      "page": "reserva-publica",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "autocomplete-valid",
+        "avoid-inline-spacing",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "duplicate-id-aria",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive",
+        "summary-name"
+      ]
+    },
+    {
+      "page": "pedido-publico",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "autocomplete-valid",
+        "avoid-inline-spacing",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "duplicate-id-aria",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label-content-name-mismatch",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive",
+        "select-name",
+        "summary-name"
+      ]
+    },
+    {
+      "page": "pedido-publico-movil",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "autocomplete-valid",
+        "avoid-inline-spacing",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "duplicate-id-aria",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label-content-name-mismatch",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive",
+        "scrollable-region-focusable",
+        "select-name",
+        "summary-name"
+      ]
+    },
+    {
+      "page": "menu-publico-movil",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "avoid-inline-spacing",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label-content-name-mismatch",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive",
+        "scrollable-region-focusable",
+        "summary-name"
+      ]
+    },
+    {
+      "page": "menu-publico-jade",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive",
+        "summary-name"
+      ]
+    },
+    {
+      "page": "menu-publico-violet",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-allowed-attr",
+        "aria-conditional-attr",
+        "aria-deprecated-role",
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "aria-prohibited-attr",
+        "aria-required-attr",
+        "aria-roles",
+        "aria-valid-attr-value",
+        "aria-valid-attr",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
+        "meta-viewport",
+        "nested-interactive",
+        "summary-name"
       ]
     },
     {
@@ -385,12 +1156,14 @@
         "aria-valid-attr",
         "autocomplete-valid",
         "button-name",
+        "bypass",
         "color-contrast",
         "document-title",
         "form-field-multiple-labels",
         "html-has-lang",
         "html-lang-valid",
         "label",
+        "link-name",
         "meta-viewport",
         "nested-interactive"
       ]
@@ -418,6 +1191,30 @@
         "html-has-lang",
         "html-lang-valid",
         "label",
+        "meta-viewport",
+        "nested-interactive"
+      ]
+    },
+    {
+      "page": "recuperar-cuenta",
+      "engine": {
+        "name": "axe-core",
+        "version": "4.14.0"
+      },
+      "violations": [],
+      "passes": [
+        "aria-hidden-body",
+        "aria-hidden-focus",
+        "autocomplete-valid",
+        "button-name",
+        "bypass",
+        "color-contrast",
+        "document-title",
+        "form-field-multiple-labels",
+        "html-has-lang",
+        "html-lang-valid",
+        "label",
+        "link-name",
         "meta-viewport",
         "nested-interactive"
       ]
@@ -453,5 +1250,6 @@
     }
   ],
   "errors": [],
-  "mobileOverflow": false
+  "mobileOverflow": false,
+  "overflowViews": []
 }

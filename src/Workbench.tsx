@@ -203,7 +203,18 @@ export function ImportCatalog({
   }
   function template() {
     exportCsv("plantilla-catalogo-cerca.csv", [
-      ["nombre", "sku", "descripcion", "categoria", "precio", "stock", "color", "tipo", "ingredientes", "alergenos"],
+      [
+        "nombre",
+        "sku",
+        "descripcion",
+        "categoria",
+        "precio",
+        "stock",
+        "color",
+        "tipo",
+        "ingredientes",
+        "alergenos",
+      ],
       [
         "Mi primer producto",
         "NUEVO-001",
@@ -211,7 +222,10 @@ export function ImportCatalog({
         "General",
         45000,
         10,
-        "sage", "producto", "", "",
+        "sage",
+        "producto",
+        "",
+        "",
       ],
     ]);
   }

@@ -5,7 +5,13 @@ export type Page =
   | "products"
   | "orders"
   | "activity"
-  | "settings";
+  | "settings"
+  | "restaurant"
+  | "reservations"
+  | "kitchen"
+  | "support"
+  | "platform";
+export type KnowledgeDocument = { id: string; title: string; content: string };
 export type Settings = {
   assistantName: string;
   active: boolean;
@@ -20,6 +26,8 @@ export type Settings = {
   faqs: { id: string; question: string; answer: string }[];
   voiceEnabled?: boolean;
   voiceRate?: number;
+  knowledge?: KnowledgeDocument[];
+  rememberPreferences?: boolean;
 };
 export type Integration = {
   configured: boolean;
@@ -30,6 +38,8 @@ export type Integration = {
 };
 export type Session = {
   offline?: boolean;
+  platformAdmin?: boolean;
+  businessState?: "active" | "suspended";
   persistence?: "browser" | "memory";
   csrfToken?: string;
   user: { id: string; name: string; email: string };
@@ -69,6 +79,8 @@ export type Message = {
   created_at: string;
 };
 export type Product = {
+  image_id?: string;
+  image_url?: string;
   id: string;
   name: string;
   sku: string;
@@ -81,7 +93,16 @@ export type Product = {
   allergens?: string;
   kind?: "product" | "dish" | "drink";
 };
-export type ReplyContext = { productIds?: string[]; menuOffset?: number };
+export type ReplyContext = {
+  productIds?: string[];
+  menuOffset?: number;
+  discussedIds?: string[];
+  budget?: number;
+  quantity?: number;
+  kind?: "product" | "dish" | "drink" | "all";
+  lastIntent?: string;
+  updatedAt?: string;
+};
 export type StoreReply = {
   text: string;
   category: string;
@@ -90,6 +111,9 @@ export type StoreReply = {
   productIds: string[];
   context: ReplyContext;
   policy: "grounded" | "outside" | "not-found" | "missing-data";
+  sources?: { id: string; title: string }[];
+  suggestions?: string[];
+  approach?: string;
 };
 export type VoiceSession = {
   id: string;

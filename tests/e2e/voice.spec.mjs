@@ -1,8 +1,10 @@
 import { test, expect } from "@playwright/test";
-async function mockVoice(page) {
-  await page.addInitScript(() => {
+async function mockVoice(page, delay = 30) {
+  await page.addInitScript((delay) => {
     const state = {
       starts: 0,
+      cancels: 0,
+      utterances: [],
       stops: 0,
       speaks: [],
       current: null,
@@ -43,10 +45,14 @@ async function mockVoice(page) {
     Object.defineProperty(window, "speechSynthesis", {
       value: {
         getVoices: () => [],
-        cancel: () => clearTimeout(timer),
+        cancel: () => {
+          state.cancels++;
+          clearTimeout(timer);
+        },
         speak: (u) => {
           state.speaks.push(u.text);
-          timer = setTimeout(() => u.onend?.(), 30);
+          state.utterances.push(u);
+          timer = setTimeout(() => u.onend?.(), delay);
         },
       },
       configurable: true,
@@ -57,10 +63,10 @@ async function mockVoice(page) {
       state.late = r.onresult;
       r.onresult?.({ results: [[{ transcript: text }]] });
     };
-  });
+  }, delay);
 }
-async function openVoice(page, offline = true) {
-  await mockVoice(page);
+async function openVoice(page, offline = true, delay = 30) {
+  await mockVoice(page, delay);
   await page.goto(offline ? "/Cerca.html" : "/");
   if (!offline)
     await page.getByRole("button", { name: "Explorar la demo" }).click();
@@ -121,12 +127,53 @@ test("voz en demo sin API: escucha, responde con datos, conserva transcripción 
   expect(await page.locator(".voice-line").count()).toBe(count);
   expect(await page.evaluate(() => window.__voiceTest.current)).toBeNull();
   await expect(page.locator(".voice-history-list")).toContainText("Finalizada");
-  await page
-    .getByRole("button", { name: /^Conversaciones/ })
-    .click();
+  await page.getByRole("button", { name: /^Conversaciones/ }).click();
   await page.getByRole("button", { name: /Llamada web de prueba/ }).click();
   await expect(page.locator(".chat-messages")).toContainText("albahaca");
   expect(requests).toEqual([]);
+});
+test("se puede interrumpir la voz; el eco y los eventos de respuestas viejas no generan consultas", async ({
+  page,
+}) => {
+  await openVoice(page, true, 10000);
+  await page
+    .getByRole("button", { name: "Hablar con el asistente", exact: true })
+    .click();
+  await expect(
+    page.getByText("Tu asistente está hablando", { exact: true }),
+  ).toBeVisible();
+  const initial = await page.locator(".voice-line").count();
+  await page.evaluate(() =>
+    window.__voiceTest.say(window.__voiceTest.speaks.at(-1)),
+  );
+  await expect(page.locator(".voice-line")).toHaveCount(initial);
+  await expect(
+    page.getByText("Tu asistente está hablando", { exact: true }),
+  ).toBeVisible();
+  await page.evaluate(() => window.__voiceTest.say("Espera por favor"));
+  await expect(page.getByText("Te escucho", { exact: true })).toBeVisible();
+  await expect(page.locator(".voice-line")).toHaveCount(initial);
+  await page.evaluate(() =>
+    window.__voiceTest.say("¿Cuánto cuesta la Pizza Margarita?"),
+  );
+  await expect(page.locator(".voice-line.assistant").last()).toContainText(
+    "28.000",
+  );
+  await expect(
+    page.getByText("Tu asistente está hablando", { exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Interrumpir y hablar", exact: true })
+    .click();
+  await expect(page.getByText("Te escucho", { exact: true })).toBeVisible();
+  await page.evaluate(() => window.__voiceTest.utterances[0].onend?.());
+  await expect(page.getByText("Te escucho", { exact: true })).toBeVisible();
+  await page.evaluate(() => window.__voiceTest.say("¿Qué ingredientes tiene?"));
+  await expect(page.locator(".voice-line.assistant").last()).toContainText(
+    "albahaca",
+  );
+  await page.getByRole("button", { name: "Terminar llamada" }).click();
+  expect(await page.evaluate(() => window.__voiceTest.current)).toBeNull();
 });
 test("un cliente sin iniciar sesión puede llamar desde un enlace público sin ver el panel", async ({
   page,
@@ -166,7 +213,7 @@ test("un cliente sin iniciar sesión puede llamar desde un enlace público sin v
   await page.goto(cfg.publicUrl);
   await expect(page.locator(".public-voice-page")).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Productos", exact: true }),
+    page.getByRole("button", { name: "Menú y fotos", exact: true }),
   ).toHaveCount(0);
   await page
     .getByRole("button", { name: "Hablar con el asistente", exact: true })
@@ -207,7 +254,7 @@ test("evaluación y menú editable muestran ingredientes reales y advierten cuan
   page,
 }) => {
   await page.goto("/Cerca.html");
-  await page.getByRole("button", { name: "Productos", exact: true }).click();
+  await page.getByRole("button", { name: "Menú y fotos", exact: true }).click();
   await page
     .getByRole("button", { name: "Agregar producto", exact: true })
     .click();

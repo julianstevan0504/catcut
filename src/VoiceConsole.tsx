@@ -11,7 +11,9 @@ import {
   ShieldCheck,
   ArrowLeft,
   LoaderCircle,
+  Hand,
 } from "lucide-react";
+import { isSpeechEcho, interruptionOnly } from "../shared/speech";
 import { api, post } from "./api";
 import type { StoreReply, VoiceSession } from "./types";
 import "./studio.css";
@@ -26,7 +28,12 @@ type Recognition = {
   onend: (() => void) | null;
   onerror: ((e: { error: string }) => void) | null;
   onresult:
-    | ((e: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void)
+    | ((e: {
+        results: ArrayLike<
+          ArrayLike<{ transcript: string }> & { isFinal?: boolean }
+        >;
+        resultIndex?: number;
+      }) => void)
     | null;
 };
 type SpeechWindow = Window & {
@@ -72,7 +79,7 @@ export function VoiceConsole({
 }) {
   const [phase, setPhase] = useState<Phase>("idle"),
     [lines, setLines] = useState<
-      { role: "user" | "assistant"; text: string }[]
+      { role: "user" | "assistant"; text: string; interrupted?: boolean }[]
     >([]),
     [error, setError] = useState(""),
     [text, setText] = useState(""),
@@ -93,7 +100,17 @@ export function VoiceConsole({
     transcript = useRef<HTMLDivElement>(null),
     lastSend = useRef(""),
     startedAt = useRef(0),
-    silences = useRef(0);
+    silences = useRef(0),
+    speaking = useRef(false),
+    speakingText = useRef(""),
+    speechEpoch = useRef(0),
+    turnEpoch = useRef(0),
+    queue = useRef<string | null>(null),
+    phaseRef = useRef<Phase>("idle");
+  const phaseNow = (value: Phase) => {
+    phaseRef.current = value;
+    setPhase(value);
+  };
   const Rec =
     (window as SpeechWindow).SpeechRecognition ??
     (window as SpeechWindow).webkitSpeechRecognition;
@@ -127,36 +144,52 @@ export function VoiceConsole({
       keepalive: suffix === "end",
     });
   }
-  function listen(g: number) {
-    if (!valid(g) || mute.current || pending.current) {
-      if (valid(g) && !pending.current) setPhase("ready");
+  function listen(g: number, overlay = false) {
+    if (!valid(g) || mute.current || (pending.current && !overlay)) {
+      if (valid(g) && !pending.current) phaseNow("ready");
       return;
     }
-    stopListening();
+    if (recognizer.current) {
+      if (!speaking.current && !pending.current) phaseNow("listening");
+      return;
+    }
+    clearTimeout(retry.current);
     if (!supported || !Rec) {
-      setPhase("ready");
+      if (!speaking.current && !pending.current) phaseNow("ready");
       return;
     }
     const r = new Rec();
     recognizer.current = r;
     r.lang = "es-CO";
     r.continuous = false;
-    r.interimResults = false;
-    setPhase("permission");
+    r.interimResults = true;
+    if (!overlay) phaseNow("permission");
     let gotResult = false;
     r.onstart = () => {
       if (valid(g)) {
-        setPhase("listening");
+        if (!speaking.current && !pending.current) phaseNow("listening");
         setError("");
       }
     };
     r.onresult = (e) => {
-      if (!valid(g) || mute.current) return;
-      const t = String(e.results[0]?.[0]?.transcript ?? "").trim();
-      if (t) {
+      if (!valid(g) || mute.current || recognizer.current !== r) return;
+      for (let i = e.resultIndex ?? 0; i < e.results.length; i++) {
+        const result = e.results[i],
+          t = String(result?.[0]?.transcript ?? "").trim();
+        if (!t) continue;
+        const final = result.isFinal !== false;
+        if (speaking.current && isSpeechEcho(t, speakingText.current)) continue;
+        if (speaking.current) interrupt(true);
+        if (!final) continue;
         gotResult = true;
         silences.current = 0;
+        if (interruptionOnly(t, name)) {
+          gotResult = false;
+          phaseNow("listening");
+          return;
+        }
         void send(t, g);
+        return;
       }
     };
     r.onerror = (e) => {
@@ -164,7 +197,11 @@ export function VoiceConsole({
       recognizer.current = null;
       r.onend = null;
       if (e.error === "aborted") return;
-      setPhase("ready");
+      if (!speaking.current && !pending.current) phaseNow("ready");
+      if (e.error === "no-speech" && (speaking.current || pending.current)) {
+        retry.current = setTimeout(() => listen(g, true), 600);
+        return;
+      }
       if (e.error === "no-speech") {
         setError(
           "No escuché una consulta. Pulsa el micrófono para volver a intentar o escribe abajo.",
@@ -184,8 +221,12 @@ export function VoiceConsole({
     r.onend = () => {
       if (!valid(g) || recognizer.current !== r) return;
       recognizer.current = null;
+      if (speaking.current || pending.current) {
+        retry.current = setTimeout(() => listen(g, true), 500);
+        return;
+      }
       if (!gotResult && !pending.current) {
-        setPhase("ready");
+        phaseNow("ready");
         if (++silences.current < 2)
           retry.current = setTimeout(() => listen(g), 700);
       }
@@ -194,22 +235,57 @@ export function VoiceConsole({
       r.start();
     } catch {
       recognizer.current = null;
-      setPhase("ready");
+      if (!speaking.current && !pending.current) phaseNow("ready");
       setError(
         "No se pudo abrir el micrófono. Continúa por texto o vuelve a intentarlo.",
       );
     }
   }
+  function interrupt(keepRecognition = false) {
+    if (!active.current) return;
+    const wasSpeaking = speaking.current;
+    if (pending.current) {
+      turnEpoch.current++;
+      void sessionRequest("interrupt", {}).catch(() => {});
+    }
+    speechEpoch.current++;
+    speaking.current = false;
+    clearTimeout(speechTimer.current);
+    if (speechSupported) window.speechSynthesis.cancel();
+    if (wasSpeaking) {
+      setLines((lines) => {
+        const next = [...lines];
+        for (let i = next.length - 1; i >= 0; i--)
+          if (next[i].role === "assistant") {
+            next[i] = { ...next[i], interrupted: true };
+            break;
+          }
+        return next;
+      });
+      void sessionRequest("interrupt", {}).catch(() => {});
+    }
+    if (!keepRecognition) {
+      stopListening();
+      mute.current = !supported;
+      setMuted(!supported);
+      silences.current = 0;
+      listen(generation.current, true);
+    }
+    phaseNow(recognizer.current ? "listening" : "ready");
+  }
   function speak(text: string, g: number) {
     if (!valid(g)) return;
-    stopListening();
     clearTimeout(speechTimer.current);
+    const epoch = ++speechEpoch.current;
     if (!audio.current || !speechSupported) {
+      speaking.current = false;
       listen(g);
       return;
     }
+    speaking.current = true;
+    speakingText.current = spoken(text);
     window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(spoken(text));
+    const u = new SpeechSynthesisUtterance(speakingText.current);
     u.lang = "es-CO";
     u.rate = rate;
     const voices = window.speechSynthesis.getVoices();
@@ -219,8 +295,9 @@ export function VoiceConsole({
       null;
     let finished = false;
     const finish = () => {
-      if (finished || !valid(g)) return;
+      if (finished || !valid(g) || epoch !== speechEpoch.current) return;
       finished = true;
+      speaking.current = false;
       clearTimeout(speechTimer.current);
       listen(g);
     };
@@ -229,30 +306,40 @@ export function VoiceConsole({
       if (e.error === "interrupted" || e.error === "canceled") return;
       finish();
     };
-    setPhase("speaking");
+    phaseNow("speaking");
     speechTimer.current = setTimeout(
       () => {
-        if (!valid(g)) return;
+        if (!valid(g) || epoch !== speechEpoch.current) return;
         window.speechSynthesis.cancel();
         finish();
       },
       Math.min(120000, Math.max(15000, text.length * 115)),
     );
     window.speechSynthesis.speak(u);
+    listen(g, true);
   }
   async function send(value: string, g = generation.current) {
-    if (!value.trim() || !valid(g) || pending.current) return;
+    if (!value.trim() || !valid(g)) return;
+    if (pending.current) {
+      queue.current = value.trim();
+      setText("");
+      interrupt(true);
+      return;
+    }
+    if (speaking.current) interrupt(true);
     const key = value.trim();
-    if (lastSend.current === key && phase === "thinking") return;
+    if (lastSend.current === key && phaseRef.current === "thinking") return;
     lastSend.current = key;
     pending.current = true;
     stopListening();
     if (speechSupported) window.speechSynthesis.cancel();
     clearTimeout(speechTimer.current);
-    setPhase("thinking");
+    phaseNow("thinking");
+    listen(g, true);
     setText("");
     setError("");
     setLines((l) => [...l, { role: "user", text: key }]);
+    const requestEpoch = ++turnEpoch.current;
     const abort = new AbortController();
     controller.current = abort;
     try {
@@ -262,6 +349,7 @@ export function VoiceConsole({
         abort.signal,
       );
       if (!valid(g)) return;
+      if (queue.current || requestEpoch !== turnEpoch.current) return;
       setLines((l) => [...l, { role: "assistant", text: reply.text }]);
       onUpdated?.();
       pending.current = false;
@@ -271,19 +359,24 @@ export function VoiceConsole({
       }
       speak(reply.text, g);
     } catch (e) {
-      if (valid(g)) {
+      if (valid(g) && requestEpoch === turnEpoch.current) {
         setError((e as Error).message);
-        setPhase("ready");
+        phaseNow("ready");
       }
     } finally {
-      if (valid(g)) pending.current = false;
+      if (valid(g)) {
+        pending.current = false;
+        const next = queue.current;
+        queue.current = null;
+        if (next) void send(next, g);
+      }
     }
   }
   async function start() {
     if (active.current || phase === "starting") return;
     const g = ++generation.current;
     setError("");
-    setPhase("starting");
+    phaseNow("starting");
     setLines([]);
     setElapsed(0);
     try {
@@ -315,13 +408,16 @@ export function VoiceConsole({
     } catch (e) {
       if (g === generation.current) {
         setError((e as Error).message);
-        setPhase("idle");
+        phaseNow("idle");
       }
     }
   }
   function end(update = true) {
     const c = call.current;
     active.current = false;
+    speaking.current = false;
+    speechEpoch.current++;
+    queue.current = null;
     generation.current++;
     stopListening();
     clearTimeout(speechTimer.current);
@@ -338,7 +434,7 @@ export function VoiceConsole({
       }).catch(() => {});
     if (update) {
       setActiveUI(false);
-      setPhase("ended");
+      phaseNow("ended");
       onUpdated?.();
     }
   }
@@ -369,18 +465,19 @@ export function VoiceConsole({
     setMuted(next);
     if (next) {
       stopListening();
-      if (phase === "listening" || phase === "permission") setPhase("ready");
-    } else if (phase !== "thinking" && phase !== "speaking")
-      listen(generation.current);
+      if (phase === "listening" || phase === "permission") phaseNow("ready");
+    } else listen(generation.current, true);
   }
   function toggleSpeaker() {
     const next = !audio.current;
     audio.current = next;
     setSpeaker(next);
     if (!next && speechSupported) {
+      speechEpoch.current++;
+      speaking.current = false;
       window.speechSynthesis.cancel();
       clearTimeout(speechTimer.current);
-      if (phase === "speaking") listen(generation.current);
+      if (phaseRef.current === "speaking") listen(generation.current);
     }
   }
   return (
@@ -467,6 +564,20 @@ export function VoiceConsole({
             </button>
           </div>
         )}
+        {activeUI && (phase === "speaking" || phase === "thinking") && (
+          <button
+            type="button"
+            className="button voice-interrupt"
+            onClick={() => interrupt()}
+          >
+            <Hand size={16} /> Interrumpir y hablar
+          </button>
+        )}
+        {activeUI && (
+          <p className="voice-barge-hint">
+            Puedes hablar para interrumpirme o pulsar «Interrumpir y hablar».
+          </p>
+        )}
         <p className="voice-consent">
           Al iniciar, se guarda la transcripción en la tienda. Tu navegador
           puede procesar la voz mediante su propio servicio. Cerca no guarda
@@ -510,6 +621,9 @@ export function VoiceConsole({
             <div className={`voice-line ${l.role}`} key={i}>
               <strong>{l.role === "user" ? "Tú" : name}</strong>
               <p>{l.text}</p>
+              {l.interrupted && (
+                <small className="voice-interrupted">Interrumpida por ti</small>
+              )}
             </div>
           ))
         )}
@@ -529,13 +643,13 @@ export function VoiceConsole({
               : "Inicia la llamada para conversar…"
           }
           maxLength={1500}
-          disabled={!activeUI || phase === "thinking"}
+          disabled={!activeUI}
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
         <button
           aria-label="Enviar mensaje en la llamada"
-          disabled={!activeUI || !text.trim() || phase === "thinking"}
+          disabled={!activeUI || !text.trim()}
         >
           <Send size={17} />
         </button>

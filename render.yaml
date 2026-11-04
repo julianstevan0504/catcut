@@ -20,6 +20,8 @@ services:
         value: /app/data/cerca.sqlite
       - key: APP_ENCRYPTION_KEY
         generateValue: true
+      - key: PLATFORM_SETUP_TOKEN
+        generateValue: true
       - key: DEMO_MODE
         value: "false"
       - key: REGISTRATION_OPEN

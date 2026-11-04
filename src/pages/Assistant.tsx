@@ -29,6 +29,7 @@ import {
 import { post, put, useResource, dateLabel } from "../api";
 import { useApp } from "../context";
 import { SaveButton, Toggle } from "../components";
+import { KnowledgeEditor } from "../KnowledgeEditor";
 import { VoiceConsole } from "../VoiceConsole";
 import { VoiceSettings } from "../VoiceSettings";
 import { evaluateStore } from "../../shared/evaluation";
@@ -246,6 +247,15 @@ export function Assistant() {
             >
               Probar una llamada <ArrowRight size={16} />
             </button>
+            <button
+              className="text-button knowledge-shortcut"
+              onClick={() => {
+                setStudio("config");
+                setTab("knowledge");
+              }}
+            >
+              Enseñarle sobre mi negocio <ArrowRight size={15} />
+            </button>
             {session.demo && (
               <p className="studio-demo-note">
                 Los productos y el menú de esta demo son ejemplos. Carga tus
@@ -419,6 +429,7 @@ export function Assistant() {
                     { id: "personality", label: "Personalidad" },
                     { id: "store", label: "Sobre tu tienda" },
                     { id: "faqs", label: "Preguntas frecuentes" },
+                    { id: "knowledge", label: "Guía del negocio" },
                   ].map((t) => (
                     <button
                       type="button"
@@ -572,6 +583,35 @@ export function Assistant() {
                     ))}
                   </div>
                 )}
+                {tab === "knowledge" && (
+                  <div className="editor-section">
+                    <KnowledgeEditor
+                      value={draft.knowledge ?? []}
+                      onChange={(value) => change("knowledge", value)}
+                    />
+                    <div className="voice-setting-row">
+                      <span>
+                        <strong>
+                          Recordar preferencias durante la conversación
+                        </strong>
+                        <small>
+                          Relaciona productos, cantidades y presupuesto en cada
+                          chat. Reiniciar la prueba limpia ese contexto.
+                        </small>
+                      </span>
+                      <Toggle
+                        checked={draft.rememberPreferences ?? true}
+                        onChange={() =>
+                          change(
+                            "rememberPreferences",
+                            !(draft.rememberPreferences ?? true),
+                          )
+                        }
+                        label="Recordar contexto de conversación"
+                      />
+                    </div>
+                  </div>
+                )}
                 {tab === "faqs" && (
                   <div className="form-section">
                     <div className="form-section-heading">
@@ -722,7 +762,13 @@ export function Assistant() {
   );
 }
 
-type SimMessage = { role: "user" | "assistant" | "system"; text: string };
+type SimMessage = {
+  role: "user" | "assistant" | "system";
+  text: string;
+  sources?: { id: string; title: string }[];
+  suggestions?: string[];
+  approach?: string;
+};
 function Simulator() {
   const { session, refresh, notify } = useApp();
   const [messages, setMessages] = useState<SimMessage[]>([
@@ -737,10 +783,13 @@ function Simulator() {
     setText("");
     setBusy(true);
     try {
-      const reply = await post<{ text: string | null; paused?: boolean }>(
-        "/simulator",
-        { text: value },
-      );
+      const reply = await post<{
+        text: string | null;
+        paused?: boolean;
+        sources?: { id: string; title: string }[];
+        suggestions?: string[];
+        approach?: string;
+      }>("/simulator", { text: value });
       if (reply.paused) {
         setPaused(true);
         setMessages((m) => [
@@ -751,7 +800,16 @@ function Simulator() {
           },
         ]);
       } else if (reply.text)
-        setMessages((m) => [...m, { role: "assistant", text: reply.text! }]);
+        setMessages((m) => [
+          ...m,
+          {
+            role: "assistant",
+            text: reply.text!,
+            sources: reply.sources,
+            suggestions: reply.suggestions,
+            approach: reply.approach,
+          },
+        ]);
       refresh();
     } catch (e) {
       notify((e as Error).message, true);
@@ -808,6 +866,16 @@ function Simulator() {
         {messages.map((m, i) => (
           <div className={`sim-message ${m.role}`} key={i}>
             {m.text}
+            {m.sources?.length ? (
+              <div
+                className="assistant-sources"
+                aria-label="Fuentes consultadas"
+              >
+                {m.sources.slice(0, 4).map((s) => (
+                  <span key={s.id}>{s.title}</span>
+                ))}
+              </div>
+            ) : null}
           </div>
         ))}
         {busy && (
@@ -821,6 +889,7 @@ function Simulator() {
       {messages.length < 3 && (
         <div className="simulator-suggestions">
           {[
+            "Somos dos y tenemos 50.000 de presupuesto, ¿qué recomiendas?",
             "¿Qué menú hay?",
             "¿Qué lleva la Pizza Margarita?",
             "¿Tienen sushi?",
@@ -839,6 +908,22 @@ function Simulator() {
           ))}
         </div>
       )}
+      {messages.length >= 3 && messages.at(-1)?.suggestions?.length ? (
+        <div className="advisor-followups">
+          {messages
+            .at(-1)!
+            .suggestions!.slice(0, 3)
+            .map((q) => (
+              <button
+                key={q}
+                disabled={busy || paused}
+                onClick={() => void send(q)}
+              >
+                {q}
+              </button>
+            ))}
+        </div>
+      ) : null}
       <form
         className="simulator-composer"
         onSubmit={(e) => {

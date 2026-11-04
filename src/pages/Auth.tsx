@@ -48,7 +48,16 @@ export function Auth({
     setError("");
     const fields = Object.fromEntries(new FormData(e.currentTarget));
     try {
-      await post(register ? "/auth/register" : "/auth/login", fields);
+      const result = await post<{ recoveryCodes?: string[] }>(
+        register ? "/auth/register" : "/auth/login",
+        fields,
+      );
+      if (result.recoveryCodes?.length)
+        dispatchEvent(
+          new CustomEvent("cerca:recovery-codes", {
+            detail: result.recoveryCodes,
+          }),
+        );
       await onAuthenticated();
       location.hash = "overview";
     } catch (e) {
@@ -84,13 +93,13 @@ export function Auth({
             <span /> TU NUEVO MEJOR EQUIPO
           </span>
           <h1>
-            Tu tienda,
+            Tu restaurante,
             <br />
             siempre <span>cerca.</span>
           </h1>
           <p>
-            Las buenas conversaciones hacen crecer los negocios. Dale a cada
-            cliente la atención que merece, por WhatsApp.
+            Una buena atención empieza antes de sentarse a la mesa. Reúne tu
+            menú, reservas, pedidos y conversaciones en un solo lugar.
           </p>
           <div className="auth-conversation">
             <div className="auth-chat-heading">
@@ -155,7 +164,7 @@ export function Auth({
           <span className="auth-form-icon">
             <MessageCircle size={26} />
           </span>
-          <div className="eyebrow">HAGAMOS ESPACIO PARA TU TIENDA</div>
+          <div className="eyebrow">HAGAMOS ESPACIO PARA TU RESTAURANTE</div>
           <h2>
             {register
               ? "El comienzo de algo bueno."
@@ -163,14 +172,14 @@ export function Auth({
           </h2>
           <p>
             {register
-              ? "Crea tu cuenta y dale una voz a tu negocio."
+              ? "Crea tu cuenta y dale una voz a tu restaurante."
               : "Entra a tu espacio. Tu próxima conversación te espera."}
           </p>
           {standaloneMode && (
             <div className="inline-notice">
               <Sparkles size={19} />
               <div>
-                <strong>Tu tienda de ejemplo está lista.</strong>
+                <strong>Tu restaurante de ejemplo está listo.</strong>
                 <p>
                   Explora productos, pedidos y conversaciones sin una cuenta
                   real. Para conectar WhatsApp y crear tu cuenta, usa el
@@ -194,7 +203,7 @@ export function Auth({
                     />
                   </label>
                   <label className="field-label">
-                    Nombre de tu tienda
+                    Nombre de tu restaurante
                     <input
                       name="storeName"
                       autoComplete="organization"
@@ -254,9 +263,14 @@ export function Auth({
                 disabled={busy || demoBusy}
               >
                 {busy ? <LoaderCircle className="spin" size={18} /> : null}
-                {register ? "Crear mi espacio" : "Entrar a mi tienda"}
+                {register ? "Crear mi espacio" : "Entrar a mi restaurante"}
                 <ArrowRight size={18} />
               </button>
+              {!register && (
+                <a className="forgot-password-link" href="/?recover=start">
+                  ¿Olvidaste tu contraseña?
+                </a>
+              )}
             </form>
           )}
           {flags?.demoEnabled && (

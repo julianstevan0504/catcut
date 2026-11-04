@@ -1,9 +1,9 @@
 {
   "tool": "Evaluador local de alcance, datos y privacidad de Cerca",
-  "generatedAt": "2026-11-04T00:27:46.935Z",
+  "generatedAt": "2026-11-04T05:53:12.943Z",
   "method": "Casos con expectativas explícitas sobre una tienda de prueba. Proveedor de IA simulado; no se llamó a una IA externa ni a WhatsApp real.",
-  "passed": 27,
-  "total": 27,
+  "passed": 33,
+  "total": 33,
   "results": [
     {
       "name": "Alcance: Cuál es la capital de Francia",
@@ -26,7 +26,7 @@
       "passed": true
     },
     {
-      "name": "Alcance: Dame una receta de pizza",
+      "name": "Alcance: Dame una receta de unicornio",
       "passed": true
     },
     {
@@ -91,6 +91,30 @@
     },
     {
       "name": "Contexto recuerda un producto en la siguiente pregunta",
+      "passed": true
+    },
+    {
+      "name": "Relaciona preguntas sobre políticas del restaurante",
+      "passed": true
+    },
+    {
+      "name": "Recomendaciones respetan presupuesto y número de personas",
+      "passed": true
+    },
+    {
+      "name": "Compara dos platos y recuerda las opciones",
+      "passed": true
+    },
+    {
+      "name": "Calcula cantidades sin inventar descuentos",
+      "passed": true
+    },
+    {
+      "name": "Responde preguntas relacionadas usando la guía del negocio",
+      "passed": true
+    },
+    {
+      "name": "Reconoce detalles que no están documentados",
       "passed": true
     },
     {

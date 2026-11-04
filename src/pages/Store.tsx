@@ -45,6 +45,7 @@ import {
   StatusBadge,
 } from "../components";
 import type { Activity, Order, Product } from "../types";
+import { ImageUploader, imageSrc } from "../Images";
 import { ImportCatalog } from "../Workbench";
 
 type ProductDraft = Omit<Product, "id">;
@@ -268,11 +269,21 @@ export function Products({ initialId }: { initialId?: string } = {}) {
             <article className="product-card" key={product.id}>
               <div className={`product-art ${product.color}`}>
                 <span className="product-category">{product.category}</span>
-                <ProductArt
-                  category={product.category}
-                  name={product.name}
-                  kind={product.kind}
-                />
+                {product.image_url || product.image_id ? (
+                  <img
+                    className="menu-product-photo"
+                    src={product.image_url || imageSrc(product.image_id!)}
+                    alt={product.name}
+                    loading="lazy"
+                  />
+                ) : (
+                  <ProductArt
+                    category={product.category}
+                    name={product.name}
+                    kind={product.kind}
+                  />
+                )}
+
                 <span
                   className={`stock-badge ${!product.stock ? "empty" : product.stock <= 3 ? "low" : ""}`}
                 >
@@ -342,7 +353,8 @@ export function Products({ initialId }: { initialId?: string } = {}) {
         <Sparkles size={15} />
         <span>
           Los cambios de precio y stock se aplican a las próximas respuestas del
-          asistente. El inventario se gestiona manualmente.
+          asistente. Los pedidos de cocina descuentan existencias; también
+          puedes ajustarlas aquí.
         </span>
       </div>
       {editing && (
@@ -439,6 +451,15 @@ function ProductForm({
   }
   return (
     <form className="modal-form" onSubmit={(e) => void save(e)}>
+      <ImageUploader
+        value={
+          draft.image_url ||
+          (draft.image_id ? imageSrc(draft.image_id!) : undefined)
+        }
+        onChange={(id, url) =>
+          setDraft((d) => ({ ...d, image_id: id, image_url: url }))
+        }
+      />
       <label className="field-label">
         Nombre del producto
         <input

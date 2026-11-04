@@ -1,3 +1,4 @@
+import { restaurantDemoRequest } from "./restaurant-standalone";
 import type {
   Activity,
   Conversation,
@@ -9,9 +10,12 @@ import type {
   ReplyContext,
   VoiceSession,
 } from "./types";
-import { menuExamples } from "../shared/menu-examples";
+import { businessExamples } from "../shared/business-examples";
+import { restaurantMenuExamples } from "../shared/restaurant-examples";
 import { defaultSettings } from "../shared/defaults";
-import { localReply, normalize } from "../shared/replies";
+import { assistantReply } from "../shared/advisor";
+import { validateKnowledge } from "../shared/knowledge";
+import { normalize } from "../shared/replies";
 import { validateImport, validateProduct } from "../shared/catalog";
 
 declare const __CERCA_STANDALONE__: boolean;
@@ -25,7 +29,8 @@ const id = () =>
       x.toString(16).padStart(2, "0"),
     ).join("");
 const stamp = () => new Date().toISOString();
-type DemoData = {
+export type DemoData = {
+  images?: Record<string, string>;
   version: 2;
   name: string;
   settings: Settings;
@@ -59,39 +64,24 @@ function seed(): DemoData {
   const now = stamp();
   const d: DemoData = {
     version: 2,
-    name: "Luna Store",
-    settings: structuredClone(defaultSettings),
+    name: "La Mesa",
+    settings: {
+      ...structuredClone(defaultSettings),
+      knowledge: structuredClone(businessExamples),
+    },
     products: [],
     orders: [],
     conversations: [],
     messages: {},
     activities: [],
   };
-  const products: [string, string, string, number, number, string][] = [
-    ["Camiseta Essential", "CE-001", "Ropa", 69900, 24, "sand"],
-    ["Bolso Alba", "BA-002", "Accesorios", 129900, 8, "peach"],
-    ["Tenis Urban", "TU-003", "Calzado", 189900, 0, "sage"],
-    ["Pantalón Lino", "PL-004", "Ropa", 149900, 12, "sand"],
-    ["Gorra Studio", "GS-005", "Accesorios", 49900, 17, "sage"],
-    ["Collar Aurora", "CA-006", "Accesorios", 59900, 3, "lavender"],
-  ];
-  d.products = products.map(([name, sku, category, price, stock, color]) => ({
-    id: id(),
-    name,
-    sku,
-    category,
-    price,
-    stock,
-    color,
-    description: `${name}, una selección especial de nuestra tienda. Consulta con el equipo los detalles, colores y tallas.`,
-  }));
-  d.products.push(...menuExamples.map((p) => ({ ...p, id: id() })));
+  d.products = restaurantMenuExamples.map((p) => ({ ...p, id: id() }));
   const contacts = [
     [
       "Valentina Rojas",
       "+573001112233",
       "stock",
-      "¡Hola! ¿Todavía tienen el Bolso Alba?",
+      "¡Hola! ¿Qué lleva la Pizza Margarita?",
     ],
     [
       "Santiago López",
@@ -115,7 +105,7 @@ function seed(): DemoData {
       "Andrés Castro",
       "+573405556688",
       "stock",
-      "¿Están disponibles los Tenis Urban?",
+      "¿Están disponibles los platos del menú?",
     ],
     ["Camila Ruiz", "+573516667799", "general", "¿Qué medios de pago manejan?"],
     [
@@ -132,8 +122,8 @@ function seed(): DemoData {
       customer: "Valentina Rojas",
       phone: "+573001112233",
       status: "shipped",
-      total: 129900,
-      items: "1 × Bolso Alba",
+      total: 28000,
+      items: "1 × Pizza Margarita",
       tracking_number: "DEMO-1042",
       tracking_url: "",
       created_at: now,
@@ -145,8 +135,8 @@ function seed(): DemoData {
       customer: "Santiago López",
       phone: "+573102224455",
       status: "preparing",
-      total: 219800,
-      items: "1 × Camiseta Essential, 1 × Pantalón Lino",
+      total: 56000,
+      items: "2 × Hamburguesa de la Casa, 1 × Limonada Natural",
       tracking_number: "",
       tracking_url: "",
       created_at: now,
@@ -170,7 +160,7 @@ function seed(): DemoData {
       last_message: "",
       last_role: "assistant",
     };
-    const reply = localReply({
+    const reply = assistantReply({
       text,
       settings: d.settings,
       storeName: d.name,
@@ -301,6 +291,7 @@ function requireText(value: unknown, max = 4000) {
 }
 function session(d: DemoData): Session {
   return {
+    platformAdmin: true,
     user: { id: "offline-owner", name: "Andrea", email: "demo@cerca.local" },
     workspace: {
       id: "offline-workspace",
@@ -344,11 +335,19 @@ export async function standaloneRequest<T>(
     if (method !== "GET" && method !== "HEAD") save(d);
     return structuredClone(value) as T;
   }
+  const restaurantResult = restaurantDemoRequest({
+    route: path,
+    method,
+    body,
+    data: d,
+  });
+  if (restaurantResult) return done(restaurantResult.value);
   if (route === "/bootstrap")
     return done({
       demoEnabled: true,
       registrationAllowed: false,
       offline: true,
+      emailRecoveryEnabled: false,
     });
   if (route === "/auth/register" || route === "/auth/login")
     throw new LocalError(
@@ -369,6 +368,8 @@ export async function standaloneRequest<T>(
     return done({ ok: true });
   }
   if (route === "/settings" && method === "PUT") {
+    if (body.knowledge !== undefined)
+      body.knowledge = validateKnowledge(body.knowledge);
     if (body.storeName !== undefined) d.name = requireText(body.storeName, 100);
     const allowed = [
       "assistantName",
@@ -381,6 +382,10 @@ export async function standaloneRequest<T>(
       "payments",
       "welcome",
       "faqs",
+      "knowledge",
+      "rememberPreferences",
+      "voiceEnabled",
+      "voiceRate",
     ] as const;
     for (const key of allowed)
       if (body[key] !== undefined)
@@ -588,7 +593,7 @@ export async function standaloneRequest<T>(
     message(d, c, "user", text);
     if (c.handoff || !d.settings.active)
       return done({ paused: true, text: null, conversationId: c.id });
-    const reply = localReply({
+    const reply = assistantReply({
       settings: d.settings,
       storeName: d.name,
       products: d.products,
@@ -677,7 +682,9 @@ export async function standaloneRequest<T>(
     );
     return done(session);
   }
-  const voiceRoute = route.match(/^\/voice\/sessions\/([^/]+)\/(turn|end)$/);
+  const voiceRoute = route.match(
+    /^\/voice\/sessions\/([^/]+)\/(turn|end|interrupt)$/,
+  );
   if (voiceRoute && method === "POST") {
     const session = demoVoiceSessions.get(voiceRoute[1]);
     const headers = new Headers(options.headers);
@@ -686,6 +693,14 @@ export async function standaloneRequest<T>(
     const history = d.voiceHistory!.find((h) => h.id === session.id)!;
     if (history.ended_at || session.expiresAt < stamp())
       throw new LocalError("La llamada terminó. Inicia otra.", 410);
+    if (voiceRoute[2] === "interrupt") {
+      event(
+        d,
+        "voice.interrupted",
+        "Interrumpiste una respuesta de voz para continuar.",
+      );
+      return done({ ok: true });
+    }
     if (voiceRoute[2] === "end") {
       history.ended_at = stamp();
       event(d, "voice.ended", "Terminó una llamada de prueba.");
@@ -703,7 +718,7 @@ export async function standaloneRequest<T>(
       );
     const text = requireText(body.text, 1500);
     message(d, c, "user", text);
-    const reply = localReply({
+    const reply = assistantReply({
       settings: d.settings,
       storeName: d.name,
       products: d.products,
@@ -816,4 +831,8 @@ export async function standaloneRequest<T>(
     "Esta función no está disponible en la demo independiente.",
     404,
   );
+}
+
+export function standaloneImage(id: string) {
+  return load().images?.[id] ?? "";
 }

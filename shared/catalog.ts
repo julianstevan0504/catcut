@@ -1,4 +1,5 @@
 export type ProductInput = {
+  image_id?: string;
   name: string;
   sku: string;
   description: string;
@@ -38,6 +39,12 @@ export function validateProduct(value: unknown): ProductInput {
   if (!value || typeof value !== "object")
     throw new ValidationError("El producto no es válido.");
   const p = value as Record<string, unknown>;
+  if (
+    p.image_id !== undefined &&
+    (typeof p.image_id !== "string" ||
+      (p.image_id !== "" && !/^[a-f0-9-]{36}$/.test(p.image_id)))
+  )
+    throw new ValidationError("La foto no es válida.");
   const aliases: Record<string, string> = {
     producto: "product",
     plato: "dish",
@@ -61,6 +68,7 @@ export function validateProduct(value: unknown): ProductInput {
       );
   }
   return {
+    image_id: p.image_id as string | undefined,
     name: text(p.name, "el nombre", 100),
     sku: text(p.sku, "el SKU", 40).toUpperCase(),
     description: text(p.description ?? "", "la descripción", 1000, true),
